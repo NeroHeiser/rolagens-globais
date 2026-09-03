@@ -1,4 +1,5 @@
 import { RulesEngine } from "./rules-engine.mjs";
+import { MadnessEngine } from "./madness-engine.mjs";
 import { RulesManagerApp } from "./apps/rules-manager.mjs";
 import { ItemConfigDialog } from "./apps/item-config-dialog.mjs";
 import { getActiveAdapter } from "./adapters/index.mjs";
@@ -13,6 +14,7 @@ Hooks.once("init", () => {
 
   // Registrar configurações de mundo
   RulesEngine.registerSettings();
+  MadnessEngine.registerSettings();
 
   // Registrar o botão de configuração no menu de módulos
   game.settings.registerMenu(MODULE_ID, "managerMenu", {
@@ -32,8 +34,9 @@ Hooks.once("ready", () => {
   const adapter = getActiveAdapter();
   console.log(`Rolagens Globais | Pronto para uso! Sistema detectado: ${adapter.name} (${game.system.id})`);
 
-  // Inicializar o mecanismo de escuta do chat
+  // Inicializar os motores de escuta
   RulesEngine.initialize();
+  MadnessEngine.initialize();
 
   // Expor API pública no objeto do módulo
   const module = game.modules.get(MODULE_ID);
@@ -41,6 +44,7 @@ Hooks.once("ready", () => {
     module.api = {
       RulesManagerApp,
       RulesEngine,
+      MadnessEngine,
       getActiveAdapter,
       openManager: () => new RulesManagerApp().render({ force: true })
     };
@@ -61,6 +65,59 @@ Hooks.on("getItemSheetHeaderButtons", (sheet, buttons) => {
       new ItemConfigDialog(sheet.item).render({ force: true });
     }
   });
+});
+
+/**
+ * Adiciona barra de controle rápida na Aba de Tabelas Roláveis da barra lateral.
+ */
+Hooks.on("renderRollTableDirectory", (app, html, data) => {
+  if (!game.user.isGM) return;
+
+  const root = html instanceof HTMLElement ? html : html?.[0];
+  if (!root) return;
+
+  if (root.querySelector(".rolagens-globais-sidebar-toolbar")) return;
+
+  const header = root.querySelector(".directory-header");
+  if (!header) return;
+
+  const isEnabled = MadnessEngine.isEnabled();
+  const toolbar = document.createElement("div");
+  toolbar.className = "rolagens-globais-sidebar-toolbar";
+  toolbar.innerHTML = `
+    <button type="button" class="btn-madness-toggle ${isEnabled ? "active" : "inactive"}" title="${game.i18n.localize("ROLAGENS_GLOBAIS.Madness.SidebarToggleTitle")}">
+      <i class="fas fa-brain"></i>
+      <span class="toggle-label">${isEnabled ? game.i18n.localize("ROLAGENS_GLOBAIS.Madness.StatusActive") : game.i18n.localize("ROLAGENS_GLOBAIS.Madness.StatusInactive")}</span>
+    </button>
+    <button type="button" class="btn-open-manager" title="${game.i18n.localize("ROLAGENS_GLOBAIS.ManagerTitle")}">
+      <i class="fas fa-cog"></i>
+    </button>
+  `;
+
+  const toggleBtn = toolbar.querySelector(".btn-madness-toggle");
+  const labelSpan = toolbar.querySelector(".toggle-label");
+  const managerBtn = toolbar.querySelector(".btn-open-manager");
+
+  toggleBtn.addEventListener("click", async (e) => {
+    e.preventDefault();
+    const newState = await MadnessEngine.toggleEnabled();
+    if (newState) {
+      toggleBtn.classList.remove("inactive");
+      toggleBtn.classList.add("active");
+      labelSpan.textContent = game.i18n.localize("ROLAGENS_GLOBAIS.Madness.StatusActive");
+    } else {
+      toggleBtn.classList.remove("active");
+      toggleBtn.classList.add("inactive");
+      labelSpan.textContent = game.i18n.localize("ROLAGENS_GLOBAIS.Madness.StatusInactive");
+    }
+  });
+
+  managerBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    new RulesManagerApp().render({ force: true });
+  });
+
+  header.appendChild(toolbar);
 });
 
 /**
@@ -85,4 +142,3 @@ Hooks.on("renderChatLog", (app, html, data) => {
 
   controlButtons.prepend(btn);
 });
-

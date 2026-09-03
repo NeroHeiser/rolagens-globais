@@ -4,7 +4,7 @@
 
 /* --- Painel Central (RulesManagerApp) --- */
 .rolagens-globais.manager-window {
-  min-width: 680px;
+  min-width: 720px;
 }
 
 .rolagens-globais-manager {
@@ -19,7 +19,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 10px;
+  padding-bottom: 8px;
   border-bottom: 1px solid var(--color-border-light, #555);
 }
 
@@ -48,13 +48,198 @@
   color: var(--color-text-primary, #ddd);
 }
 
-.rolagens-globais-manager .header-actions {
+/* --- Abas de Navegação --- */
+.rolagens-globais-manager .manager-tabs {
   display: flex;
+  gap: 6px;
+  border-bottom: 2px solid var(--color-border-light, #444);
+  padding-bottom: 2px;
+}
+
+.rolagens-globais-manager .manager-tabs .tab-item {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--color-border-light, #444);
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: var(--color-text-secondary, #bbb);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
   gap: 8px;
 }
 
-.rolagens-globais-manager .btn-add,
-.rolagens-globais-manager .btn-preset {
+.rolagens-globais-manager .manager-tabs .tab-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--color-text-primary, #fff);
+}
+
+.rolagens-globais-manager .manager-tabs .tab-item.active {
+  background: rgba(123, 44, 191, 0.25);
+  border-color: #9d4edd;
+  color: #e0aaff;
+  box-shadow: inset 0 2px 0 #c77dff;
+}
+
+.rolagens-globais-manager .manager-body {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* --- Aba 1: Modo Loucura --- */
+.tab-madness {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 4px 2px;
+}
+
+.madness-status-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.madness-status-card.status-card-active {
+  background: linear-gradient(135deg, rgba(74, 20, 140, 0.4), rgba(49, 27, 146, 0.4));
+  border: 2px solid #9d4edd;
+  box-shadow: 0 0 15px rgba(157, 78, 221, 0.3);
+}
+
+.madness-status-card.status-card-inactive {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--color-border-light, #444);
+}
+
+.madness-status-card .status-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.madness-status-card .status-icon {
+  font-size: 2.2rem;
+  color: #c77dff;
+}
+
+.madness-status-card.status-card-inactive .status-icon {
+  color: #777;
+}
+
+.madness-status-card .status-text h3 {
+  margin: 0 0 4px 0;
+  font-size: 1.15rem;
+  border: none;
+  color: var(--color-text-primary, #fff);
+}
+
+.madness-status-card .status-text p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--color-text-secondary, #ccc);
+}
+
+.btn-toggle-madness {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  font-size: 0.95rem;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.btn-toggle-madness.btn-active {
+  background: #c62828;
+  color: #fff;
+  box-shadow: 0 0 10px rgba(198, 40, 40, 0.4);
+}
+.btn-toggle-madness.btn-active:hover {
+  background: #d32f2f;
+}
+
+.btn-toggle-madness.btn-inactive {
+  background: linear-gradient(135deg, #7b2cbf, #5a189a);
+  color: #fff;
+  box-shadow: 0 0 10px rgba(123, 44, 191, 0.4);
+}
+.btn-toggle-madness.btn-inactive:hover {
+  background: linear-gradient(135deg, #9d4edd, #7b2cbf);
+}
+
+.madness-config-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.madness-config-form .checkbox-group label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.madness-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 6px;
+  padding-top: 10px;
+  border-top: 1px solid var(--color-border-light, #444);
+}
+
+.btn-save-madness {
+  background: #1b5e20;
+  color: #fff;
+  border: 1px solid #2e7d32;
+  padding: 8px 18px;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.btn-save-madness:hover {
+  background: #2e7d32;
+}
+
+.btn-test-madness {
+  background: rgba(123, 44, 191, 0.25);
+  color: #e0aaff;
+  border: 1px solid #9d4edd;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.btn-test-madness:hover {
+  background: rgba(123, 44, 191, 0.45);
+}
+
+/* --- Aba 2: Rolagens Extras --- */
+.tab-rules {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rules-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.btn-add,
+.btn-preset {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -66,36 +251,30 @@
   border: 1px solid var(--color-border-dark, #333);
 }
 
-.rolagens-globais-manager .btn-add {
+.btn-add {
   background: #1b5e20;
   color: #fff;
 }
-.rolagens-globais-manager .btn-add:hover {
+.btn-add:hover {
   background: #2e7d32;
 }
 
-.rolagens-globais-manager .btn-preset {
+.btn-preset {
   background: #b26a00;
   color: #fff;
 }
-.rolagens-globais-manager .btn-preset:hover {
+.btn-preset:hover {
   background: #d47a00;
 }
 
-/* --- Tabela de Regras --- */
-.rolagens-globais-manager .rules-list {
-  flex: 1;
-  overflow-y: auto;
-}
-
-.rolagens-globais-manager .rules-table {
+.rules-table {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
   font-size: 0.85rem;
 }
 
-.rolagens-globais-manager .rules-table th {
+.rules-table th {
   background: rgba(0, 0, 0, 0.3);
   padding: 8px;
   font-weight: 600;
@@ -103,24 +282,24 @@
   border-bottom: 2px solid var(--color-border-light, #555);
 }
 
-.rolagens-globais-manager .rules-table td {
+.rules-table td {
   padding: 8px;
   vertical-align: middle;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.rolagens-globais-manager .rule-row.row-disabled {
+.rule-row.row-disabled {
   opacity: 0.5;
 }
 
-.rolagens-globais-manager .rule-subtext {
+.rule-subtext {
   display: block;
   font-size: 0.75rem;
   color: var(--color-text-secondary, #888);
   font-style: italic;
 }
 
-/* --- Botão de Toggle --- */
+/* --- Botão de Toggle na Tabela --- */
 .btn-toggle {
   background: none;
   border: none;
@@ -207,6 +386,58 @@
   opacity: 0.4;
 }
 
+/* --- Barra de Controle na Aba Lateral de Tabelas (RollTableDirectory) --- */
+.rolagens-globais-sidebar-toolbar {
+  display: flex;
+  gap: 6px;
+  padding: 6px 8px;
+  margin-bottom: 6px;
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 4px;
+  border: 1px solid var(--color-border-light, #444);
+}
+
+.rolagens-globais-sidebar-toolbar .btn-madness-toggle {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.rolagens-globais-sidebar-toolbar .btn-madness-toggle.active {
+  background: linear-gradient(135deg, #7b2cbf, #5a189a);
+  color: #fff;
+  border-color: #c77dff;
+  box-shadow: 0 0 8px rgba(157, 78, 221, 0.5);
+}
+
+.rolagens-globais-sidebar-toolbar .btn-madness-toggle.inactive {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--color-text-secondary, #aaa);
+  border-color: #444;
+}
+
+.rolagens-globais-sidebar-toolbar .btn-open-manager {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid #444;
+  color: var(--color-text-primary, #ddd);
+  border-radius: 4px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+.rolagens-globais-sidebar-toolbar .btn-open-manager:hover {
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+}
+
 /* --- Modal de Criação / Edição de Regra (RuleDialog) --- */
 .rolagens-globais.rule-dialog-window {
   min-width: 540px;
@@ -228,7 +459,7 @@
   gap: 12px;
 }
 
-.rolagens-globais-dialog .rule-section {
+.rule-section {
   border: 1px solid var(--color-border-light, #555);
   border-radius: 6px;
   padding: 10px 14px;
@@ -236,22 +467,22 @@
   background: rgba(0, 0, 0, 0.15);
 }
 
-.rolagens-globais-dialog .rule-section legend {
+.rule-section legend {
   font-weight: bold;
   font-size: 0.9rem;
   padding: 0 6px;
   color: var(--color-text-primary, #f0f0e0);
 }
 
-.rolagens-globais-dialog .form-row {
+.form-row {
   display: flex;
   gap: 10px;
 }
-.rolagens-globais-dialog .form-row .col-6 {
+.form-row .col-6 {
   flex: 1;
 }
 
-.rolagens-globais-dialog .dialog-buttons {
+.dialog-buttons {
   flex-shrink: 0;
   display: flex;
   justify-content: flex-end;
@@ -261,7 +492,7 @@
   background: rgba(0, 0, 0, 0.4);
 }
 
-.rolagens-globais-dialog .btn-save {
+.btn-save {
   background: #1b5e20;
   color: #fff;
   border: 1px solid #2e7d32;
@@ -271,11 +502,11 @@
   font-size: 0.9rem;
   cursor: pointer;
 }
-.rolagens-globais-dialog .btn-save:hover {
+.btn-save:hover {
   background: #2e7d32;
 }
 
-.rolagens-globais-dialog .btn-cancel {
+.btn-cancel {
   background: rgba(255, 255, 255, 0.1);
   color: #ccc;
   border: 1px solid #555;
@@ -283,11 +514,11 @@
   border-radius: 4px;
   cursor: pointer;
 }
-.rolagens-globais-dialog .btn-cancel:hover {
+.btn-cancel:hover {
   background: rgba(255, 255, 255, 0.2);
 }
 
-/* --- Badge de Rolagem Extra no Chat --- */
+/* --- Badges no Chat --- */
 .rolagens-globais-badge {
   display: inline-flex;
   align-items: center;
@@ -302,15 +533,9 @@
   font-weight: bold;
 }
 
-/* --- Diálogo de Item --- */
-.rolagens-globais-item-dialog .item-header-preview {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
+.rolagens-globais-madness-badge {
+  background: rgba(123, 44, 191, 0.2);
+  border: 1px solid rgba(157, 78, 221, 0.5);
+  color: #e0aaff;
+  line-height: 1.4;
 }
-.rolagens-globais-item-dialog .notes {
-  font-size: 0.85rem;
-  color: var(--color-text-secondary, #aaa);
-}
-

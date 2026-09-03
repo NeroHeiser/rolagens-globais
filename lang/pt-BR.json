@@ -1,0 +1,119 @@
+{
+  "ROLAGENS_GLOBAIS": {
+    "Title": "Rolagens Globais",
+    "ManagerTitle": "Gerenciador de Rolagens Globais",
+    "Settings": {
+      "Rules": {
+        "Name": "Lista de Regras",
+        "Hint": "Armazena a lista de regras de rolagens extras configuradas pelo Mestre."
+      },
+      "OpenManager": {
+        "Name": "Configurar Rolagens Globais",
+        "Label": "Abrir Gerenciador",
+        "Hint": "Abre a interface para criar e gerenciar regras de rolagens extras e o Modo Loucura."
+      }
+    },
+    "Madness": {
+      "TabTitle": "Modo Loucura (Pré-Ataque)",
+      "SettingEnabled": {
+        "Name": "Modo Loucura Ativo",
+        "Hint": "Quando ativo, intercepta ataques e magias antes do d20 rolar, sorteando a tabela de loucura."
+      },
+      "SettingConfig": {
+        "Name": "Configurações do Modo Loucura",
+        "Hint": "Configurações de tabela e filtros de interceptação da Loucura."
+      },
+      "StatusActive": "Modo Loucura: ATIVADO",
+      "StatusInactive": "Modo Loucura: DESATIVADO",
+      "ToggleOn": "Ativar Modo Loucura",
+      "ToggleOff": "Desativar Modo Loucura",
+      "ActivatedNotice": "🌀 Modo Loucura ATIVADO! Ataques e magias agora serão interceptados pela tabela.",
+      "DeactivatedNotice": "✨ Modo Loucura DESATIVADO. As rolagens voltaram ao normal.",
+      "NoTableConfigured": "Rolagens Globais: Nenhuma Tabela Rolável foi configurada para o Modo Loucura. Abra o Gerenciador e selecione uma tabela.",
+      "SelectTable": "Tabela Rolável de Loucura",
+      "SelectTableHint": "Tabela sorteada no lugar do dado de ataque d20.",
+      "Filters": "Ações Interceptadas",
+      "InterceptMelee": "Interceptar Ataques Corpo a Corpo",
+      "InterceptRanged": "Interceptar Ataques à Distância",
+      "InterceptSpells": "Interceptar Lançamento de Magias",
+      "Flavor": "Mensagem de Destaque no Chat",
+      "FlavorPlaceholder": "Ex: 🌀 A Loucura tomou o controle da ação de {actor}!",
+      "Visibility": "Visibilidade do Sorteio",
+      "SaveConfig": "Salvar Configurações da Loucura",
+      "ConfigSaved": "Configurações da Loucura salvas com sucesso!",
+      "TestDraw": "Testar Sorteio da Tabela",
+      "SidebarToggleTitle": "Alternar Modo Loucura (Ativar/Desativar)"
+    },
+    "Manager": {
+      "HeaderSubtitle": "Automação de tabelas, fórmulas e macros acionadas por rolagens",
+      "SystemDetected": "Sistema detectado:",
+      "TabMadness": "🌀 Modo Loucura (Pré-Ataque)",
+      "TabRules": "⚡ Rolagens Extras (Gatilhos Reativos)",
+      "AddRule": "Nova Regra",
+      "LoadPresets": "Carregar Regras Recomendadas",
+      "NoRules": "Nenhuma regra configurada ainda. Clique em 'Nova Regra' ou 'Carregar Regras Recomendadas'.",
+      "Active": "Ativa",
+      "Inactive": "Inativa",
+      "Edit": "Editar",
+      "Delete": "Excluir",
+      "ConfirmDelete": "Tem certeza de que deseja excluir esta regra?",
+      "PresetsLoaded": "Regras recomendadas para o sistema foram carregadas com sucesso!"
+    },
+    "Rule": {
+      "NewRuleTitle": "Criar Nova Regra",
+      "EditRuleTitle": "Editar Regra",
+      "Name": "Nome da Regra",
+      "NamePlaceholder": "Ex: Erro Crítico em Ataque",
+      "Enabled": "Ativar esta regra",
+      "TriggerSection": "1. Gatilho (Quando ela ativa?)",
+      "ActionType": "Tipo de Ação",
+      "ActionAny": "Qualquer Rolagem",
+      "ResultType": "Condição de Resultado",
+      "ResultAny": "Qualquer Resultado",
+      "DieType": "Tipo de Dado",
+      "DieAny": "Qualquer Dado",
+      "DieFace": "Valor da Face (Dado Natural)",
+      "DieFaceHint": "Ex: 1 para Nat 1, 20 para Nat 20",
+      "TotalComparison": "Condição da Soma Total",
+      "TotalNone": "Sem verificação de total",
+      "TotalLessThan": "Total Menor ou igual a",
+      "TotalGreaterThan": "Total Maior ou igual a",
+      "TotalEquals": "Total Igual a",
+      "TotalValue": "Valor do Total",
+      "KeywordFilter": "Filtro de Palavra-chave (Opcional)",
+      "KeywordPlaceholder": "Ex: Ataque, Espada, Fogo...",
+      "EffectSection": "2. Efeito Extra (O que acontece?)",
+      "EffectType": "Tipo de Efeito",
+      "EffectTable": "Tabela Rolável (RollTable)",
+      "EffectRoll": "Fórmula Livre de Dados",
+      "EffectMacro": "Executar Macro",
+      "SelectTable": "Selecionar Tabela",
+      "NoTables": "Nenhuma tabela rolável encontrada no mundo.",
+      "Formula": "Fórmula do Dado",
+      "FormulaPlaceholder": "Ex: 1d100, 2d6[fogo], 1d4",
+      "SelectMacro": "Selecionar Macro",
+      "NoMacros": "Nenhuma macro encontrada no mundo.",
+      "DeliverySection": "3. Entrega no Chat",
+      "Visibility": "Visibilidade da Rolagem",
+      "VisPublic": "Pública (Todos veem)",
+      "VisWhisperGM": "Privada para o Mestre (Whisper GM)",
+      "VisBlind": "Rolagem Cega (Apenas Mestre)",
+      "VisSame": "Mesma da rolagem original",
+      "FlavorMessage": "Mensagem de Destaque no Chat",
+      "FlavorPlaceholder": "Ex: ⚠️ Efeito Crítico Ativado!",
+      "Save": "Salvar Regra",
+      "Cancel": "Cancelar"
+    },
+    "ItemConfig": {
+      "ButtonTooltip": "Rolagens Globais: Configurações do Item",
+      "Title": "Rolagens Globais: {item}",
+      "IgnoreGlobal": "Ignorar regras de rolagens extras para este item",
+      "IgnoreMadness": "Ignorar o Modo Loucura para este item (ataca normalmente)",
+      "Save": "Salvar Configurações"
+    },
+    "Chat": {
+      "TriggeredBadge": "Rolagem Extra",
+      "OriginalRoll": "Rolagem Original"
+    }
+  }
+}

@@ -10,12 +10,45 @@
       "OpenManager": {
         "Name": "Configure Global Extra Rolls",
         "Label": "Open Manager",
-        "Hint": "Opens the interface to create and manage automated extra roll rules."
+        "Hint": "Opens the interface to create and manage automated extra roll rules and Madness Mode."
       }
+    },
+    "Madness": {
+      "TabTitle": "Madness Mode (Pre-Attack)",
+      "SettingEnabled": {
+        "Name": "Madness Mode Active",
+        "Hint": "When active, intercepts attacks and spells before the d20 is rolled, drawing from the madness table."
+      },
+      "SettingConfig": {
+        "Name": "Madness Mode Configuration",
+        "Hint": "Table and interception filters configuration for Madness Mode."
+      },
+      "StatusActive": "Madness Mode: ACTIVE",
+      "StatusInactive": "Madness Mode: INACTIVE",
+      "ToggleOn": "Enable Madness Mode",
+      "ToggleOff": "Disable Madness Mode",
+      "ActivatedNotice": "🌀 Madness Mode ACTIVE! Attacks and spells will now be intercepted by the table.",
+      "DeactivatedNotice": "✨ Madness Mode DEACTIVATED. Rolls have returned to normal.",
+      "NoTableConfigured": "Global Extra Rolls: No RollTable configured for Madness Mode. Open the Manager and select a table.",
+      "SelectTable": "Madness RollTable",
+      "SelectTableHint": "Table drawn in place of the d20 attack die.",
+      "Filters": "Intercepted Actions",
+      "InterceptMelee": "Intercept Melee Attacks",
+      "InterceptRanged": "Intercept Ranged Attacks",
+      "InterceptSpells": "Intercept Spellcasting",
+      "Flavor": "Highlighted Chat Message",
+      "FlavorPlaceholder": "Ex: 🌀 Madness took control of {actor}'s action!",
+      "Visibility": "Draw Visibility",
+      "SaveConfig": "Save Madness Settings",
+      "ConfigSaved": "Madness settings saved successfully!",
+      "TestDraw": "Test Table Draw",
+      "SidebarToggleTitle": "Toggle Madness Mode (Enable/Disable)"
     },
     "Manager": {
       "HeaderSubtitle": "Automation of tables, formulas, and macros triggered by rolls",
       "SystemDetected": "Detected system:",
+      "TabMadness": "🌀 Madness Mode (Pre-Attack)",
+      "TabRules": "⚡ Extra Rolls (Reactive Triggers)",
       "AddRule": "New Rule",
       "LoadPresets": "Load Recommended Rules",
       "NoRules": "No rules configured yet. Click 'New Rule' or 'Load Recommended Rules'.",
@@ -75,6 +108,7 @@
       "ButtonTooltip": "Global Extra Rolls: Item Settings",
       "Title": "Global Extra Rolls: {item}",
       "IgnoreGlobal": "Ignore global extra roll rules for this item",
+      "IgnoreMadness": "Ignore Madness Mode for this item (attack normally)",
       "Save": "Save Settings"
     },
     "Chat": {
@@ -83,4 +117,3 @@
     }
   }
 }
-

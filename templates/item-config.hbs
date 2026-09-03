@@ -5,13 +5,20 @@
   </div>
 
   <p class="notes">
-    Personalize como este item específico interage com o sistema de Rolagens Globais.
+    Personalize como este item específico interage com o sistema de Rolagens Globais e com o Modo Loucura.
   </p>
 
   <div class="form-group">
     <label for="item-ignoreGlobal">{{localize "ROLAGENS_GLOBAIS.ItemConfig.IgnoreGlobal"}}</label>
     <div class="form-fields">
       <input type="checkbox" id="item-ignoreGlobal" name="ignoreGlobal" {{#if ignoreGlobal}}checked{{/if}} />
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="item-ignoreMadness">{{localize "ROLAGENS_GLOBAIS.ItemConfig.IgnoreMadness"}}</label>
+    <div class="form-fields">
+      <input type="checkbox" id="item-ignoreMadness" name="ignoreMadness" {{#if ignoreMadness}}checked{{/if}} />
     </div>
   </div>
 
@@ -24,4 +31,3 @@
     </button>
   </footer>
 </form>
-

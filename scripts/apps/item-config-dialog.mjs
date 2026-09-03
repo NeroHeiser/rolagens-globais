@@ -19,7 +19,7 @@ export class ItemConfigDialog extends HandlebarsApplicationMixin(ApplicationV2) 
       resizable: false
     },
     position: {
-      width: 420,
+      width: 440,
       height: "auto"
     },
     actions: {
@@ -35,9 +35,11 @@ export class ItemConfigDialog extends HandlebarsApplicationMixin(ApplicationV2) 
 
   async _prepareContext(options) {
     const ignoreGlobal = this.item.getFlag("rolagens-globais", "ignoreGlobal") || false;
+    const ignoreMadness = this.item.getFlag("rolagens-globais", "ignoreMadness") || false;
     return {
       item: this.item,
-      ignoreGlobal
+      ignoreGlobal,
+      ignoreMadness
     };
   }
 
@@ -58,10 +60,11 @@ export class ItemConfigDialog extends HandlebarsApplicationMixin(ApplicationV2) 
     const form = event.currentTarget;
     const formData = new FormData(form);
     const ignoreGlobal = formData.get("ignoreGlobal") === "on";
+    const ignoreMadness = formData.get("ignoreMadness") === "on";
 
     await this.item.setFlag("rolagens-globais", "ignoreGlobal", ignoreGlobal);
+    await this.item.setFlag("rolagens-globais", "ignoreMadness", ignoreMadness);
     ui.notifications.info(`Configurações de Rolagens Globais salvas para: ${this.item.name}`);
     this.close();
   }
 }
-
