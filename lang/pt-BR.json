@@ -50,9 +50,12 @@
       "SidebarToggleTitle": "Alternar Modo de Interceptação"
     },
     "QuickTable": {
-      "Title": "Criador Rápido de Tabelas",
-      "Button": "Criador Rápido",
-      "ButtonTooltip": "Criar ou importar uma Tabela Rolável colando texto",
+      "Title": "Central de Tabelas Roláveis",
+      "Button": "Central de Tabelas",
+      "ButtonTooltip": "Criar, importar ou exportar Tabelas Roláveis",
+      "TabCreate": "Criador Rápido",
+      "TabExport": "Exportar Tabelas",
+      "TabImport": "Importar Arquivo",
       "HeroTitle": "Criador Rápido de Tabelas Roláveis",
       "HeroSubtitle": "Cole uma lista de opções para gerar uma Tabela Rolável completa e funcional em segundos.",
       "BasicSection": "Informações da Tabela",

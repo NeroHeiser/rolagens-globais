@@ -1,75 +1,224 @@
-<form class="rolagens-globais-dialog quick-table-form" autocomplete="off">
-  <div class="dialog-scroll-body">
-    <!-- Banner de Apresentação -->
-    <div class="quick-table-banner">
-      <div class="banner-icon">
-        <i class="fas fa-bolt"></i>
+<div class="rolagens-globais-dialog quick-table-hub">
+  <!-- Navegação de Abas do Hub -->
+  <nav class="hub-tabs">
+    <button type="button" class="hub-tab-item {{#if (eq activeTab 'create')}}active{{/if}}" data-action="setTab" data-tab="create">
+      <i class="fas fa-bolt"></i> {{localize "ROLAGENS_GLOBAIS.QuickTable.TabCreate"}}
+    </button>
+    <button type="button" class="hub-tab-item {{#if (eq activeTab 'export')}}active{{/if}}" data-action="setTab" data-tab="export">
+      <i class="fas fa-file-export"></i> {{localize "ROLAGENS_GLOBAIS.QuickTable.TabExport"}}
+    </button>
+    <button type="button" class="hub-tab-item {{#if (eq activeTab 'import')}}active{{/if}}" data-action="setTab" data-tab="import">
+      <i class="fas fa-file-import"></i> {{localize "ROLAGENS_GLOBAIS.QuickTable.TabImport"}}
+    </button>
+  </nav>
+
+  <!-- ================= ABA 1: CRIADOR RÁPIDO ================= -->
+  {{#if (eq activeTab "create")}}
+    <form class="quick-table-create-form" autocomplete="off" style="display: flex; flex-direction: column; height: 100%;">
+      <div class="dialog-scroll-body">
+        <!-- Banner de Apresentação -->
+        <div class="quick-table-banner">
+          <div class="banner-icon">
+            <i class="fas fa-bolt"></i>
+          </div>
+          <div class="banner-text">
+            <h4>{{localize "ROLAGENS_GLOBAIS.QuickTable.HeroTitle"}}</h4>
+            <p>{{localize "ROLAGENS_GLOBAIS.QuickTable.HeroSubtitle"}}</p>
+          </div>
+        </div>
+
+        <!-- Informações Básicas da Tabela -->
+        <fieldset class="rule-section">
+          <legend><i class="fas fa-sliders-h"></i> {{localize "ROLAGENS_GLOBAIS.QuickTable.BasicSection"}}</legend>
+          
+          <div class="form-group-stacked">
+            <label for="table-name">{{localize "ROLAGENS_GLOBAIS.QuickTable.TableName"}}</label>
+            <input type="text" id="table-name" name="name" placeholder="{{localize 'ROLAGENS_GLOBAIS.QuickTable.NamePlaceholder'}}" required />
+          </div>
+
+          <div class="form-row-grid">
+            <div class="form-group-stacked">
+              <label for="table-formula">{{localize "ROLAGENS_GLOBAIS.QuickTable.Formula"}}</label>
+              <input type="text" id="table-formula" name="formula" placeholder="Ex: 1d6, 1d20" />
+              <span class="field-hint">{{localize "ROLAGENS_GLOBAIS.QuickTable.FormulaHint"}}</span>
+            </div>
+
+            <div class="form-group-stacked">
+              <label for="table-target"><i class="fas fa-link"></i> {{localize "ROLAGENS_GLOBAIS.QuickTable.BindLabel"}} ({{modeName}})</label>
+              <select id="table-target" name="setTarget">
+                <option value="">{{localize "ROLAGENS_GLOBAIS.QuickTable.NoBind"}}</option>
+                <option value="physical" {{#if isPhysicalTarget}}selected{{/if}}>⚔️ {{localize "ROLAGENS_GLOBAIS.QuickTable.BindPhysical"}}</option>
+                <option value="magic" {{#if isMagicTarget}}selected{{/if}}>✨ {{localize "ROLAGENS_GLOBAIS.QuickTable.BindMagic"}}</option>
+              </select>
+              <span class="field-hint">Vincula o sorteio automaticamente a esta categoria.</span>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Área de Colagem da Lista (100% de Largura) -->
+        <fieldset class="rule-section">
+          <legend>
+            <i class="fas fa-list"></i> {{localize "ROLAGENS_GLOBAIS.QuickTable.ListSection"}} 
+            <span class="badge-count"><span class="line-count">0</span> opções detectadas</span>
+          </legend>
+
+          <div class="textarea-container">
+            <textarea name="rawText" class="quick-table-textarea" rows="10" placeholder="{{localize 'ROLAGENS_GLOBAIS.QuickTable.TextareaPlaceholder'}}"></textarea>
+          </div>
+
+          <!-- Guia de Sintaxe & Dicas -->
+          <div class="syntax-guide">
+            <div class="syntax-title">
+              <i class="fas fa-lightbulb"></i> {{localize "ROLAGENS_GLOBAIS.QuickTable.SyntaxTitle"}}
+            </div>
+            <ul class="syntax-list">
+              <li><strong>Opções de Texto:</strong> Cole 1 resultado por linha. Numerações (ex: <code>1. </code>, <code>2 - </code>, <code>[3]</code>) são removidas automaticamente.</li>
+              <li><strong>Tabelas Aninhadas (Recursivas):</strong> Use <code>tabela: Nome da Tabela</code> (ex: <code>tabela: Magia Selvagem</code>) para rolar outra tabela automaticamente quando cair nessa linha!</li>
+            </ul>
+          </div>
+        </fieldset>
       </div>
-      <div class="banner-text">
-        <h4>{{localize "ROLAGENS_GLOBAIS.QuickTable.HeroTitle"}}</h4>
-        <p>{{localize "ROLAGENS_GLOBAIS.QuickTable.HeroSubtitle"}}</p>
+
+      <!-- Botões de Ação Fixos no Rodapé -->
+      <footer class="dialog-buttons">
+        <button type="button" class="btn-cancel" data-action="cancel">
+          <i class="fas fa-times"></i> {{localize "ROLAGENS_GLOBAIS.Rule.Cancel"}}
+        </button>
+        <button type="submit" class="btn-save btn-quick-create">
+          <i class="fas fa-bolt"></i> {{localize "ROLAGENS_GLOBAIS.QuickTable.CreateButton"}}
+        </button>
+      </footer>
+    </form>
+  {{/if}}
+
+  <!-- ================= ABA 2: EXPORTAR TABELAS ================= -->
+  {{#if (eq activeTab "export")}}
+    <div class="quick-table-export-pane" style="display: flex; flex-direction: column; height: 100%;">
+      <div class="dialog-scroll-body">
+        <div class="quick-table-banner">
+          <div class="banner-icon">
+            <i class="fas fa-file-export"></i>
+          </div>
+          <div class="banner-text">
+            <h4>Exportar Tabelas Roláveis</h4>
+            <p>Exporte uma ou várias tabelas para utilizar em outras mesas do Foundry ou outros programas (Excel, Notion, Roll20).</p>
+          </div>
+        </div>
+
+        <!-- Seletor de Formato -->
+        <fieldset class="rule-section">
+          <legend><i class="fas fa-file-alt"></i> Formato de Exportação</legend>
+          <div class="export-format-grid">
+            <label class="format-card {{#if (eq exportFormat 'json')}}selected{{/if}}">
+              <input type="radio" name="exportFormat" value="json" {{#if (eq exportFormat 'json')}}checked{{/if}} />
+              <div class="format-info">
+                <i class="fas fa-code format-icon"></i>
+                <div class="format-title">JSON (Foundry VTT)</div>
+                <div class="format-desc">100% de fidelidade. Perfeito para importar em qualquer outro mundo ou mesa do Foundry.</div>
+              </div>
+            </label>
+
+            <label class="format-card {{#if (eq exportFormat 'csv')}}selected{{/if}}">
+              <input type="radio" name="exportFormat" value="csv" {{#if (eq exportFormat 'csv')}}checked{{/if}} />
+              <div class="format-info">
+                <i class="fas fa-file-csv format-icon"></i>
+                <div class="format-title">Planilha CSV</div>
+                <div class="format-desc">Abre no Excel, Google Planilhas ou importadores de outros VTTs (Roll20).</div>
+              </div>
+            </label>
+
+            <label class="format-card {{#if (eq exportFormat 'md')}}selected{{/if}}">
+              <input type="radio" name="exportFormat" value="md" {{#if (eq exportFormat 'md')}}checked{{/if}} />
+              <div class="format-info">
+                <i class="fas fa-align-left format-icon"></i>
+                <div class="format-title">Texto / Markdown</div>
+                <div class="format-desc">Formatado para Obsidian, Notion, Discord ou para colar em outras mesas.</div>
+              </div>
+            </label>
+          </div>
+        </fieldset>
+
+        <!-- Seleção de Tabelas do Mundo -->
+        <fieldset class="rule-section">
+          <legend>
+            <i class="fas fa-th-list"></i> Selecionar Tabelas do Mundo
+            <div class="legend-actions">
+              <button type="button" class="btn-micro" data-action="selectAllTables"><i class="fas fa-check-double"></i> Todas</button>
+              <button type="button" class="btn-micro" data-action="deselectAllTables"><i class="fas fa-times"></i> Nenhuma</button>
+            </div>
+          </legend>
+
+          {{#if worldTables.length}}
+            <div class="table-checklist">
+              {{#each worldTables as |tbl|}}
+                <label class="table-check-item">
+                  <input type="checkbox" class="export-table-checkbox" value="{{tbl.id}}" checked />
+                  <img src="{{tbl.img}}" width="24" height="24" alt="{{tbl.name}}" />
+                  <span class="table-name">{{tbl.name}}</span>
+                  <span class="badge-count">{{tbl.resultsCount}} opções</span>
+                </label>
+              {{/each}}
+            </div>
+          {{else}}
+            <p class="notes">Nenhuma tabela rolável encontrada no mundo para exportar.</p>
+          {{/if}}
+        </fieldset>
       </div>
+
+      <footer class="dialog-buttons">
+        <button type="button" class="btn-cancel" data-action="cancel">
+          <i class="fas fa-times"></i> {{localize "ROLAGENS_GLOBAIS.Rule.Cancel"}}
+        </button>
+        <button type="button" class="btn-save btn-export-trigger" data-action="doExport">
+          <i class="fas fa-download"></i> Baixar Arquivo Exportado
+        </button>
+      </footer>
     </div>
+  {{/if}}
 
-    <!-- Informações Básicas da Tabela -->
-    <fieldset class="rule-section">
-      <legend><i class="fas fa-sliders-h"></i> {{localize "ROLAGENS_GLOBAIS.QuickTable.BasicSection"}}</legend>
-      
-      <div class="form-group-stacked">
-        <label for="table-name">{{localize "ROLAGENS_GLOBAIS.QuickTable.TableName"}}</label>
-        <input type="text" id="table-name" name="name" placeholder="{{localize 'ROLAGENS_GLOBAIS.QuickTable.NamePlaceholder'}}" required />
-      </div>
-
-      <div class="form-row-grid">
-        <div class="form-group-stacked">
-          <label for="table-formula">{{localize "ROLAGENS_GLOBAIS.QuickTable.Formula"}}</label>
-          <input type="text" id="table-formula" name="formula" placeholder="Ex: 1d6, 1d20" />
-          <span class="field-hint">{{localize "ROLAGENS_GLOBAIS.QuickTable.FormulaHint"}}</span>
+  <!-- ================= ABA 3: IMPORTAR ARQUIVO ================= -->
+  {{#if (eq activeTab "import")}}
+    <div class="quick-table-import-pane" style="display: flex; flex-direction: column; height: 100%;">
+      <div class="dialog-scroll-body">
+        <div class="quick-table-banner">
+          <div class="banner-icon">
+            <i class="fas fa-file-import"></i>
+          </div>
+          <div class="banner-text">
+            <h4>Importar Tabelas de Arquivo</h4>
+            <p>Carregue um arquivo (.JSON, .CSV ou .TXT) para recriar as tabelas automaticamente neste mundo.</p>
+          </div>
         </div>
 
-        <div class="form-group-stacked">
-          <label for="table-target"><i class="fas fa-link"></i> {{localize "ROLAGENS_GLOBAIS.QuickTable.BindLabel"}} ({{modeName}})</label>
-          <select id="table-target" name="setTarget">
-            <option value="">{{localize "ROLAGENS_GLOBAIS.QuickTable.NoBind"}}</option>
-            <option value="physical" {{#if isPhysicalTarget}}selected{{/if}}>⚔️ {{localize "ROLAGENS_GLOBAIS.QuickTable.BindPhysical"}}</option>
-            <option value="magic" {{#if isMagicTarget}}selected{{/if}}>✨ {{localize "ROLAGENS_GLOBAIS.QuickTable.BindMagic"}}</option>
-          </select>
-          <span class="field-hint">Vincula o sorteio automaticamente a esta categoria.</span>
-        </div>
-      </div>
-    </fieldset>
+        <fieldset class="rule-section">
+          <legend><i class="fas fa-cloud-upload-alt"></i> Carregar Arquivo</legend>
 
-    <!-- Área de Colagem da Lista (100% de Largura) -->
-    <fieldset class="rule-section">
-      <legend>
-        <i class="fas fa-list"></i> {{localize "ROLAGENS_GLOBAIS.QuickTable.ListSection"}} 
-        <span class="badge-count"><span class="line-count">0</span> opções detectadas</span>
-      </legend>
+          <div class="drop-zone" id="file-drop-zone">
+            <i class="fas fa-file-arrow-up upload-icon"></i>
+            <p class="drop-title">Arraste e solte o arquivo aqui</p>
+            <p class="drop-sub">ou clique no botão abaixo para escolher do computador</p>
+            <span class="supported-files">Formatos suportados: <strong>.JSON</strong> (Foundry), <strong>.CSV</strong> (Planilhas), <strong>.TXT / .MD</strong></span>
+            <input type="file" class="import-file-input" accept=".json,.csv,.txt,.md" style="display: none;" />
+            <button type="button" class="btn-select-file" data-action="triggerFileInput">
+              <i class="fas fa-folder-open"></i> Escolher Arquivo do Computador
+            </button>
+          </div>
 
-      <div class="textarea-container">
-        <textarea name="rawText" class="quick-table-textarea" rows="11" placeholder="{{localize 'ROLAGENS_GLOBAIS.QuickTable.TextareaPlaceholder'}}"></textarea>
+          <div class="import-preview-box" style="display: none;">
+            <h4><i class="fas fa-check-circle"></i> Arquivo carregado: <span class="file-name-label"></span></h4>
+            <div class="preview-content"></div>
+          </div>
+        </fieldset>
       </div>
 
-      <!-- Guia de Sintaxe & Dicas -->
-      <div class="syntax-guide">
-        <div class="syntax-title">
-          <i class="fas fa-lightbulb"></i> {{localize "ROLAGENS_GLOBAIS.QuickTable.SyntaxTitle"}}
-        </div>
-        <ul class="syntax-list">
-          <li><strong>Opções de Texto:</strong> Cole 1 resultado por linha. Prefixos de numeração (ex: <code>1. </code>, <code>2 - </code>, <code>[3]</code>) são removidos automaticamente.</li>
-          <li><strong>Tabelas Aninhadas (Recursivas):</strong> Use <code>tabela: Nome da Tabela</code> (ex: <code>tabela: Magia Selvagem</code>) para rolar outra tabela automaticamente quando cair nessa linha!</li>
-        </ul>
-      </div>
-    </fieldset>
-  </div>
-
-  <!-- Botões de Ação Fixos no Rodapé -->
-  <footer class="dialog-buttons">
-    <button type="button" class="btn-cancel" data-action="cancel">
-      <i class="fas fa-times"></i> {{localize "ROLAGENS_GLOBAIS.Rule.Cancel"}}
-    </button>
-    <button type="submit" class="btn-save btn-quick-create">
-      <i class="fas fa-bolt"></i> {{localize "ROLAGENS_GLOBAIS.QuickTable.CreateButton"}}
-    </button>
-  </footer>
-</form>
+      <footer class="dialog-buttons">
+        <button type="button" class="btn-cancel" data-action="cancel">
+          <i class="fas fa-times"></i> {{localize "ROLAGENS_GLOBAIS.Rule.Cancel"}}
+        </button>
+        <button type="button" class="btn-save btn-import-trigger" data-action="doImport" disabled>
+          <i class="fas fa-file-import"></i> Importar Tabelas para o Mundo
+        </button>
+      </footer>
+    </div>
+  {{/if}}
+</div>

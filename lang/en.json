@@ -50,9 +50,12 @@
       "SidebarToggleTitle": "Toggle Interception Mode"
     },
     "QuickTable": {
-      "Title": "Quick Table Creator",
-      "Button": "Quick Creator",
-      "ButtonTooltip": "Create or import a RollTable by pasting text",
+      "Title": "RollTables Hub",
+      "Button": "Tables Hub",
+      "ButtonTooltip": "Create, import or export RollTables",
+      "TabCreate": "Quick Creator",
+      "TabExport": "Export Tables",
+      "TabImport": "Import File",
       "HeroTitle": "Quick RollTable Creator",
       "HeroSubtitle": "Paste a list of options to generate a fully functional RollTable in seconds.",
       "BasicSection": "Table Information",

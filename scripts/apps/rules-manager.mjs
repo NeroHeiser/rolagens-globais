@@ -36,6 +36,7 @@ export class RulesManagerApp extends HandlebarsApplicationMixin(ApplicationV2) {
       openQuickTable: RulesManagerApp.#onOpenQuickTable,
       openQuickTablePhysical: RulesManagerApp.#onOpenQuickTablePhysical,
       openQuickTableMagic: RulesManagerApp.#onOpenQuickTableMagic,
+      openExportTables: RulesManagerApp.#onOpenExportTables,
       addRule: RulesManagerApp.#onAddRule,
       editRule: RulesManagerApp.#onEditRule,
       deleteRule: RulesManagerApp.#onDeleteRule,
@@ -257,6 +258,16 @@ export class RulesManagerApp extends HandlebarsApplicationMixin(ApplicationV2) {
   static #onOpenQuickTableMagic(event, target) {
     new QuickTableDialog({
       targetMode: "magic",
+      onCreated: () => this.render({ force: true })
+    }).render({ force: true });
+  }
+
+  /**
+   * Ação: Abrir a Central de Tabelas na aba de Exportação.
+   */
+  static #onOpenExportTables(event, target) {
+    new QuickTableDialog({
+      initialTab: "export",
       onCreated: () => this.render({ force: true })
     }).render({ force: true });
   }
