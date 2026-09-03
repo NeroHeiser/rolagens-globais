@@ -1,0 +1,81 @@
+<div class="rolagens-globais-manager">
+  <header class="manager-header">
+    <div class="header-info">
+      <h2>{{localize "ROLAGENS_GLOBAIS.ManagerTitle"}}</h2>
+      <p class="subtitle">{{localize "ROLAGENS_GLOBAIS.Manager.HeaderSubtitle"}}</p>
+      <div class="system-badge">
+        <i class="fas fa-shield-alt"></i> 
+        <span>{{localize "ROLAGENS_GLOBAIS.Manager.SystemDetected"}} <strong>{{systemName}}</strong></span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button type="button" class="btn-preset" data-action="loadPresets">
+        <i class="fas fa-bolt"></i> {{localize "ROLAGENS_GLOBAIS.Manager.LoadPresets"}}
+      </button>
+      <button type="button" class="btn-add" data-action="addRule">
+        <i class="fas fa-plus"></i> {{localize "ROLAGENS_GLOBAIS.Manager.AddRule"}}
+      </button>
+    </div>
+  </header>
+
+  <main class="rules-list">
+    {{#if rules.length}}
+      <table class="rules-table">
+        <thead>
+          <tr>
+            <th class="col-status">Status</th>
+            <th class="col-name">{{localize "ROLAGENS_GLOBAIS.Rule.Name"}}</th>
+            <th class="col-trigger">Gatilho</th>
+            <th class="col-effect">Efeito Extra</th>
+            <th class="col-vis">Visibilidade</th>
+            <th class="col-actions">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each rules as |rule|}}
+            <tr class="rule-row {{#unless rule.enabled}}row-disabled{{/unless}}" data-rule-id="{{rule.id}}">
+              <td class="col-status">
+                <button type="button" class="btn-toggle {{#if rule.enabled}}active{{else}}inactive{{/if}}" data-action="toggleRule" data-rule-id="{{rule.id}}" title="Alternar status">
+                  <i class="fas {{#if rule.enabled}}fa-check-circle{{else}}fa-times-circle{{/if}}"></i>
+                </button>
+              </td>
+              <td class="col-name">
+                <strong>{{rule.name}}</strong>
+                {{#if rule.flavor}}
+                  <span class="rule-subtext">{{rule.flavor}}</span>
+                {{/if}}
+              </td>
+              <td class="col-trigger">
+                <span class="badge-trigger">{{rule.triggerSummary}}</span>
+              </td>
+              <td class="col-effect">
+                <span class="badge-effect badge-{{rule.effectType}}">
+                  {{#if (eq rule.effectType "table")}}<i class="fas fa-th-list"></i> Tabela: {{rule.targetName}}{{/if}}
+                  {{#if (eq rule.effectType "roll")}}<i class="fas fa-dice"></i> Fórmula: {{rule.formula}}{{/if}}
+                  {{#if (eq rule.effectType "macro")}}<i class="fas fa-code"></i> Macro: {{rule.targetName}}{{/if}}
+                </span>
+              </td>
+              <td class="col-vis">
+                <span class="badge-vis">{{rule.visibilityLabel}}</span>
+              </td>
+              <td class="col-actions">
+                <button type="button" class="btn-icon" data-action="editRule" data-rule-id="{{rule.id}}" title="{{localize 'ROLAGENS_GLOBAIS.Manager.Edit'}}">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button type="button" class="btn-icon btn-delete" data-action="deleteRule" data-rule-id="{{rule.id}}" title="{{localize 'ROLAGENS_GLOBAIS.Manager.Delete'}}">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    {{else}}
+      <div class="empty-state">
+        <i class="fas fa-dice-d20 empty-icon"></i>
+        <p>{{localize "ROLAGENS_GLOBAIS.Manager.NoRules"}}</p>
+      </div>
+    {{/if}}
+  </main>
+</div>
+

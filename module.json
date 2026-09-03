@@ -1,0 +1,40 @@
+{
+  "id": "rolagens-globais",
+  "title": "Rolagens Globais (Global Extra Rolls)",
+  "description": "Gera automaticamente rolagens extras, tabelas roláveis ou macros acionadas por gatilhos configuráveis no D&D 5e, Tormenta20, Pathfinder 2e, Daggerheart e modo Genérico.",
+  "version": "1.0.0",
+  "compatibility": {
+    "minimum": "12",
+    "verified": "12",
+    "maximum": "14"
+  },
+  "authors": [
+    {
+      "name": "Lopes"
+    }
+  ],
+  "esmodules": [
+    "scripts/main.mjs"
+  ],
+  "styles": [
+    "styles/style.css"
+  ],
+  "languages": [
+    {
+      "lang": "pt-BR",
+      "name": "Português (Brasil)",
+      "path": "lang/pt-BR.json"
+    },
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    }
+  ],
+  "url": "https://github.com/NeroHeiser/rolagens-globais",
+  "manifest": "https://raw.githubusercontent.com/NeroHeiser/rolagens-globais/main/module.json",
+  "download": "https://github.com/NeroHeiser/rolagens-globais/archive/refs/heads/main.zip",
+  "readme": "https://github.com/NeroHeiser/rolagens-globais/blob/main/README.md",
+  "bugs": "https://github.com/NeroHeiser/rolagens-globais/issues"
+}
+

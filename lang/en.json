@@ -1,0 +1,86 @@
+{
+  "ROLAGENS_GLOBAIS": {
+    "Title": "Global Extra Rolls",
+    "ManagerTitle": "Global Extra Rolls Manager",
+    "Settings": {
+      "Rules": {
+        "Name": "Rules List",
+        "Hint": "Stores the list of extra roll rules configured by the GM."
+      },
+      "OpenManager": {
+        "Name": "Configure Global Extra Rolls",
+        "Label": "Open Manager",
+        "Hint": "Opens the interface to create and manage automated extra roll rules."
+      }
+    },
+    "Manager": {
+      "HeaderSubtitle": "Automation of tables, formulas, and macros triggered by rolls",
+      "SystemDetected": "Detected system:",
+      "AddRule": "New Rule",
+      "LoadPresets": "Load Recommended Rules",
+      "NoRules": "No rules configured yet. Click 'New Rule' or 'Load Recommended Rules'.",
+      "Active": "Active",
+      "Inactive": "Inactive",
+      "Edit": "Edit",
+      "Delete": "Delete",
+      "ConfirmDelete": "Are you sure you want to delete this rule?",
+      "PresetsLoaded": "Recommended rules for the system have been successfully loaded!"
+    },
+    "Rule": {
+      "NewRuleTitle": "Create New Rule",
+      "EditRuleTitle": "Edit Rule",
+      "Name": "Rule Name",
+      "NamePlaceholder": "Ex: Attack Critical Fumble",
+      "Enabled": "Enable this rule",
+      "TriggerSection": "1. Trigger (When does it activate?)",
+      "ActionType": "Action Type",
+      "ActionAny": "Any Action",
+      "ResultType": "Result Condition",
+      "ResultAny": "Any Result",
+      "DieType": "Die Type",
+      "DieAny": "Any Die",
+      "DieFace": "Face Value (Natural Die)",
+      "DieFaceHint": "Ex: 1 for Nat 1, 20 for Nat 20",
+      "TotalComparison": "Total Sum Condition",
+      "TotalNone": "No total verification",
+      "TotalLessThan": "Total Less than or equal to",
+      "TotalGreaterThan": "Total Greater than or equal to",
+      "TotalEquals": "Total Equal to",
+      "TotalValue": "Total Value",
+      "KeywordFilter": "Keyword Filter (Optional)",
+      "KeywordPlaceholder": "Ex: Attack, Sword, Fire...",
+      "EffectSection": "2. Extra Effect (What happens?)",
+      "EffectType": "Effect Type",
+      "EffectTable": "Rollable Table (RollTable)",
+      "EffectRoll": "Free Dice Formula",
+      "EffectMacro": "Execute Macro",
+      "SelectTable": "Select Table",
+      "NoTables": "No rollable tables found in the world.",
+      "Formula": "Dice Formula",
+      "FormulaPlaceholder": "Ex: 1d100, 2d6[fire], 1d4",
+      "SelectMacro": "Select Macro",
+      "NoMacros": "No macros found in the world.",
+      "DeliverySection": "3. Chat Delivery",
+      "Visibility": "Roll Visibility",
+      "VisPublic": "Public (Everyone sees)",
+      "VisWhisperGM": "Whisper to GM",
+      "VisBlind": "Blind Roll (GM only)",
+      "VisSame": "Same as original roll",
+      "FlavorMessage": "Highlighted Chat Message",
+      "FlavorPlaceholder": "Ex: ⚠️ Critical Effect Triggered!",
+      "Save": "Save Rule",
+      "Cancel": "Cancel"
+    },
+    "ItemConfig": {
+      "ButtonTooltip": "Global Extra Rolls: Item Settings",
+      "Title": "Global Extra Rolls: {item}",
+      "IgnoreGlobal": "Ignore global extra roll rules for this item",
+      "Save": "Save Settings"
+    },
+    "Chat": {
+      "TriggeredBadge": "Extra Roll",
+      "OriginalRoll": "Original Roll"
+    }
+  }
+}
+

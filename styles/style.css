@@ -1,0 +1,300 @@
+/* ==========================================================================
+   Rolagens Globais - Estilos Gerais (Foundry VTT V12 / V14)
+   ========================================================================== */
+
+/* --- Painel Central (RulesManagerApp) --- */
+.rolagens-globais.manager-window {
+  min-width: 680px;
+}
+
+.rolagens-globais-manager {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 12px;
+  font-family: var(--font-primary, inherit);
+}
+
+.rolagens-globais-manager .manager-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--color-border-light, #555);
+}
+
+.rolagens-globais-manager .manager-header h2 {
+  margin: 0;
+  font-size: 1.35rem;
+  color: var(--color-text-primary, #f0f0e0);
+  border: none;
+}
+
+.rolagens-globais-manager .manager-header .subtitle {
+  margin: 2px 0 6px 0;
+  font-size: 0.85rem;
+  color: var(--color-text-secondary, #aaa);
+}
+
+.rolagens-globais-manager .system-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--color-border-light, #666);
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  color: var(--color-text-primary, #ddd);
+}
+
+.rolagens-globais-manager .header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.rolagens-globais-manager .btn-add,
+.rolagens-globais-manager .btn-preset {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid var(--color-border-dark, #333);
+}
+
+.rolagens-globais-manager .btn-add {
+  background: #1b5e20;
+  color: #fff;
+}
+.rolagens-globais-manager .btn-add:hover {
+  background: #2e7d32;
+}
+
+.rolagens-globais-manager .btn-preset {
+  background: #b26a00;
+  color: #fff;
+}
+.rolagens-globais-manager .btn-preset:hover {
+  background: #d47a00;
+}
+
+/* --- Tabela de Regras --- */
+.rolagens-globais-manager .rules-list {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.rolagens-globais-manager .rules-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.85rem;
+}
+
+.rolagens-globais-manager .rules-table th {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 8px;
+  font-weight: 600;
+  color: var(--color-text-secondary, #bbb);
+  border-bottom: 2px solid var(--color-border-light, #555);
+}
+
+.rolagens-globais-manager .rules-table td {
+  padding: 8px;
+  vertical-align: middle;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.rolagens-globais-manager .rule-row.row-disabled {
+  opacity: 0.5;
+}
+
+.rolagens-globais-manager .rule-subtext {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary, #888);
+  font-style: italic;
+}
+
+/* --- Botão de Toggle --- */
+.btn-toggle {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0 4px;
+  transition: transform 0.15s ease;
+}
+.btn-toggle.active {
+  color: #4caf50;
+}
+.btn-toggle.inactive {
+  color: #777;
+}
+.btn-toggle:hover {
+  transform: scale(1.15);
+}
+
+/* --- Badges --- */
+.badge-trigger,
+.badge-effect,
+.badge-vis {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+.badge-trigger {
+  background: rgba(33, 150, 243, 0.15);
+  border: 1px solid rgba(33, 150, 243, 0.4);
+  color: #90caf9;
+}
+
+.badge-effect {
+  background: rgba(156, 39, 176, 0.15);
+  border: 1px solid rgba(156, 39, 176, 0.4);
+  color: #ce93d8;
+}
+
+.badge-vis {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ccc;
+}
+
+/* --- Botões de Ação na Linha --- */
+.btn-icon {
+  background: none;
+  border: none;
+  color: var(--color-text-secondary, #aaa);
+  cursor: pointer;
+  padding: 4px 6px;
+  font-size: 0.95rem;
+}
+.btn-icon:hover {
+  color: var(--color-text-primary, #fff);
+}
+.btn-icon.btn-delete:hover {
+  color: #f44336;
+}
+
+/* --- Empty State --- */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--color-text-secondary, #888);
+}
+.empty-state .empty-icon {
+  font-size: 3rem;
+  margin-bottom: 12px;
+  opacity: 0.4;
+}
+
+/* --- Modal de Criação / Edição de Regra (RuleDialog) --- */
+.rolagens-globais.rule-dialog-window {
+  min-width: 520px;
+}
+
+.rolagens-globais-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  max-height: 75vh;
+  padding: 6px;
+}
+
+.rolagens-globais-dialog .rule-section {
+  border: 1px solid var(--color-border-light, #555);
+  border-radius: 6px;
+  padding: 10px 14px;
+  margin: 0;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.rolagens-globais-dialog .rule-section legend {
+  font-weight: bold;
+  font-size: 0.9rem;
+  padding: 0 6px;
+  color: var(--color-text-primary, #f0f0e0);
+}
+
+.rolagens-globais-dialog .form-row {
+  display: flex;
+  gap: 10px;
+}
+.rolagens-globais-dialog .form-row .col-6 {
+  flex: 1;
+}
+
+.rolagens-globais-dialog .dialog-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 10px;
+  border-top: 1px solid var(--color-border-light, #555);
+  padding-top: 10px;
+}
+
+.rolagens-globais-dialog .btn-save {
+  background: #1b5e20;
+  color: #fff;
+  border: 1px solid #2e7d32;
+  padding: 6px 14px;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.rolagens-globais-dialog .btn-save:hover {
+  background: #2e7d32;
+}
+
+.rolagens-globais-dialog .btn-cancel {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ccc;
+  border: 1px solid #555;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.rolagens-globais-dialog .btn-cancel:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* --- Badge de Rolagem Extra no Chat --- */
+.rolagens-globais-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  margin-bottom: 4px;
+  border-radius: 4px;
+  background: rgba(230, 81, 0, 0.15);
+  border: 1px solid rgba(230, 81, 0, 0.4);
+  color: #ffb74d;
+  font-size: 0.85rem;
+  font-weight: bold;
+}
+
+/* --- Diálogo de Item --- */
+.rolagens-globais-item-dialog .item-header-preview {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.rolagens-globais-item-dialog .notes {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary, #aaa);
+}
+

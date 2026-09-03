@@ -1,0 +1,183 @@
+<form class="rolagens-globais-dialog" autocomplete="off">
+  <!-- Informações Básicas -->
+  <div class="form-group">
+    <label for="rule-name">{{localize "ROLAGENS_GLOBAIS.Rule.Name"}}</label>
+    <div class="form-fields">
+      <input type="text" id="rule-name" name="name" value="{{rule.name}}" placeholder="{{localize 'ROLAGENS_GLOBAIS.Rule.NamePlaceholder'}}" required />
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="rule-enabled">{{localize "ROLAGENS_GLOBAIS.Rule.Enabled"}}</label>
+    <div class="form-fields">
+      <input type="checkbox" id="rule-enabled" name="enabled" {{#if rule.enabled}}checked{{/if}} />
+    </div>
+  </div>
+
+  <!-- Seção 1: Gatilho -->
+  <fieldset class="rule-section">
+    <legend><i class="fas fa-crosshairs"></i> {{localize "ROLAGENS_GLOBAIS.Rule.TriggerSection"}}</legend>
+
+    <div class="form-group">
+      <label for="rule-actionType">{{localize "ROLAGENS_GLOBAIS.Rule.ActionType"}}</label>
+      <div class="form-fields">
+        <select id="rule-actionType" name="actionType">
+          {{#each actionTypes as |act|}}
+            <option value="{{act.value}}" {{#if (eq act.value ../rule.actionType)}}selected{{/if}}>{{act.label}}</option>
+          {{/each}}
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="rule-resultType">{{localize "ROLAGENS_GLOBAIS.Rule.ResultType"}}</label>
+      <div class="form-fields">
+        <select id="rule-resultType" name="resultType">
+          {{#each resultTypes as |res|}}
+            <option value="{{res.value}}" {{#if (eq res.value ../rule.resultType)}}selected{{/if}}>{{res.label}}</option>
+          {{/each}}
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group col-6">
+        <label for="rule-dieType">{{localize "ROLAGENS_GLOBAIS.Rule.DieType"}}</label>
+        <div class="form-fields">
+          <select id="rule-dieType" name="dieType">
+            <option value="any" {{#if (eq rule.dieType "any")}}selected{{/if}}>{{localize "ROLAGENS_GLOBAIS.Rule.DieAny"}}</option>
+            <option value="d20" {{#if (eq rule.dieType "d20")}}selected{{/if}}>d20</option>
+            <option value="d12" {{#if (eq rule.dieType "d12")}}selected{{/if}}>d12</option>
+            <option value="d10" {{#if (eq rule.dieType "d10")}}selected{{/if}}>d10</option>
+            <option value="d8" {{#if (eq rule.dieType "d8")}}selected{{/if}}>d8</option>
+            <option value="d6" {{#if (eq rule.dieType "d6")}}selected{{/if}}>d6</option>
+            <option value="d4" {{#if (eq rule.dieType "d4")}}selected{{/if}}>d4</option>
+            <option value="d100" {{#if (eq rule.dieType "d100")}}selected{{/if}}>d100</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group col-6">
+        <label for="rule-dieFace">{{localize "ROLAGENS_GLOBAIS.Rule.DieFace"}}</label>
+        <div class="form-fields">
+          <input type="number" id="rule-dieFace" name="dieFace" value="{{rule.dieFace}}" placeholder="{{localize 'ROLAGENS_GLOBAIS.Rule.DieFaceHint'}}" />
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group col-6">
+        <label for="rule-totalComparison">{{localize "ROLAGENS_GLOBAIS.Rule.TotalComparison"}}</label>
+        <div class="form-fields">
+          <select id="rule-totalComparison" name="totalComparison">
+            <option value="none" {{#if (eq rule.totalComparison "none")}}selected{{/if}}>{{localize "ROLAGENS_GLOBAIS.Rule.TotalNone"}}</option>
+            <option value="lt" {{#if (eq rule.totalComparison "lt")}}selected{{/if}}>{{localize "ROLAGENS_GLOBAIS.Rule.TotalLessThan"}}</option>
+            <option value="gt" {{#if (eq rule.totalComparison "gt")}}selected{{/if}}>{{localize "ROLAGENS_GLOBAIS.Rule.TotalGreaterThan"}}</option>
+            <option value="eq" {{#if (eq rule.totalComparison "eq")}}selected{{/if}}>{{localize "ROLAGENS_GLOBAIS.Rule.TotalEquals"}}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group col-6">
+        <label for="rule-totalValue">{{localize "ROLAGENS_GLOBAIS.Rule.TotalValue"}}</label>
+        <div class="form-fields">
+          <input type="number" id="rule-totalValue" name="totalValue" value="{{rule.totalValue}}" placeholder="Ex: 10" />
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="rule-keyword">{{localize "ROLAGENS_GLOBAIS.Rule.KeywordFilter"}}</label>
+      <div class="form-fields">
+        <input type="text" id="rule-keyword" name="keyword" value="{{rule.keyword}}" placeholder="{{localize 'ROLAGENS_GLOBAIS.Rule.KeywordPlaceholder'}}" />
+      </div>
+    </div>
+  </fieldset>
+
+  <!-- Seção 2: Efeito Extra -->
+  <fieldset class="rule-section">
+    <legend><i class="fas fa-dice"></i> {{localize "ROLAGENS_GLOBAIS.Rule.EffectSection"}}</legend>
+
+    <div class="form-group">
+      <label for="rule-effectType">{{localize "ROLAGENS_GLOBAIS.Rule.EffectType"}}</label>
+      <div class="form-fields">
+        <select id="rule-effectType" name="effectType" data-action="changeEffectType">
+          <option value="table" {{#if (eq rule.effectType "table")}}selected{{/if}}>{{localize "ROLAGENS_GLOBAIS.Rule.EffectTable"}}</option>
+          <option value="roll" {{#if (eq rule.effectType "roll")}}selected{{/if}}>{{localize "ROLAGENS_GLOBAIS.Rule.EffectRoll"}}</option>
+          <option value="macro" {{#if (eq rule.effectType "macro")}}selected{{/if}}>{{localize "ROLAGENS_GLOBAIS.Rule.EffectMacro"}}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="effect-field-group effect-table-group" {{#unless (eq rule.effectType "table")}}style="display:none;"{{/unless}}>
+      <div class="form-group">
+        <label for="rule-tableId">{{localize "ROLAGENS_GLOBAIS.Rule.SelectTable"}}</label>
+        <div class="form-fields">
+          <select id="rule-tableId" name="tableId">
+            <option value="">-- Selecione uma Tabela --</option>
+            {{#each tables as |tbl|}}
+              <option value="{{tbl.id}}" {{#if (eq tbl.id ../rule.tableId)}}selected{{/if}}>{{tbl.name}}</option>
+            {{/each}}
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="effect-field-group effect-roll-group" {{#unless (eq rule.effectType "roll")}}style="display:none;"{{/unless}}>
+      <div class="form-group">
+        <label for="rule-formula">{{localize "ROLAGENS_GLOBAIS.Rule.Formula"}}</label>
+        <div class="form-fields">
+          <input type="text" id="rule-formula" name="formula" value="{{rule.formula}}" placeholder="{{localize 'ROLAGENS_GLOBAIS.Rule.FormulaPlaceholder'}}" />
+        </div>
+      </div>
+    </div>
+
+    <div class="effect-field-group effect-macro-group" {{#unless (eq rule.effectType "macro")}}style="display:none;"{{/unless}}>
+      <div class="form-group">
+        <label for="rule-macroId">{{localize "ROLAGENS_GLOBAIS.Rule.SelectMacro"}}</label>
+        <div class="form-fields">
+          <select id="rule-macroId" name="macroId">
+            <option value="">-- Selecione uma Macro --</option>
+            {{#each macros as |mcr|}}
+              <option value="{{mcr.id}}" {{#if (eq mcr.id ../rule.macroId)}}selected{{/if}}>{{mcr.name}}</option>
+            {{/each}}
+          </select>
+        </div>
+      </div>
+    </div>
+  </fieldset>
+
+  <!-- Seção 3: Entrega -->
+  <fieldset class="rule-section">
+    <legend><i class="fas fa-comment-alt"></i> {{localize "ROLAGENS_GLOBAIS.Rule.DeliverySection"}}</legend>
+
+    <div class="form-group">
+      <label for="rule-visibility">{{localize "ROLAGENS_GLOBAIS.Rule.Visibility"}}</label>
+      <div class="form-fields">
+        <select id="rule-visibility" name="visibility">
+          <option value="public" {{#if (eq rule.visibility "public")}}selected{{/if}}>{{localize "ROLAGENS_GLOBAIS.Rule.VisPublic"}}</option>
+          <option value="whisper_gm" {{#if (eq rule.visibility "whisper_gm")}}selected{{/if}}>{{localize "ROLAGENS_GLOBAIS.Rule.VisWhisperGM"}}</option>
+          <option value="blind" {{#if (eq rule.visibility "blind")}}selected{{/if}}>{{localize "ROLAGENS_GLOBAIS.Rule.VisBlind"}}</option>
+          <option value="same" {{#if (eq rule.visibility "same")}}selected{{/if}}>{{localize "ROLAGENS_GLOBAIS.Rule.VisSame"}}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="rule-flavor">{{localize "ROLAGENS_GLOBAIS.Rule.FlavorMessage"}}</label>
+      <div class="form-fields">
+        <input type="text" id="rule-flavor" name="flavor" value="{{rule.flavor}}" placeholder="{{localize 'ROLAGENS_GLOBAIS.Rule.FlavorPlaceholder'}}" />
+      </div>
+    </div>
+  </fieldset>
+
+  <footer class="dialog-buttons">
+    <button type="button" class="btn-cancel" data-action="cancel">
+      <i class="fas fa-times"></i> {{localize "ROLAGENS_GLOBAIS.Rule.Cancel"}}
+    </button>
+    <button type="submit" class="btn-save" data-action="save">
+      <i class="fas fa-save"></i> {{localize "ROLAGENS_GLOBAIS.Rule.Save"}}
+    </button>
+  </footer>
+</form>
+
