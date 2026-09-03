@@ -219,3 +219,4 @@ export class TableSerializer {
     return result;
   }
 }
+

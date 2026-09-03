@@ -100,12 +100,17 @@ export class QuickTableDialog extends HandlebarsApplicationMixin(ApplicationV2) 
     }
 
     // Configuração da Aba 2: Mudança de formato de exportação
-    const formatRadios = this.element.querySelectorAll("input[name='exportFormat']");
-    formatRadios.forEach(radio => {
-      radio.addEventListener("change", (e) => {
-        this.exportFormat = e.target.value;
-        this.element.querySelectorAll(".format-card").forEach(card => card.classList.remove("selected"));
-        e.target.closest(".format-card")?.classList.add("selected");
+    const formatCards = this.element.querySelectorAll(".format-card");
+    formatCards.forEach(card => {
+      card.addEventListener("click", () => {
+        const format = card.dataset.format;
+        if (format) {
+          this.exportFormat = format;
+          const radio = card.querySelector("input[type='radio']");
+          if (radio) radio.checked = true;
+          formatCards.forEach(c => c.classList.remove("selected"));
+          card.classList.add("selected");
+        }
       });
     });
 

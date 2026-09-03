@@ -14,7 +14,7 @@
 
   <!-- ================= ABA 1: CRIADOR RÁPIDO ================= -->
   {{#if (eq activeTab "create")}}
-    <form class="quick-table-create-form" autocomplete="off" style="display: flex; flex-direction: column; height: 100%;">
+    <form class="quick-table-create-form" autocomplete="off">
       <div class="dialog-scroll-body">
         <!-- Banner de Apresentação -->
         <div class="quick-table-banner">
@@ -93,7 +93,7 @@
 
   <!-- ================= ABA 2: EXPORTAR TABELAS ================= -->
   {{#if (eq activeTab "export")}}
-    <div class="quick-table-export-pane" style="display: flex; flex-direction: column; height: 100%;">
+    <div class="quick-table-export-pane">
       <div class="dialog-scroll-body">
         <div class="quick-table-banner">
           <div class="banner-icon">
@@ -109,32 +109,26 @@
         <fieldset class="rule-section">
           <legend><i class="fas fa-file-alt"></i> Formato de Exportação</legend>
           <div class="export-format-grid">
-            <label class="format-card {{#if (eq exportFormat 'json')}}selected{{/if}}">
+            <div class="format-card {{#if (eq exportFormat 'json')}}selected{{/if}}" data-format="json">
               <input type="radio" name="exportFormat" value="json" {{#if (eq exportFormat 'json')}}checked{{/if}} />
-              <div class="format-info">
-                <i class="fas fa-code format-icon"></i>
-                <div class="format-title">JSON (Foundry VTT)</div>
-                <div class="format-desc">100% de fidelidade. Perfeito para importar em qualquer outro mundo ou mesa do Foundry.</div>
-              </div>
-            </label>
+              <i class="fas fa-code format-icon"></i>
+              <div class="format-title">JSON (Foundry VTT)</div>
+              <div class="format-desc">100% de fidelidade. Perfeito para importar em qualquer outro mundo ou mesa do Foundry.</div>
+            </div>
 
-            <label class="format-card {{#if (eq exportFormat 'csv')}}selected{{/if}}">
+            <div class="format-card {{#if (eq exportFormat 'csv')}}selected{{/if}}" data-format="csv">
               <input type="radio" name="exportFormat" value="csv" {{#if (eq exportFormat 'csv')}}checked{{/if}} />
-              <div class="format-info">
-                <i class="fas fa-file-csv format-icon"></i>
-                <div class="format-title">Planilha CSV</div>
-                <div class="format-desc">Abre no Excel, Google Planilhas ou importadores de outros VTTs (Roll20).</div>
-              </div>
-            </label>
+              <i class="fas fa-file-csv format-icon"></i>
+              <div class="format-title">Planilha CSV</div>
+              <div class="format-desc">Abre no Excel, Google Planilhas ou importadores de outros VTTs (Roll20).</div>
+            </div>
 
-            <label class="format-card {{#if (eq exportFormat 'md')}}selected{{/if}}">
+            <div class="format-card {{#if (eq exportFormat 'md')}}selected{{/if}}" data-format="md">
               <input type="radio" name="exportFormat" value="md" {{#if (eq exportFormat 'md')}}checked{{/if}} />
-              <div class="format-info">
-                <i class="fas fa-align-left format-icon"></i>
-                <div class="format-title">Texto / Markdown</div>
-                <div class="format-desc">Formatado para Obsidian, Notion, Discord ou para colar em outras mesas.</div>
-              </div>
-            </label>
+              <i class="fas fa-align-left format-icon"></i>
+              <div class="format-title">Texto / Markdown</div>
+              <div class="format-desc">Formatado para Obsidian, Notion, Discord ou para colar em outras mesas.</div>
+            </div>
           </div>
         </fieldset>
 
@@ -153,7 +147,7 @@
               {{#each worldTables as |tbl|}}
                 <label class="table-check-item">
                   <input type="checkbox" class="export-table-checkbox" value="{{tbl.id}}" checked />
-                  <img src="{{tbl.img}}" width="24" height="24" alt="{{tbl.name}}" />
+                  <img src="{{tbl.img}}" width="28" height="28" alt="{{tbl.name}}" />
                   <span class="table-name">{{tbl.name}}</span>
                   <span class="badge-count">{{tbl.resultsCount}} opções</span>
                 </label>
@@ -178,7 +172,7 @@
 
   <!-- ================= ABA 3: IMPORTAR ARQUIVO ================= -->
   {{#if (eq activeTab "import")}}
-    <div class="quick-table-import-pane" style="display: flex; flex-direction: column; height: 100%;">
+    <div class="quick-table-import-pane">
       <div class="dialog-scroll-body">
         <div class="quick-table-banner">
           <div class="banner-icon">
