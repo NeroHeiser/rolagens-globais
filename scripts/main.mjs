@@ -72,6 +72,8 @@ Hooks.on("renderChatLog", (app, html, data) => {
   const controlButtons = html.querySelector(".control-buttons") || html.find?.(".control-buttons")?.[0];
   if (!controlButtons) return;
 
+  if (controlButtons.querySelector(".rolagens-globais-chat-btn")) return;
+
   const btn = document.createElement("a");
   btn.className = "button control-button rolagens-globais-chat-btn";
   btn.title = game.i18n.localize("ROLAGENS_GLOBAIS.ManagerTitle");

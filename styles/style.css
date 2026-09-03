@@ -162,6 +162,13 @@
   color: #ce93d8;
 }
 
+.badge-effect.badge-warning {
+  background: rgba(244, 67, 54, 0.2);
+  border: 1px solid rgba(244, 67, 54, 0.7);
+  color: #ff8a80;
+  font-weight: bold;
+}
+
 .badge-vis {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.2);

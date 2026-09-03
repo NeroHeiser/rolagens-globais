@@ -61,12 +61,36 @@ export class RuleDialog extends HandlebarsApplicationMixin(ApplicationV2) {
   async _prepareContext(options) {
     const adapter = getActiveAdapter();
 
+    const tables = game.tables.contents.map(t => ({ id: t.id, name: t.name }));
+    for (const pack of game.packs.filter(p => p.metadata.type === "RollTable")) {
+      try {
+        const index = await pack.getIndex();
+        for (const entry of index) {
+          tables.push({ id: entry.uuid, name: `${entry.name} (${pack.metadata.label})` });
+        }
+      } catch (e) {
+        // Ignora compêndio se não carregar
+      }
+    }
+
+    const macros = game.macros.contents.map(m => ({ id: m.id, name: m.name }));
+    for (const pack of game.packs.filter(p => p.metadata.type === "Macro")) {
+      try {
+        const index = await pack.getIndex();
+        for (const entry of index) {
+          macros.push({ id: entry.uuid, name: `${entry.name} (${pack.metadata.label})` });
+        }
+      } catch (e) {
+        // Ignora compêndio se não carregar
+      }
+    }
+
     return {
       rule: this.rule,
       actionTypes: adapter.getActionTypes(),
       resultTypes: adapter.getResultTypes(),
-      tables: game.tables.contents.map(t => ({ id: t.id, name: t.name })),
-      macros: game.macros.contents.map(m => ({ id: m.id, name: m.name }))
+      tables,
+      macros
     };
   }
 

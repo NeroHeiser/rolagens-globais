@@ -52,19 +52,29 @@ export class RulesEngine {
       return;
     }
 
-    // 2. Só processa se a mensagem contiver rolagens
+    // 2. Ignora mensagens originadas de RollTables (tanto automáticas quanto manuais)
+    // Isso impede recursão infinita e impede que rolagens da tabela acionem gatilhos de ataque
+    if (message.flags?.core?.RollTable || message.flags?.core?.table) {
+      return;
+    }
+
+    // 3. Só processa se a mensagem contiver rolagens
     if (!message.rolls || message.rolls.length === 0) {
       return;
     }
 
-    // 3. Seleção do cliente executor:
-    // Garante que apenas UM cliente na mesa processe o gatilho (preferencialmente o GM ativo para evitar problemas de permissão).
-    const isPrimaryExecutor = game.users.activeGM?.isSelf || (!game.users.activeGM && message.isAuthor);
-    if (!isPrimaryExecutor) {
+    // 4. Seleção do cliente executor:
+    // Garante que APENAS UM cliente na mesa execute a regra (o primeiro GM ativo conectado).
+    // Se nenhum GM estiver conectado, o próprio autor da rolagem executa como fallback.
+    const activeGMs = game.users.filter(u => u.active && u.isGM);
+    const isPrimaryGM = activeGMs.length > 0 && activeGMs[0].id === game.user.id;
+    const isAuthorFallback = activeGMs.length === 0 && message.isAuthor;
+
+    if (!isPrimaryGM && !isAuthorFallback) {
       return;
     }
 
-    // 4. Verificação de sobreposição a nível de Item (Modo Híbrido)
+    // 5. Verificação de sobreposição a nível de Item (Modo Híbrido)
     const item = await this.#getItemFromMessage(message);
     if (item && item.flags?.[this.MODULE_ID]?.ignoreGlobal === true) {
       return;
@@ -77,12 +87,13 @@ export class RulesEngine {
 
     const adapter = getActiveAdapter();
 
-    // 5. Avalia cada regra ativa para cada rolagem contida na mensagem
+    // 6. Avalia cada regra ativa para cada rolagem contida na mensagem
     for (const rule of rules) {
       if (!rule.enabled) continue;
 
       for (const roll of message.rolls) {
         if (adapter.matches(rule, message, roll)) {
+          console.log(`Rolagens Globais | Gatilho ativado: "${rule.name}" (${rule.effectType})`);
           await this.#executeRule(rule, message, roll);
           break; // Evita disparar a mesma regra múltiplas vezes no mesmo conjunto de dados
         }
@@ -131,7 +142,11 @@ export class RulesEngine {
    * Executa a rolagem de uma Tabela Rolável (RollTable).
    */
   static async #executeTable(rule, originalMessage, rollMode) {
-    if (!rule.tableId) return;
+    if (!rule.tableId) {
+      console.warn(`Rolagens Globais | Regra "${rule.name}" ativada, mas nenhuma tabela está selecionada.`);
+      ui.notifications.warn(`Rolagens Globais: A regra "${rule.name}" foi ativada, mas nenhuma Tabela Rolável foi configurada nela. Abra o Gerenciador e selecione uma tabela.`);
+      return;
+    }
 
     let table = game.tables.get(rule.tableId);
     if (!table) {
@@ -144,25 +159,31 @@ export class RulesEngine {
 
     if (!table) {
       console.warn(`Rolagens Globais | Tabela não encontrada: ${rule.tableId}`);
+      ui.notifications.warn(`Rolagens Globais: Tabela não encontrada para a regra "${rule.name}".`);
       return;
     }
 
     const flavor = rule.flavor || `${table.name} (Rolagem Extra)`;
 
-    await table.draw({
-      displayChat: true,
-      rollMode: rollMode,
+    // Rola a tabela SEM criar mensagem automaticamente no chat
+    const draw = await table.draw({ displayChat: false });
+
+    // Publica o resultado no chat com as flags necessárias para prevenção de loop
+    await table.toMessage(draw.results, {
+      roll: draw.roll,
       messageData: {
         flavor: `<div class="rolagens-globais-badge"><i class="fas fa-dice"></i> ${flavor}</div>`,
         speaker: ChatMessage.getSpeaker({ actor: originalMessage.actor }),
         flags: {
+          core: { RollTable: table.id },
           [this.MODULE_ID]: {
             isExtraRoll: true,
             originalMessageId: originalMessage.id,
             ruleId: rule.id
           }
         }
-      }
+      },
+      rollMode
     });
   }
 
@@ -248,4 +269,3 @@ export class RulesEngine {
     }
   }
 }
-

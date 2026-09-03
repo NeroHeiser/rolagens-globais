@@ -45,12 +45,24 @@ export class RulesManagerApp extends HandlebarsApplicationMixin(ApplicationV2) {
 
     const rules = rawRules.map(rule => {
       let targetName = "";
+      let hasConfigError = false;
+
       if (rule.effectType === "table") {
-        const table = game.tables.get(rule.tableId);
-        targetName = table ? table.name : (rule.tableId ? "Tabela não encontrada" : "Não configurada");
+        if (!rule.tableId) {
+          targetName = "⚠️ Nenhuma tabela selecionada (clique em Editar)";
+          hasConfigError = true;
+        } else {
+          const table = game.tables.get(rule.tableId);
+          targetName = table ? table.name : (rule.tableId ? "Tabela não encontrada" : "Não configurada");
+        }
       } else if (rule.effectType === "macro") {
-        const macro = game.macros.get(rule.macroId);
-        targetName = macro ? macro.name : (rule.macroId ? "Macro não encontrada" : "Não configurada");
+        if (!rule.macroId) {
+          targetName = "⚠️ Nenhuma macro selecionada (clique em Editar)";
+          hasConfigError = true;
+        } else {
+          const macro = game.macros.get(rule.macroId);
+          targetName = macro ? macro.name : (rule.macroId ? "Macro não encontrada" : "Não configurada");
+        }
       }
 
       let triggerSummary = rule.resultType || "Qualquer";
@@ -65,6 +77,7 @@ export class RulesManagerApp extends HandlebarsApplicationMixin(ApplicationV2) {
       return {
         ...rule,
         targetName,
+        hasConfigError,
         triggerSummary,
         visibilityLabel
       };
@@ -163,8 +176,7 @@ export class RulesManagerApp extends HandlebarsApplicationMixin(ApplicationV2) {
     const currentRules = RulesEngine.getRules();
     const mergedRules = [...currentRules, ...presets];
     await RulesEngine.saveRules(mergedRules);
-    ui.notifications.info(game.i18n.localize("ROLAGENS_GLOBAIS.Manager.PresetsLoaded"));
+    ui.notifications.info("Regras recomendadas carregadas! Lembre-se de clicar em 'Editar' para escolher qual Tabela Rolável ou Macro deseja associar.");
     this.render({ force: true });
   }
 }
-

@@ -49,7 +49,7 @@
                 <span class="badge-trigger">{{rule.triggerSummary}}</span>
               </td>
               <td class="col-effect">
-                <span class="badge-effect badge-{{rule.effectType}}">
+                <span class="badge-effect badge-{{rule.effectType}} {{#if rule.hasConfigError}}badge-warning{{/if}}">
                   {{#if (eq rule.effectType "table")}}<i class="fas fa-th-list"></i> Tabela: {{rule.targetName}}{{/if}}
                   {{#if (eq rule.effectType "roll")}}<i class="fas fa-dice"></i> Fórmula: {{rule.formula}}{{/if}}
                   {{#if (eq rule.effectType "macro")}}<i class="fas fa-code"></i> Macro: {{rule.targetName}}{{/if}}
