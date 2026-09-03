@@ -44,6 +44,24 @@
       "TestDraw": "Test Table Draw",
       "SidebarToggleTitle": "Toggle Madness Mode (Enable/Disable)"
     },
+    "QuickTable": {
+      "Title": "Quick Table Creator",
+      "Button": "Quick Creator",
+      "ButtonTooltip": "Create or import a RollTable by pasting text",
+      "HeroTitle": "Quick RollTable Creator",
+      "HeroSubtitle": "Paste a list of options to generate a fully functional RollTable in seconds.",
+      "BasicSection": "Table Information",
+      "TableName": "Table Name",
+      "NamePlaceholder": "Ex: Madness Table, Wild Magic Effects, Critical Fumbles...",
+      "Formula": "Dice Formula",
+      "FormulaHint": "Calculated automatically from the number of lines.",
+      "SetAsMadness": "Set as Madness Mode Table",
+      "ListSection": "Table Options (1 per line)",
+      "TextareaPlaceholder": "Paste your list here, one option per line...\nExample:\nCritical Fumble: lose your turn\nNormal fumble\nSuccess with consequence\nNormal success\nCritical Success: max damage\ntable: Wild Magic",
+      "SyntaxTitle": "How it works:",
+      "CreateButton": "Create RollTable",
+      "EmptyWarn": "Please paste at least one option to generate the table."
+    },
     "Manager": {
       "HeaderSubtitle": "Automation of tables, formulas, and macros triggered by rolls",
       "SystemDetected": "Detected system:",
@@ -51,6 +69,7 @@
       "TabRules": "⚡ Extra Rolls (Reactive Triggers)",
       "AddRule": "New Rule",
       "LoadPresets": "Load Recommended Rules",
+      "QuickTableBtn": "Quick Table Creator",
       "NoRules": "No rules configured yet. Click 'New Rule' or 'Load Recommended Rules'.",
       "Active": "Active",
       "Inactive": "Inactive",

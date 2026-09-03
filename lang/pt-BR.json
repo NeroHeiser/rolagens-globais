@@ -44,6 +44,24 @@
       "TestDraw": "Testar Sorteio da Tabela",
       "SidebarToggleTitle": "Alternar Modo Loucura (Ativar/Desativar)"
     },
+    "QuickTable": {
+      "Title": "Criador Rápido de Tabelas",
+      "Button": "Criador Rápido",
+      "ButtonTooltip": "Criar ou importar uma Tabela Rolável colando texto",
+      "HeroTitle": "Criador Rápido de Tabelas Roláveis",
+      "HeroSubtitle": "Cole uma lista de opções para gerar uma Tabela Rolável completa e funcional em segundos.",
+      "BasicSection": "Informações da Tabela",
+      "TableName": "Nome da Tabela",
+      "NamePlaceholder": "Ex: Tabela de Loucura, Efeitos Selvagens, Falhas Críticas...",
+      "Formula": "Fórmula do Dado",
+      "FormulaHint": "Calculada automaticamente a partir do número de linhas.",
+      "SetAsMadness": "Definir como Tabela do Modo Loucura",
+      "ListSection": "Opções da Tabela (1 por linha)",
+      "TextareaPlaceholder": "Cole sua lista aqui, uma opção por linha...\nExemplo:\nErro Crítico: perde o turno\nErro normal\nAcerto com consequência\nAcerto normal\nAcerto Crítico: dano máximo\ntabela: Magia Selvagem",
+      "SyntaxTitle": "Como funciona:",
+      "CreateButton": "Criar Tabela Rolável",
+      "EmptyWarn": "Por favor, cole ao menos uma opção para gerar a tabela."
+    },
     "Manager": {
       "HeaderSubtitle": "Automação de tabelas, fórmulas e macros acionadas por rolagens",
       "SystemDetected": "Sistema detectado:",
@@ -51,6 +69,7 @@
       "TabRules": "⚡ Rolagens Extras (Gatilhos Reativos)",
       "AddRule": "Nova Regra",
       "LoadPresets": "Carregar Regras Recomendadas",
+      "QuickTableBtn": "Criar Tabela Rápida",
       "NoRules": "Nenhuma regra configurada ainda. Clique em 'Nova Regra' ou 'Carregar Regras Recomendadas'.",
       "Active": "Ativa",
       "Inactive": "Inativa",

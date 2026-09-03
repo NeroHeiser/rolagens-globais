@@ -1,6 +1,7 @@
 import { RulesEngine } from "./rules-engine.mjs";
 import { MadnessEngine } from "./madness-engine.mjs";
 import { RulesManagerApp } from "./apps/rules-manager.mjs";
+import { QuickTableDialog } from "./apps/quick-table-dialog.mjs";
 import { ItemConfigDialog } from "./apps/item-config-dialog.mjs";
 import { getActiveAdapter } from "./adapters/index.mjs";
 
@@ -45,8 +46,10 @@ Hooks.once("ready", () => {
       RulesManagerApp,
       RulesEngine,
       MadnessEngine,
+      QuickTableDialog,
       getActiveAdapter,
-      openManager: () => new RulesManagerApp().render({ force: true })
+      openManager: () => new RulesManagerApp().render({ force: true }),
+      openQuickTable: (options = {}) => new QuickTableDialog(options).render({ force: true })
     };
   }
 });
@@ -89,6 +92,9 @@ Hooks.on("renderRollTableDirectory", (app, html, data) => {
       <i class="fas fa-brain"></i>
       <span class="toggle-label">${isEnabled ? game.i18n.localize("ROLAGENS_GLOBAIS.Madness.StatusActive") : game.i18n.localize("ROLAGENS_GLOBAIS.Madness.StatusInactive")}</span>
     </button>
+    <button type="button" class="btn-quick-table" title="${game.i18n.localize("ROLAGENS_GLOBAIS.QuickTable.ButtonTooltip")}">
+      <i class="fas fa-bolt"></i>
+    </button>
     <button type="button" class="btn-open-manager" title="${game.i18n.localize("ROLAGENS_GLOBAIS.ManagerTitle")}">
       <i class="fas fa-cog"></i>
     </button>
@@ -96,6 +102,7 @@ Hooks.on("renderRollTableDirectory", (app, html, data) => {
 
   const toggleBtn = toolbar.querySelector(".btn-madness-toggle");
   const labelSpan = toolbar.querySelector(".toggle-label");
+  const quickTableBtn = toolbar.querySelector(".btn-quick-table");
   const managerBtn = toolbar.querySelector(".btn-open-manager");
 
   toggleBtn.addEventListener("click", async (e) => {
@@ -110,6 +117,11 @@ Hooks.on("renderRollTableDirectory", (app, html, data) => {
       toggleBtn.classList.add("inactive");
       labelSpan.textContent = game.i18n.localize("ROLAGENS_GLOBAIS.Madness.StatusInactive");
     }
+  });
+
+  quickTableBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    new QuickTableDialog().render({ force: true });
   });
 
   managerBtn.addEventListener("click", (e) => {

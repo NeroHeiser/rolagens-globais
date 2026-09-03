@@ -239,7 +239,8 @@
 }
 
 .btn-add,
-.btn-preset {
+.btn-preset,
+.btn-quick {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -265,6 +266,33 @@
 }
 .btn-preset:hover {
   background: #d47a00;
+}
+
+.btn-quick {
+  background: #4a148c;
+  color: #fff;
+  border-color: #7b1fa2;
+}
+.btn-quick:hover {
+  background: #6a1b9a;
+}
+
+.btn-quick-inline {
+  background: rgba(123, 44, 191, 0.2);
+  color: #e0aaff;
+  border: 1px solid #9d4edd;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.82rem;
+  font-weight: bold;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 6px;
+}
+.btn-quick-inline:hover {
+  background: rgba(123, 44, 191, 0.4);
 }
 
 .rules-table {
@@ -321,7 +349,8 @@
 /* --- Badges --- */
 .badge-trigger,
 .badge-effect,
-.badge-vis {
+.badge-vis,
+.badge-count {
   display: inline-block;
   padding: 2px 6px;
   border-radius: 4px;
@@ -352,6 +381,14 @@
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: #ccc;
+}
+
+.badge-count {
+  background: rgba(123, 44, 191, 0.2);
+  border: 1px solid rgba(157, 78, 221, 0.5);
+  color: #e0aaff;
+  font-weight: bold;
+  margin-left: 8px;
 }
 
 /* --- Botões de Ação na Linha --- */
@@ -425,6 +462,7 @@
   border-color: #444;
 }
 
+.rolagens-globais-sidebar-toolbar .btn-quick-table,
 .rolagens-globais-sidebar-toolbar .btn-open-manager {
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid #444;
@@ -432,10 +470,19 @@
   border-radius: 4px;
   padding: 6px 10px;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
+.rolagens-globais-sidebar-toolbar .btn-quick-table:hover,
 .rolagens-globais-sidebar-toolbar .btn-open-manager:hover {
   background: rgba(255, 255, 255, 0.16);
   color: #fff;
+}
+
+.rolagens-globais-sidebar-toolbar .btn-quick-table:hover {
+  color: #e0aaff;
+  border-color: #9d4edd;
 }
 
 /* --- Modal de Criação / Edição de Regra (RuleDialog) --- */
@@ -538,4 +585,98 @@
   border: 1px solid rgba(157, 78, 221, 0.5);
   color: #e0aaff;
   line-height: 1.4;
+}
+
+/* --- Criador Rápido de Tabelas (QuickTableDialog) --- */
+.rolagens-globais.quick-table-window {
+  min-width: 560px;
+}
+
+.quick-table-hero {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, rgba(74, 20, 140, 0.25), rgba(49, 27, 146, 0.25));
+  border: 1px solid rgba(157, 78, 221, 0.4);
+}
+
+.quick-table-hero .hero-icon {
+  font-size: 2rem;
+  color: #c77dff;
+}
+
+.quick-table-hero h3 {
+  margin: 0 0 2px 0;
+  font-size: 1.05rem;
+  color: #fff;
+  border: none;
+}
+
+.quick-table-hero p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #ccc;
+}
+
+.quick-table-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: monospace;
+  font-size: 0.85rem;
+  padding: 10px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.35);
+  color: #eee;
+  border: 1px solid var(--color-border-light, #555);
+  resize: vertical;
+}
+
+.quick-table-textarea:focus {
+  border-color: #9d4edd;
+  outline: none;
+  box-shadow: 0 0 6px rgba(157, 78, 221, 0.5);
+}
+
+.syntax-guide {
+  margin-top: 8px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  font-size: 0.8rem;
+  color: var(--color-text-secondary, #bbb);
+}
+
+.syntax-guide h4 {
+  margin: 0 0 4px 0;
+  font-size: 0.85rem;
+  color: #e0aaff;
+  border: none;
+}
+
+.syntax-guide ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.syntax-guide li {
+  margin-bottom: 3px;
+}
+
+.syntax-guide code {
+  background: rgba(0, 0, 0, 0.4);
+  padding: 1px 5px;
+  border-radius: 3px;
+  color: #90caf9;
+}
+
+.btn-quick-create {
+  background: linear-gradient(135deg, #7b2cbf, #5a189a);
+  border-color: #9d4edd;
+  color: #fff;
+}
+.btn-quick-create:hover {
+  background: linear-gradient(135deg, #9d4edd, #7b2cbf);
 }

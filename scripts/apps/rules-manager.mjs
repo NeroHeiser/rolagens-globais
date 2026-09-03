@@ -2,6 +2,7 @@ import { RulesEngine } from "../rules-engine.mjs";
 import { MadnessEngine } from "../madness-engine.mjs";
 import { getActiveAdapter } from "../adapters/index.mjs";
 import { RuleDialog } from "./rule-dialog.mjs";
+import { QuickTableDialog } from "./quick-table-dialog.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
@@ -31,6 +32,8 @@ export class RulesManagerApp extends HandlebarsApplicationMixin(ApplicationV2) {
       toggleMadness: RulesManagerApp.#onToggleMadness,
       saveMadnessConfig: RulesManagerApp.#onSaveMadnessConfig,
       testMadnessDraw: RulesManagerApp.#onTestMadnessDraw,
+      openQuickTable: RulesManagerApp.#onOpenQuickTable,
+      openQuickTableMadness: RulesManagerApp.#onOpenQuickTableMadness,
       addRule: RulesManagerApp.#onAddRule,
       editRule: RulesManagerApp.#onEditRule,
       deleteRule: RulesManagerApp.#onDeleteRule,
@@ -192,6 +195,25 @@ export class RulesManagerApp extends HandlebarsApplicationMixin(ApplicationV2) {
     }
 
     await table.draw({ rollMode: config.visibility || CONST.DICE_ROLL_MODES.PUBLIC });
+  }
+
+  /**
+   * Ação: Abrir o Criador Rápido de Tabelas (geral).
+   */
+  static #onOpenQuickTable(event, target) {
+    new QuickTableDialog({
+      onCreated: () => this.render({ force: true })
+    }).render({ force: true });
+  }
+
+  /**
+   * Ação: Abrir o Criador Rápido de Tabelas vinculado diretamente ao Modo Loucura.
+   */
+  static #onOpenQuickTableMadness(event, target) {
+    new QuickTableDialog({
+      setAsMadness: true,
+      onCreated: () => this.render({ force: true })
+    }).render({ force: true });
   }
 
   /**

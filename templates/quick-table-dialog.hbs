@@ -1,0 +1,70 @@
+<form class="rolagens-globais-dialog quick-table-form" autocomplete="off">
+  <div class="dialog-scroll-body">
+    <div class="quick-table-hero">
+      <i class="fas fa-bolt hero-icon"></i>
+      <div>
+        <h3>{{localize "ROLAGENS_GLOBAIS.QuickTable.HeroTitle"}}</h3>
+        <p class="notes">{{localize "ROLAGENS_GLOBAIS.QuickTable.HeroSubtitle"}}</p>
+      </div>
+    </div>
+
+    <!-- Informações da Tabela -->
+    <fieldset class="rule-section">
+      <legend><i class="fas fa-heading"></i> {{localize "ROLAGENS_GLOBAIS.QuickTable.BasicSection"}}</legend>
+      
+      <div class="form-group">
+        <label for="table-name">{{localize "ROLAGENS_GLOBAIS.QuickTable.TableName"}}</label>
+        <div class="form-fields">
+          <input type="text" id="table-name" name="name" placeholder="{{localize 'ROLAGENS_GLOBAIS.QuickTable.NamePlaceholder'}}" required />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col-6">
+          <label for="table-formula">{{localize "ROLAGENS_GLOBAIS.QuickTable.Formula"}}</label>
+          <div class="form-fields">
+            <input type="text" id="table-formula" name="formula" placeholder="Ex: 1d6, 1d20" />
+          </div>
+          <p class="notes">{{localize "ROLAGENS_GLOBAIS.QuickTable.FormulaHint"}}</p>
+        </div>
+
+        <div class="form-group col-6 checkbox-group" style="align-self: center; margin-top: 14px;">
+          <label>
+            <input type="checkbox" name="setAsMadness" {{#if setAsMadness}}checked{{/if}} />
+            <span><i class="fas fa-brain"></i> {{localize "ROLAGENS_GLOBAIS.QuickTable.SetAsMadness"}}</span>
+          </label>
+        </div>
+      </div>
+    </fieldset>
+
+    <!-- Área de Colagem da Lista -->
+    <fieldset class="rule-section">
+      <legend>
+        <i class="fas fa-list-ol"></i> {{localize "ROLAGENS_GLOBAIS.QuickTable.ListSection"}} 
+        <span class="badge-count"><span class="line-count">0</span> opções</span>
+      </legend>
+
+      <div class="form-group">
+        <textarea name="rawText" class="quick-table-textarea" rows="10" placeholder="{{localize 'ROLAGENS_GLOBAIS.QuickTable.TextareaPlaceholder'}}"></textarea>
+      </div>
+
+      <!-- Caixa de Dicas de Sintaxe -->
+      <div class="syntax-guide">
+        <h4><i class="fas fa-info-circle"></i> {{localize "ROLAGENS_GLOBAIS.QuickTable.SyntaxTitle"}}</h4>
+        <ul>
+          <li><strong>Linhas normais:</strong> Coloque 1 opção por linha. Numerações (ex: <code>1. </code>, <code>2 - </code>) são removidas automaticamente.</li>
+          <li><strong>Tabelas Aninhadas (Recursivas):</strong> Escreva <code>tabela: Nome da Tabela</code> (ex: <code>tabela: Magia Selvagem</code>) para que aquela linha sorteie outra tabela automaticamente!</li>
+        </ul>
+      </div>
+    </fieldset>
+  </div>
+
+  <footer class="dialog-buttons">
+    <button type="button" class="btn-cancel" data-action="cancel">
+      <i class="fas fa-times"></i> {{localize "ROLAGENS_GLOBAIS.Rule.Cancel"}}
+    </button>
+    <button type="submit" class="btn-save btn-quick-create">
+      <i class="fas fa-bolt"></i> {{localize "ROLAGENS_GLOBAIS.QuickTable.CreateButton"}}
+    </button>
+  </footer>
+</form>

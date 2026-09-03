@@ -60,6 +60,9 @@
                     <option value="{{tbl.id}}" {{#if (eq tbl.id ../madnessConfig.tableId)}}selected{{/if}}>{{tbl.name}}</option>
                   {{/each}}
                 </select>
+                <button type="button" class="btn-quick-inline" data-action="openQuickTableMadness" title="{{localize 'ROLAGENS_GLOBAIS.QuickTable.ButtonTooltip'}}">
+                  <i class="fas fa-bolt"></i> {{localize "ROLAGENS_GLOBAIS.Manager.QuickTableBtn"}}
+                </button>
               </div>
               <p class="notes">{{localize "ROLAGENS_GLOBAIS.Madness.SelectTableHint"}}</p>
             </div>
@@ -129,8 +132,11 @@
     {{#if (eq activeTab "rules")}}
       <section class="tab-pane tab-rules">
         <div class="rules-toolbar">
+          <button type="button" class="btn-quick" data-action="openQuickTable" title="{{localize 'ROLAGENS_GLOBAIS.QuickTable.ButtonTooltip'}}">
+            <i class="fas fa-bolt"></i> {{localize "ROLAGENS_GLOBAIS.Manager.QuickTableBtn"}}
+          </button>
           <button type="button" class="btn-preset" data-action="loadPresets">
-            <i class="fas fa-bolt"></i> {{localize "ROLAGENS_GLOBAIS.Manager.LoadPresets"}}
+            <i class="fas fa-magic"></i> {{localize "ROLAGENS_GLOBAIS.Manager.LoadPresets"}}
           </button>
           <button type="button" class="btn-add" data-action="addRule">
             <i class="fas fa-plus"></i> {{localize "ROLAGENS_GLOBAIS.Manager.AddRule"}}
