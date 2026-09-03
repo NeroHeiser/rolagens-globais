@@ -10,39 +10,44 @@
       "OpenManager": {
         "Name": "Configure Global Extra Rolls",
         "Label": "Open Manager",
-        "Hint": "Opens the interface to create and manage automated extra roll rules and Madness Mode."
+        "Hint": "Opens the interface to create and manage automated extra roll rules and World Rules."
       }
     },
     "Madness": {
-      "TabTitle": "Madness Mode (Pre-Attack)",
+      "DefaultName": "World Rules",
+      "TabTitle": "World Rules (Pre-Attack)",
+      "CustomName": "Custom Mode Name",
+      "CustomNameHint": "Ex: World Rules, Madness Mode, Wild Magic, Ravenloft Mist. This name will appear on buttons and chat messages.",
+      "PhysicalTable": "Physical Attacks Table",
+      "PhysicalTableHint": "Drawn when the character makes melee or ranged weapon attacks.",
+      "MagicTable": "Spells & Magic Table",
+      "MagicTableHint": "Drawn when the character casts spells or makes spell attacks.",
       "SettingEnabled": {
-        "Name": "Madness Mode Active",
-        "Hint": "When active, intercepts attacks and spells before the d20 is rolled, drawing from the madness table."
+        "Name": "World Rules Active",
+        "Hint": "When active, intercepts attacks and spells before the d20 is rolled, drawing configured tables."
       },
       "SettingConfig": {
-        "Name": "Madness Mode Configuration",
-        "Hint": "Table and interception filters configuration for Madness Mode."
+        "Name": "World Rules Configuration",
+        "Hint": "Physical and magic tables configuration and interception filters."
       },
-      "StatusActive": "Madness Mode: ACTIVE",
-      "StatusInactive": "Madness Mode: INACTIVE",
-      "ToggleOn": "Enable Madness Mode",
-      "ToggleOff": "Disable Madness Mode",
-      "ActivatedNotice": "🌀 Madness Mode ACTIVE! Attacks and spells will now be intercepted by the table.",
-      "DeactivatedNotice": "✨ Madness Mode DEACTIVATED. Rolls have returned to normal.",
-      "NoTableConfigured": "Global Extra Rolls: No RollTable configured for Madness Mode. Open the Manager and select a table.",
-      "SelectTable": "Madness RollTable",
-      "SelectTableHint": "Table drawn in place of the d20 attack die.",
+      "StatusActive": "ACTIVE",
+      "StatusInactive": "INACTIVE",
+      "ToggleOn": "Enable",
+      "ToggleOff": "Disable",
+      "ActivatedNotice": "🌀 World Rules ACTIVATED! Attacks and spells will now be intercepted.",
+      "DeactivatedNotice": "✨ World Rules DEACTIVATED. Rolls have returned to normal.",
+      "NoTableConfigured": "Global Extra Rolls: No RollTable configured for this mode. Open the Manager and select a table.",
       "Filters": "Intercepted Actions",
       "InterceptMelee": "Intercept Melee Attacks",
       "InterceptRanged": "Intercept Ranged Attacks",
       "InterceptSpells": "Intercept Spellcasting",
       "Flavor": "Highlighted Chat Message",
-      "FlavorPlaceholder": "Ex: 🌀 Madness took control of {actor}'s action!",
+      "FlavorPlaceholder": "Ex: 🌀 {mode}: {actor} tried to use {item}, but the action was intercepted!",
       "Visibility": "Draw Visibility",
-      "SaveConfig": "Save Madness Settings",
-      "ConfigSaved": "Madness settings saved successfully!",
-      "TestDraw": "Test Table Draw",
-      "SidebarToggleTitle": "Toggle Madness Mode (Enable/Disable)"
+      "SaveConfig": "Save Settings",
+      "ConfigSaved": "Settings saved successfully!",
+      "TestDraw": "Test Draw",
+      "SidebarToggleTitle": "Toggle Interception Mode"
     },
     "QuickTable": {
       "Title": "Quick Table Creator",
@@ -52,10 +57,13 @@
       "HeroSubtitle": "Paste a list of options to generate a fully functional RollTable in seconds.",
       "BasicSection": "Table Information",
       "TableName": "Table Name",
-      "NamePlaceholder": "Ex: Madness Table, Wild Magic Effects, Critical Fumbles...",
+      "NamePlaceholder": "Ex: Madness Physical Attacks, Chaotic Spells, Critical Fumbles...",
       "Formula": "Dice Formula",
       "FormulaHint": "Calculated automatically from the number of lines.",
-      "SetAsMadness": "Set as Madness Mode Table",
+      "BindLabel": "Bind to",
+      "NoBind": "Do not bind automatically",
+      "BindPhysical": "Physical Attacks Table",
+      "BindMagic": "Spells & Magic Table",
       "ListSection": "Table Options (1 per line)",
       "TextareaPlaceholder": "Paste your list here, one option per line...\nExample:\nCritical Fumble: lose your turn\nNormal fumble\nSuccess with consequence\nNormal success\nCritical Success: max damage\ntable: Wild Magic",
       "SyntaxTitle": "How it works:",
@@ -65,11 +73,11 @@
     "Manager": {
       "HeaderSubtitle": "Automation of tables, formulas, and macros triggered by rolls",
       "SystemDetected": "Detected system:",
-      "TabMadness": "🌀 Madness Mode (Pre-Attack)",
+      "TabMadness": "🌀 World Rules (Pre-Attack)",
       "TabRules": "⚡ Extra Rolls (Reactive Triggers)",
       "AddRule": "New Rule",
       "LoadPresets": "Load Recommended Rules",
-      "QuickTableBtn": "Quick Table Creator",
+      "QuickTableBtn": "Create Table",
       "NoRules": "No rules configured yet. Click 'New Rule' or 'Load Recommended Rules'.",
       "Active": "Active",
       "Inactive": "Inactive",
@@ -127,7 +135,7 @@
       "ButtonTooltip": "Global Extra Rolls: Item Settings",
       "Title": "Global Extra Rolls: {item}",
       "IgnoreGlobal": "Ignore global extra roll rules for this item",
-      "IgnoreMadness": "Ignore Madness Mode for this item (attack normally)",
+      "IgnoreMadness": "Ignore interception for this item (attack normally)",
       "Save": "Save Settings"
     },
     "Chat": {

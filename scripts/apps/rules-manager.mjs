@@ -8,7 +8,7 @@ const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
 /**
  * Painel Central do Rolagens Globais com suporte a duas abas:
- * 1. Modo Loucura (Interceptador Pré-Ataque)
+ * 1. Regras do Mundo (Interceptador Pré-Ataque com tabelas Física e Mágica)
  * 2. Rolagens Extras (Gatilhos Reativos)
  */
 export class RulesManagerApp extends HandlebarsApplicationMixin(ApplicationV2) {
@@ -25,15 +25,17 @@ export class RulesManagerApp extends HandlebarsApplicationMixin(ApplicationV2) {
     },
     position: {
       width: 820,
-      height: 600
+      height: 640
     },
     actions: {
       setTab: RulesManagerApp.#onSetTab,
       toggleMadness: RulesManagerApp.#onToggleMadness,
       saveMadnessConfig: RulesManagerApp.#onSaveMadnessConfig,
-      testMadnessDraw: RulesManagerApp.#onTestMadnessDraw,
+      testMadnessDrawPhysical: RulesManagerApp.#onTestMadnessDrawPhysical,
+      testMadnessDrawMagic: RulesManagerApp.#onTestMadnessDrawMagic,
       openQuickTable: RulesManagerApp.#onOpenQuickTable,
-      openQuickTableMadness: RulesManagerApp.#onOpenQuickTableMadness,
+      openQuickTablePhysical: RulesManagerApp.#onOpenQuickTablePhysical,
+      openQuickTableMagic: RulesManagerApp.#onOpenQuickTableMagic,
       addRule: RulesManagerApp.#onAddRule,
       editRule: RulesManagerApp.#onEditRule,
       deleteRule: RulesManagerApp.#onDeleteRule,
@@ -56,6 +58,7 @@ export class RulesManagerApp extends HandlebarsApplicationMixin(ApplicationV2) {
     const rawRules = RulesEngine.getRules();
     const madnessEnabled = MadnessEngine.isEnabled();
     const madnessConfig = MadnessEngine.getConfig();
+    const modeName = MadnessEngine.getModeName();
     const tables = await this.#getAvailableTables();
 
     const rules = rawRules.map(rule => {
@@ -103,6 +106,7 @@ export class RulesManagerApp extends HandlebarsApplicationMixin(ApplicationV2) {
       activeTab: RulesManagerApp.currentTab,
       madnessEnabled,
       madnessConfig,
+      modeName,
       tables,
       rules
     };
@@ -141,7 +145,7 @@ export class RulesManagerApp extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   /**
-   * Ação: Alternar o Modo Loucura ligado/desligado.
+   * Ação: Alternar o Modo ligado/desligado.
    */
   static async #onToggleMadness(event, target) {
     await MadnessEngine.toggleEnabled();
@@ -149,7 +153,7 @@ export class RulesManagerApp extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   /**
-   * Ação: Salvar as configurações da aba Modo Loucura.
+   * Ação: Salvar as configurações da aba Regras do Mundo.
    */
   static async #onSaveMadnessConfig(event, target) {
     const form = this.element.querySelector(".madness-config-form");
@@ -157,11 +161,13 @@ export class RulesManagerApp extends HandlebarsApplicationMixin(ApplicationV2) {
 
     const formData = new FormData(form);
     const newConfig = {
-      tableId: formData.get("tableId")?.toString() || "",
+      customName: formData.get("customName")?.toString().trim() || "Regras do Mundo",
+      physicalTableId: formData.get("physicalTableId")?.toString() || "",
+      magicTableId: formData.get("magicTableId")?.toString() || "",
       interceptMelee: formData.get("interceptMelee") === "on",
       interceptRanged: formData.get("interceptRanged") === "on",
       interceptSpells: formData.get("interceptSpells") === "on",
-      flavor: formData.get("flavor")?.toString().trim() || "🌀 A Loucura tomou o controle da ação!",
+      flavor: formData.get("flavor")?.toString().trim() || "🌀 {mode}: {actor} tentou usar {item}, mas as regras do mundo interferiram!",
       visibility: formData.get("visibility")?.toString() || "public"
     };
 
@@ -171,30 +177,59 @@ export class RulesManagerApp extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   /**
-   * Ação: Testar o sorteio da Tabela de Loucura configurada.
+   * Ação: Testar o sorteio da Tabela Física.
    */
-  static async #onTestMadnessDraw(event, target) {
+  static async #onTestMadnessDrawPhysical(event, target) {
     const config = MadnessEngine.getConfig();
-    if (!config.tableId) {
-      ui.notifications.warn(game.i18n.localize("ROLAGENS_GLOBAIS.Madness.NoTableConfigured"));
+    const tableId = config.physicalTableId || config.tableId;
+    if (!tableId) {
+      ui.notifications.warn("Nenhuma tabela configurada para Ataques Físicos.");
       return;
     }
 
-    let table = game.tables.get(config.tableId) || game.tables.getName(config.tableId);
+    let table = game.tables.get(tableId) || game.tables.getName(tableId);
     if (!table) {
       try {
-        table = await fromUuid(config.tableId);
+        table = await fromUuid(tableId);
       } catch {
         table = null;
       }
     }
 
     if (!table) {
-      ui.notifications.warn(`Tabela "${config.tableId}" não encontrada.`);
+      ui.notifications.warn(`Tabela física "${tableId}" não encontrada.`);
       return;
     }
 
-    await table.draw({ rollMode: config.visibility || CONST.DICE_ROLL_MODES.PUBLIC });
+    await table.draw({ recursive: true, rollMode: config.visibility || CONST.DICE_ROLL_MODES.PUBLIC });
+  }
+
+  /**
+   * Ação: Testar o sorteio da Tabela Mágica.
+   */
+  static async #onTestMadnessDrawMagic(event, target) {
+    const config = MadnessEngine.getConfig();
+    const tableId = config.magicTableId || config.tableId;
+    if (!tableId) {
+      ui.notifications.warn("Nenhuma tabela configurada para Magias.");
+      return;
+    }
+
+    let table = game.tables.get(tableId) || game.tables.getName(tableId);
+    if (!table) {
+      try {
+        table = await fromUuid(tableId);
+      } catch {
+        table = null;
+      }
+    }
+
+    if (!table) {
+      ui.notifications.warn(`Tabela mágica "${tableId}" não encontrada.`);
+      return;
+    }
+
+    await table.draw({ recursive: true, rollMode: config.visibility || CONST.DICE_ROLL_MODES.PUBLIC });
   }
 
   /**
@@ -207,11 +242,21 @@ export class RulesManagerApp extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   /**
-   * Ação: Abrir o Criador Rápido de Tabelas vinculado diretamente ao Modo Loucura.
+   * Ação: Abrir o Criador Rápido vinculado à Tabela Física.
    */
-  static #onOpenQuickTableMadness(event, target) {
+  static #onOpenQuickTablePhysical(event, target) {
     new QuickTableDialog({
-      setAsMadness: true,
+      targetMode: "physical",
+      onCreated: () => this.render({ force: true })
+    }).render({ force: true });
+  }
+
+  /**
+   * Ação: Abrir o Criador Rápido vinculado à Tabela Mágica.
+   */
+  static #onOpenQuickTableMagic(event, target) {
+    new QuickTableDialog({
+      targetMode: "magic",
       onCreated: () => this.render({ force: true })
     }).render({ force: true });
   }

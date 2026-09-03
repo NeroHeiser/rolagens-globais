@@ -13,7 +13,7 @@
   <!-- Navegação de Abas -->
   <nav class="manager-tabs">
     <button type="button" class="tab-item {{#if (eq activeTab 'madness')}}active{{/if}}" data-action="setTab" data-tab="madness">
-      <i class="fas fa-brain"></i> {{localize "ROLAGENS_GLOBAIS.Manager.TabMadness"}}
+      <i class="fas fa-globe"></i> {{modeName}} (Pré-Ataque)
     </button>
     <button type="button" class="tab-item {{#if (eq activeTab 'rules')}}active{{/if}}" data-action="setTab" data-tab="rules">
       <i class="fas fa-dice-d20"></i> {{localize "ROLAGENS_GLOBAIS.Manager.TabRules"}}
@@ -21,53 +21,93 @@
   </nav>
 
   <main class="manager-body">
-    <!-- ABA 1: MODO LOUCURA (INTERCEPTAÇÃO PRÉ-ATAQUE) -->
+    <!-- ABA 1: REGRAS DO MUNDO / MODO LOUCURA (INTERCEPTAÇÃO PRÉ-ATAQUE) -->
     {{#if (eq activeTab "madness")}}
       <section class="tab-pane tab-madness">
-        <!-- Hero Box do Modo Loucura -->
+        <!-- Hero Box de Status -->
         <div class="madness-status-card {{#if madnessEnabled}}status-card-active{{else}}status-card-inactive{{/if}}">
           <div class="status-info">
             <div class="status-icon">
-              <i class="fas {{#if madnessEnabled}}fa-brain fa-spin-pulse{{else}}fa-moon{{/if}}"></i>
+              <i class="fas {{#if madnessEnabled}}fa-globe fa-spin-pulse{{else}}fa-moon{{/if}}"></i>
             </div>
             <div class="status-text">
-              <h3>{{#if madnessEnabled}}{{localize "ROLAGENS_GLOBAIS.Madness.StatusActive"}}{{else}}{{localize "ROLAGENS_GLOBAIS.Madness.StatusInactive"}}{{/if}}</h3>
+              <h3>{{modeName}}: {{#if madnessEnabled}}ATIVADO{{else}}DESATIVADO{{/if}}</h3>
               <p>
                 {{#if madnessEnabled}}
-                  Ataques e magias selecionados serão <strong>interceptados</strong> e substituídos pela Tabela de Loucura.
+                  Ataques físicos e magias serão <strong>interceptados</strong> e substituídos pelas tabelas configuradas abaixo.
                 {{else}}
-                  O sistema de ataque e magias padrão do D&D 5e está operando normalmente (rolando d20 contra CA).
+                  O sistema de ataque e magias padrão está operando normalmente (rolando d20 contra CA).
                 {{/if}}
               </p>
             </div>
           </div>
           <button type="button" class="btn-toggle-madness {{#if madnessEnabled}}btn-active{{else}}btn-inactive{{/if}}" data-action="toggleMadness">
             <i class="fas {{#if madnessEnabled}}fa-power-off{{else}}fa-play{{/if}}"></i>
-            <span>{{#if madnessEnabled}}{{localize "ROLAGENS_GLOBAIS.Madness.ToggleOff"}}{{else}}{{localize "ROLAGENS_GLOBAIS.Madness.ToggleOn"}}{{/if}}</span>
+            <span>{{#if madnessEnabled}}Desativar {{modeName}}{{else}}Ativar {{modeName}}{{/if}}</span>
           </button>
         </div>
 
-        <!-- Formulário de Configuração da Loucura -->
+        <!-- Formulário de Configuração -->
         <form class="madness-config-form">
+          <!-- Nome Personalizado do Modo -->
           <fieldset class="rule-section">
-            <legend><i class="fas fa-th-list"></i> {{localize "ROLAGENS_GLOBAIS.Madness.SelectTable"}}</legend>
+            <legend><i class="fas fa-pen"></i> {{localize "ROLAGENS_GLOBAIS.Madness.CustomName"}}</legend>
             <div class="form-group">
-              <label for="madness-tableId">{{localize "ROLAGENS_GLOBAIS.Madness.SelectTable"}}</label>
+              <label for="madness-customName">{{localize "ROLAGENS_GLOBAIS.Madness.CustomName"}}</label>
               <div class="form-fields">
-                <select id="madness-tableId" name="tableId">
-                  <option value="">-- Selecione uma Tabela Rolável --</option>
-                  {{#each tables as |tbl|}}
-                    <option value="{{tbl.id}}" {{#if (eq tbl.id ../madnessConfig.tableId)}}selected{{/if}}>{{tbl.name}}</option>
-                  {{/each}}
-                </select>
-                <button type="button" class="btn-quick-inline" data-action="openQuickTableMadness" title="{{localize 'ROLAGENS_GLOBAIS.QuickTable.ButtonTooltip'}}">
-                  <i class="fas fa-bolt"></i> {{localize "ROLAGENS_GLOBAIS.Manager.QuickTableBtn"}}
-                </button>
+                <input type="text" id="madness-customName" name="customName" value="{{madnessConfig.customName}}" placeholder="Ex: Regras do Mundo, Modo Loucura, Caos Arcano..." />
               </div>
-              <p class="notes">{{localize "ROLAGENS_GLOBAIS.Madness.SelectTableHint"}}</p>
+              <p class="notes">{{localize "ROLAGENS_GLOBAIS.Madness.CustomNameHint"}}</p>
             </div>
           </fieldset>
 
+          <!-- Tabela 1: Ataques Físicos -->
+          <fieldset class="rule-section">
+            <legend><i class="fas fa-sword"></i> {{localize "ROLAGENS_GLOBAIS.Madness.PhysicalTable"}}</legend>
+            <div class="form-group">
+              <label for="madness-physicalTableId">{{localize "ROLAGENS_GLOBAIS.Madness.PhysicalTable"}}</label>
+              <div class="form-fields">
+                <select id="madness-physicalTableId" name="physicalTableId">
+                  <option value="">-- Nenhuma (usa d20 normal ou tabela legada) --</option>
+                  {{#each tables as |tbl|}}
+                    <option value="{{tbl.id}}" {{#if (eq tbl.id ../madnessConfig.physicalTableId)}}selected{{/if}}>{{tbl.name}}</option>
+                  {{/each}}
+                </select>
+                <button type="button" class="btn-quick-inline" data-action="openQuickTablePhysical" title="Criar Tabela Rápida para Ataques Físicos">
+                  <i class="fas fa-bolt"></i> {{localize "ROLAGENS_GLOBAIS.Manager.QuickTableBtn"}}
+                </button>
+                <button type="button" class="btn-icon" data-action="testMadnessDrawPhysical" title="Testar Sorteio Físico">
+                  <i class="fas fa-dice"></i>
+                </button>
+              </div>
+              <p class="notes">{{localize "ROLAGENS_GLOBAIS.Madness.PhysicalTableHint"}}</p>
+            </div>
+          </fieldset>
+
+          <!-- Tabela 2: Magias e Conjuração -->
+          <fieldset class="rule-section">
+            <legend><i class="fas fa-wand-magic-sparkles"></i> {{localize "ROLAGENS_GLOBAIS.Madness.MagicTable"}}</legend>
+            <div class="form-group">
+              <label for="madness-magicTableId">{{localize "ROLAGENS_GLOBAIS.Madness.MagicTable"}}</label>
+              <div class="form-fields">
+                <select id="madness-magicTableId" name="magicTableId">
+                  <option value="">-- Nenhuma (usa d20 normal ou tabela legada) --</option>
+                  {{#each tables as |tbl|}}
+                    <option value="{{tbl.id}}" {{#if (eq tbl.id ../madnessConfig.magicTableId)}}selected{{/if}}>{{tbl.name}}</option>
+                  {{/each}}
+                </select>
+                <button type="button" class="btn-quick-inline" data-action="openQuickTableMagic" title="Criar Tabela Rápida para Magias">
+                  <i class="fas fa-bolt"></i> {{localize "ROLAGENS_GLOBAIS.Manager.QuickTableBtn"}}
+                </button>
+                <button type="button" class="btn-icon" data-action="testMadnessDrawMagic" title="Testar Sorteio Mágico">
+                  <i class="fas fa-dice"></i>
+                </button>
+              </div>
+              <p class="notes">{{localize "ROLAGENS_GLOBAIS.Madness.MagicTableHint"}}</p>
+            </div>
+          </fieldset>
+
+          <!-- Filtros de Interceptação -->
           <fieldset class="rule-section">
             <legend><i class="fas fa-filter"></i> {{localize "ROLAGENS_GLOBAIS.Madness.Filters"}}</legend>
             
@@ -93,6 +133,7 @@
             </div>
           </fieldset>
 
+          <!-- Entrega no Chat -->
           <fieldset class="rule-section">
             <legend><i class="fas fa-comment-alt"></i> {{localize "ROLAGENS_GLOBAIS.Rule.DeliverySection"}}</legend>
 
@@ -112,16 +153,13 @@
               <div class="form-fields">
                 <input type="text" id="madness-flavor" name="flavor" value="{{madnessConfig.flavor}}" placeholder="{{localize 'ROLAGENS_GLOBAIS.Madness.FlavorPlaceholder'}}">
               </div>
-              <p class="notes">Use <code>{actor}</code> para o nome do personagem e <code>{item}</code> para a arma/magia.</p>
+              <p class="notes">Use <code>{mode}</code> para o nome do modo, <code>{actor}</code> para o personagem e <code>{item}</code> para a arma/magia.</p>
             </div>
           </fieldset>
 
           <div class="madness-actions">
             <button type="button" class="btn-save-madness" data-action="saveMadnessConfig">
-              <i class="fas fa-save"></i> {{localize "ROLAGENS_GLOBAIS.Madness.SaveConfig"}}
-            </button>
-            <button type="button" class="btn-test-madness" data-action="testMadnessDraw">
-              <i class="fas fa-dice"></i> {{localize "ROLAGENS_GLOBAIS.Madness.TestDraw"}}
+              <i class="fas fa-save"></i> Salvar Configurações de {{modeName}}
             </button>
           </div>
         </form>

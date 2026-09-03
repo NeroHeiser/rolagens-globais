@@ -28,11 +28,15 @@
           <p class="notes">{{localize "ROLAGENS_GLOBAIS.QuickTable.FormulaHint"}}</p>
         </div>
 
-        <div class="form-group col-6 checkbox-group" style="align-self: center; margin-top: 14px;">
-          <label>
-            <input type="checkbox" name="setAsMadness" {{#if setAsMadness}}checked{{/if}} />
-            <span><i class="fas fa-brain"></i> {{localize "ROLAGENS_GLOBAIS.QuickTable.SetAsMadness"}}</span>
-          </label>
+        <div class="form-group col-6">
+          <label for="table-target"><i class="fas fa-link"></i> {{localize "ROLAGENS_GLOBAIS.QuickTable.BindLabel"}} ({{modeName}})</label>
+          <div class="form-fields">
+            <select id="table-target" name="setTarget">
+              <option value="">{{localize "ROLAGENS_GLOBAIS.QuickTable.NoBind"}}</option>
+              <option value="physical" {{#if isPhysicalTarget}}selected{{/if}}>⚔️ {{localize "ROLAGENS_GLOBAIS.QuickTable.BindPhysical"}}</option>
+              <option value="magic" {{#if isMagicTarget}}selected{{/if}}>✨ {{localize "ROLAGENS_GLOBAIS.QuickTable.BindMagic"}}</option>
+            </select>
+          </div>
         </div>
       </div>
     </fieldset>

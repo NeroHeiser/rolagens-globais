@@ -10,7 +10,7 @@ export class QuickTableDialog extends HandlebarsApplicationMixin(ApplicationV2) 
   constructor(options = {}) {
     super(options);
     this.onCreated = options.onCreated || null;
-    this.setAsMadness = options.setAsMadness ?? false;
+    this.targetMode = options.targetMode || (options.setAsMadness ? "physical" : "");
   }
 
   static DEFAULT_OPTIONS = {
@@ -38,8 +38,12 @@ export class QuickTableDialog extends HandlebarsApplicationMixin(ApplicationV2) 
   };
 
   async _prepareContext(options) {
+    const modeName = MadnessEngine.getModeName();
     return {
-      setAsMadness: this.setAsMadness
+      targetMode: this.targetMode,
+      isPhysicalTarget: this.targetMode === "physical",
+      isMagicTarget: this.targetMode === "magic",
+      modeName
     };
   }
 
@@ -97,7 +101,7 @@ export class QuickTableDialog extends HandlebarsApplicationMixin(ApplicationV2) 
     const name = formData.get("name")?.toString().trim() || "Nova Tabela Rolável";
     const description = formData.get("description")?.toString().trim() || "";
     const rawText = formData.get("rawText")?.toString() || "";
-    const setAsMadness = formData.get("setAsMadness") === "on";
+    const setTarget = formData.get("setTarget")?.toString() || "";
 
     const lines = this.#parseLines(rawText);
     if (lines.length === 0) {
@@ -172,10 +176,14 @@ export class QuickTableDialog extends HandlebarsApplicationMixin(ApplicationV2) 
 
     ui.notifications.info(`Tabela "${createdTable.name}" criada com sucesso com ${results.length} resultados!`);
 
-    // Se marcado para ser a tabela do Modo Loucura
-    if (setAsMadness) {
-      await MadnessEngine.saveConfig({ tableId: createdTable.id });
-      ui.notifications.info(`Tabela "${createdTable.name}" definida como a Tabela do Modo Loucura!`);
+    // Vincula automaticamente à categoria escolhida
+    const modeName = MadnessEngine.getModeName();
+    if (setTarget === "physical") {
+      await MadnessEngine.saveConfig({ physicalTableId: createdTable.id });
+      ui.notifications.info(`Tabela "${createdTable.name}" definida para Ataques Físicos em "${modeName}"!`);
+    } else if (setTarget === "magic") {
+      await MadnessEngine.saveConfig({ magicTableId: createdTable.id });
+      ui.notifications.info(`Tabela "${createdTable.name}" definida para Magias em "${modeName}"!`);
     }
 
     if (typeof this.onCreated === "function") {

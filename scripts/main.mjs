@@ -85,12 +85,13 @@ Hooks.on("renderRollTableDirectory", (app, html, data) => {
   if (!header) return;
 
   const isEnabled = MadnessEngine.isEnabled();
+  const modeName = MadnessEngine.getModeName();
   const toolbar = document.createElement("div");
   toolbar.className = "rolagens-globais-sidebar-toolbar";
   toolbar.innerHTML = `
-    <button type="button" class="btn-madness-toggle ${isEnabled ? "active" : "inactive"}" title="${game.i18n.localize("ROLAGENS_GLOBAIS.Madness.SidebarToggleTitle")}">
-      <i class="fas fa-brain"></i>
-      <span class="toggle-label">${isEnabled ? game.i18n.localize("ROLAGENS_GLOBAIS.Madness.StatusActive") : game.i18n.localize("ROLAGENS_GLOBAIS.Madness.StatusInactive")}</span>
+    <button type="button" class="btn-madness-toggle ${isEnabled ? "active" : "inactive"}" title="Alternar ${modeName}">
+      <i class="fas fa-globe"></i>
+      <span class="toggle-label">${modeName}: ${isEnabled ? "ATIVADO" : "DESATIVADO"}</span>
     </button>
     <button type="button" class="btn-quick-table" title="${game.i18n.localize("ROLAGENS_GLOBAIS.QuickTable.ButtonTooltip")}">
       <i class="fas fa-bolt"></i>
@@ -108,14 +109,15 @@ Hooks.on("renderRollTableDirectory", (app, html, data) => {
   toggleBtn.addEventListener("click", async (e) => {
     e.preventDefault();
     const newState = await MadnessEngine.toggleEnabled();
+    const currentModeName = MadnessEngine.getModeName();
     if (newState) {
       toggleBtn.classList.remove("inactive");
       toggleBtn.classList.add("active");
-      labelSpan.textContent = game.i18n.localize("ROLAGENS_GLOBAIS.Madness.StatusActive");
+      labelSpan.textContent = `${currentModeName}: ATIVADO`;
     } else {
       toggleBtn.classList.remove("active");
       toggleBtn.classList.add("inactive");
-      labelSpan.textContent = game.i18n.localize("ROLAGENS_GLOBAIS.Madness.StatusInactive");
+      labelSpan.textContent = `${currentModeName}: DESATIVADO`;
     }
   });
 

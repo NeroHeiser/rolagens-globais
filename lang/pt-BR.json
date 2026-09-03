@@ -10,39 +10,44 @@
       "OpenManager": {
         "Name": "Configurar Rolagens Globais",
         "Label": "Abrir Gerenciador",
-        "Hint": "Abre a interface para criar e gerenciar regras de rolagens extras e o Modo Loucura."
+        "Hint": "Abre a interface para criar e gerenciar regras de rolagens extras e as Regras do Mundo."
       }
     },
     "Madness": {
-      "TabTitle": "Modo Loucura (Pré-Ataque)",
+      "DefaultName": "Regras do Mundo",
+      "TabTitle": "Regras do Mundo (Pré-Ataque)",
+      "CustomName": "Nome Personalizado deste Modo",
+      "CustomNameHint": "Ex: Regras do Mundo, Modo Loucura, Magia Selvagem, Caos Arcano. Este nome aparecerá nos botões e no chat.",
+      "PhysicalTable": "Tabela para Ataques Físicos",
+      "PhysicalTableHint": "Sorteada quando o personagem usa armas corpo a corpo ou à distância.",
+      "MagicTable": "Tabela para Magias e Conjuração",
+      "MagicTableHint": "Sorteada quando o personagem conjura magias ou realiza ataques mágicos.",
       "SettingEnabled": {
-        "Name": "Modo Loucura Ativo",
-        "Hint": "Quando ativo, intercepta ataques e magias antes do d20 rolar, sorteando a tabela de loucura."
+        "Name": "Regras do Mundo Ativas",
+        "Hint": "Quando ativo, intercepta ataques e magias antes do d20 rolar, sorteando as tabelas configuradas."
       },
       "SettingConfig": {
-        "Name": "Configurações do Modo Loucura",
-        "Hint": "Configurações de tabela e filtros de interceptação da Loucura."
+        "Name": "Configurações das Regras do Mundo",
+        "Hint": "Configurações de tabelas físicas/mágicas e filtros de interceptação."
       },
-      "StatusActive": "Modo Loucura: ATIVADO",
-      "StatusInactive": "Modo Loucura: DESATIVADO",
-      "ToggleOn": "Ativar Modo Loucura",
-      "ToggleOff": "Desativar Modo Loucura",
-      "ActivatedNotice": "🌀 Modo Loucura ATIVADO! Ataques e magias agora serão interceptados pela tabela.",
-      "DeactivatedNotice": "✨ Modo Loucura DESATIVADO. As rolagens voltaram ao normal.",
-      "NoTableConfigured": "Rolagens Globais: Nenhuma Tabela Rolável foi configurada para o Modo Loucura. Abra o Gerenciador e selecione uma tabela.",
-      "SelectTable": "Tabela Rolável de Loucura",
-      "SelectTableHint": "Tabela sorteada no lugar do dado de ataque d20.",
+      "StatusActive": "ATIVADO",
+      "StatusInactive": "DESATIVADO",
+      "ToggleOn": "Ativar",
+      "ToggleOff": "Desativar",
+      "ActivatedNotice": "🌀 Regras do Mundo ATIVADAS! Ataques e magias agora serão interceptados.",
+      "DeactivatedNotice": "✨ Regras do Mundo DESATIVADAS. As rolagens voltaram ao normal.",
+      "NoTableConfigured": "Rolagens Globais: Nenhuma Tabela Rolável foi configurada para este modo. Abra o Gerenciador e selecione uma tabela.",
       "Filters": "Ações Interceptadas",
       "InterceptMelee": "Interceptar Ataques Corpo a Corpo",
       "InterceptRanged": "Interceptar Ataques à Distância",
       "InterceptSpells": "Interceptar Lançamento de Magias",
       "Flavor": "Mensagem de Destaque no Chat",
-      "FlavorPlaceholder": "Ex: 🌀 A Loucura tomou o controle da ação de {actor}!",
+      "FlavorPlaceholder": "Ex: 🌀 {mode}: {actor} tentou usar {item}, mas a ação foi interceptada!",
       "Visibility": "Visibilidade do Sorteio",
-      "SaveConfig": "Salvar Configurações da Loucura",
-      "ConfigSaved": "Configurações da Loucura salvas com sucesso!",
-      "TestDraw": "Testar Sorteio da Tabela",
-      "SidebarToggleTitle": "Alternar Modo Loucura (Ativar/Desativar)"
+      "SaveConfig": "Salvar Configurações",
+      "ConfigSaved": "Configurações salvas com sucesso!",
+      "TestDraw": "Testar Sorteio",
+      "SidebarToggleTitle": "Alternar Modo de Interceptação"
     },
     "QuickTable": {
       "Title": "Criador Rápido de Tabelas",
@@ -52,10 +57,13 @@
       "HeroSubtitle": "Cole uma lista de opções para gerar uma Tabela Rolável completa e funcional em segundos.",
       "BasicSection": "Informações da Tabela",
       "TableName": "Nome da Tabela",
-      "NamePlaceholder": "Ex: Tabela de Loucura, Efeitos Selvagens, Falhas Críticas...",
+      "NamePlaceholder": "Ex: Ataques Físicos de Loucura, Magias Caóticas, Falhas Críticas...",
       "Formula": "Fórmula do Dado",
       "FormulaHint": "Calculada automaticamente a partir do número de linhas.",
-      "SetAsMadness": "Definir como Tabela do Modo Loucura",
+      "BindLabel": "Vincular a",
+      "NoBind": "Não vincular automaticamente",
+      "BindPhysical": "Tabela de Ataques Físicos",
+      "BindMagic": "Tabela de Magias e Conjuração",
       "ListSection": "Opções da Tabela (1 por linha)",
       "TextareaPlaceholder": "Cole sua lista aqui, uma opção por linha...\nExemplo:\nErro Crítico: perde o turno\nErro normal\nAcerto com consequência\nAcerto normal\nAcerto Crítico: dano máximo\ntabela: Magia Selvagem",
       "SyntaxTitle": "Como funciona:",
@@ -65,11 +73,11 @@
     "Manager": {
       "HeaderSubtitle": "Automação de tabelas, fórmulas e macros acionadas por rolagens",
       "SystemDetected": "Sistema detectado:",
-      "TabMadness": "🌀 Modo Loucura (Pré-Ataque)",
+      "TabMadness": "🌀 Regras do Mundo (Pré-Ataque)",
       "TabRules": "⚡ Rolagens Extras (Gatilhos Reativos)",
       "AddRule": "Nova Regra",
       "LoadPresets": "Carregar Regras Recomendadas",
-      "QuickTableBtn": "Criar Tabela Rápida",
+      "QuickTableBtn": "Criar Tabela",
       "NoRules": "Nenhuma regra configurada ainda. Clique em 'Nova Regra' ou 'Carregar Regras Recomendadas'.",
       "Active": "Ativa",
       "Inactive": "Inativa",
@@ -127,7 +135,7 @@
       "ButtonTooltip": "Rolagens Globais: Configurações do Item",
       "Title": "Rolagens Globais: {item}",
       "IgnoreGlobal": "Ignorar regras de rolagens extras para este item",
-      "IgnoreMadness": "Ignorar o Modo Loucura para este item (ataca normalmente)",
+      "IgnoreMadness": "Ignorar interceptação para este item (ataca normalmente)",
       "Save": "Salvar Configurações"
     },
     "Chat": {
