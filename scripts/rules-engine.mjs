@@ -3,6 +3,7 @@ import { getActiveAdapter } from "./adapters/index.mjs";
 export class RulesEngine {
   static MODULE_ID = "rolagens-globais";
   static SETTING_RULES = "rules";
+  static #processedMessages = new Set();
 
   /**
    * Registra as configurações do módulo no Foundry VTT.
@@ -35,46 +36,59 @@ export class RulesEngine {
   }
 
   /**
-   * Inicializa o hook de escuta de mensagens do chat.
+   * Inicializa os hooks de escuta de mensagens do chat (criação e atualização).
    */
   static initialize() {
     Hooks.on("createChatMessage", (message, options, userId) => {
-      this.#onChatMessageCreated(message, userId);
+      this.#onChatMessageReceived(message, "create");
+    });
+
+    Hooks.on("updateChatMessage", (message, changes, options, userId) => {
+      this.#onChatMessageReceived(message, "update");
     });
   }
 
   /**
-   * Processador de nova mensagem no chat.
+   * Processador central de mensagens do chat (criação e atualização assíncrona).
    */
-  static async #onChatMessageCreated(message, userId) {
+  static async #onChatMessageReceived(message, eventSource) {
     // 1. Prevenção de Loop: ignora mensagens que já são rolagens extras deste módulo
     if (message.flags?.[this.MODULE_ID]?.isExtraRoll) {
       return;
     }
 
-    // 2. Ignora mensagens originadas de RollTables (tanto automáticas quanto manuais)
-    // Isso impede recursão infinita e impede que rolagens da tabela acionem gatilhos de ataque
+    // 2. Ignora mensagens originadas de RollTables (para não avaliar a tabela como um novo ataque)
     if (message.flags?.core?.RollTable || message.flags?.core?.table) {
       return;
     }
 
-    // 3. Só processa se a mensagem contiver rolagens
+    // 3. Só processa se a mensagem contiver rolagens avaliadas
     if (!message.rolls || message.rolls.length === 0) {
       return;
     }
 
-    // 4. Seleção do cliente executor:
-    // Garante que APENAS UM cliente na mesa execute a regra (o primeiro GM ativo conectado).
-    // Se nenhum GM estiver conectado, o próprio autor da rolagem executa como fallback.
-    const activeGMs = game.users.filter(u => u.active && u.isGM);
-    const isPrimaryGM = activeGMs.length > 0 && activeGMs[0].id === game.user.id;
-    const isAuthorFallback = activeGMs.length === 0 && message.isAuthor;
-
-    if (!isPrimaryGM && !isAuthorFallback) {
+    // 4. Evita processar a mesma mensagem duas vezes
+    if (this.#processedMessages.has(message.id)) {
       return;
     }
 
-    // 5. Verificação de sobreposição a nível de Item (Modo Híbrido)
+    // 5. Seleção de Executor:
+    // Se o cliente atual for um GM, ele tem prioridade para executar (garante permissões).
+    // Se houver múltiplos GMs, apenas o primeiro executa para não duplicar rolagens.
+    const isGM = game.user.isGM;
+    if (!isGM) {
+      // Se não for GM mas houver GM conectado, deixa o GM processar
+      const hasOnlineGM = game.users.some(u => u.isGM && u.active);
+      if (hasOnlineGM) return;
+    } else {
+      // Se for GM, garante que apenas um GM ativo execute
+      const gms = game.users.filter(u => u.isGM && (u.active || u.id === game.user.id));
+      if (gms.length > 0 && gms[0].id !== game.user.id) {
+        return;
+      }
+    }
+
+    // 6. Verificação de sobreposição a nível de Item (Modo Híbrido)
     const item = await this.#getItemFromMessage(message);
     if (item && item.flags?.[this.MODULE_ID]?.ignoreGlobal === true) {
       return;
@@ -85,17 +99,20 @@ export class RulesEngine {
       return;
     }
 
+    console.log(`Rolagens Globais | [${eventSource}] Inspecionando mensagem ${message.id}. Regras ativas: ${rules.filter(r => r.enabled).length}`);
+
     const adapter = getActiveAdapter();
 
-    // 6. Avalia cada regra ativa para cada rolagem contida na mensagem
+    // 7. Avalia cada regra ativa para cada rolagem contida na mensagem
     for (const rule of rules) {
       if (!rule.enabled) continue;
 
       for (const roll of message.rolls) {
         if (adapter.matches(rule, message, roll)) {
-          console.log(`Rolagens Globais | Gatilho ativado: "${rule.name}" (${rule.effectType})`);
+          console.log(`Rolagens Globais | ✅ Regra ATIVADA: "${rule.name}" (${rule.effectType})`);
+          this.#processedMessages.add(message.id);
           await this.#executeRule(rule, message, roll);
-          break; // Evita disparar a mesma regra múltiplas vezes no mesmo conjunto de dados
+          break; // Dispara uma vez por regra por mensagem
         }
       }
     }
@@ -106,7 +123,7 @@ export class RulesEngine {
    */
   static async #getItemFromMessage(message) {
     if (message.item) return message.item;
-    const itemUuid = message.flags?.dnd5e?.item?.uuid || message.flags?.dnd5e?.roll?.itemUuid;
+    const itemUuid = message.flags?.dnd5e?.item?.uuid || message.flags?.dnd5e?.roll?.itemUuid || message.flags?.dnd5e?.activity?.item;
     if (itemUuid) {
       try {
         return await fromUuid(itemUuid);
@@ -118,23 +135,28 @@ export class RulesEngine {
   }
 
   /**
-   * Executa a consequência da regra ativada.
+   * Executa a consequência da regra ativada com tratamento de erros.
    */
   static async #executeRule(rule, originalMessage, originalRoll) {
     const rollMode = this.#resolveRollMode(rule.visibility, originalMessage);
 
-    switch (rule.effectType) {
-      case "table":
-        await this.#executeTable(rule, originalMessage, rollMode);
-        break;
+    try {
+      switch (rule.effectType) {
+        case "table":
+          await this.#executeTable(rule, originalMessage, rollMode);
+          break;
 
-      case "roll":
-        await this.#executeFormula(rule, originalMessage, rollMode);
-        break;
+        case "roll":
+          await this.#executeFormula(rule, originalMessage, rollMode);
+          break;
 
-      case "macro":
-        await this.#executeMacro(rule, originalMessage);
-        break;
+        case "macro":
+          await this.#executeMacro(rule, originalMessage);
+          break;
+      }
+    } catch (err) {
+      console.error(`Rolagens Globais | Erro ao executar regra "${rule.name}":`, err);
+      ui.notifications.error(`Rolagens Globais: Erro na regra "${rule.name}": ${err.message}`);
     }
   }
 
@@ -148,7 +170,8 @@ export class RulesEngine {
       return;
     }
 
-    let table = game.tables.get(rule.tableId);
+    // Busca por ID, por Nome ou por UUID
+    let table = game.tables.get(rule.tableId) || game.tables.getName(rule.tableId);
     if (!table) {
       try {
         table = await fromUuid(rule.tableId);
@@ -159,14 +182,19 @@ export class RulesEngine {
 
     if (!table) {
       console.warn(`Rolagens Globais | Tabela não encontrada: ${rule.tableId}`);
-      ui.notifications.warn(`Rolagens Globais: Tabela não encontrada para a regra "${rule.name}".`);
+      ui.notifications.warn(`Rolagens Globais: Tabela "${rule.tableId}" não encontrada no mundo para a regra "${rule.name}".`);
       return;
     }
 
     const flavor = rule.flavor || `${table.name} (Rolagem Extra)`;
 
-    // Rola a tabela SEM criar mensagem automaticamente no chat
+    // Rola a tabela sem publicar automaticamente no chat
     const draw = await table.draw({ displayChat: false });
+
+    if (!draw || !draw.results || draw.results.length === 0) {
+      console.warn(`Rolagens Globais | A tabela ${table.name} não retornou resultados ao rolar.`);
+      return;
+    }
 
     // Publica o resultado no chat com as flags necessárias para prevenção de loop
     await table.toMessage(draw.results, {
@@ -193,29 +221,25 @@ export class RulesEngine {
   static async #executeFormula(rule, originalMessage, rollMode) {
     if (!rule.formula) return;
 
-    try {
-      const extraRoll = new Roll(rule.formula);
-      await extraRoll.evaluate();
+    const extraRoll = new Roll(rule.formula);
+    await extraRoll.evaluate();
 
-      const flavor = rule.flavor || game.i18n.localize("ROLAGENS_GLOBAIS.Chat.TriggeredBadge");
+    const flavor = rule.flavor || game.i18n.localize("ROLAGENS_GLOBAIS.Chat.TriggeredBadge");
 
-      await extraRoll.toMessage(
-        {
-          speaker: ChatMessage.getSpeaker({ actor: originalMessage.actor }),
-          flavor: `<div class="rolagens-globais-badge"><i class="fas fa-bolt"></i> ${flavor}</div>`,
-          flags: {
-            [this.MODULE_ID]: {
-              isExtraRoll: true,
-              originalMessageId: originalMessage.id,
-              ruleId: rule.id
-            }
+    await extraRoll.toMessage(
+      {
+        speaker: ChatMessage.getSpeaker({ actor: originalMessage.actor }),
+        flavor: `<div class="rolagens-globais-badge"><i class="fas fa-bolt"></i> ${flavor}</div>`,
+        flags: {
+          [this.MODULE_ID]: {
+            isExtraRoll: true,
+            originalMessageId: originalMessage.id,
+            ruleId: rule.id
           }
-        },
-        { rollMode }
-      );
-    } catch (err) {
-      console.error(`Rolagens Globais | Erro ao avaliar fórmula: ${rule.formula}`, err);
-    }
+        }
+      },
+      { rollMode }
+    );
   }
 
   /**
@@ -224,7 +248,7 @@ export class RulesEngine {
   static async #executeMacro(rule, originalMessage) {
     if (!rule.macroId) return;
 
-    let macro = game.macros.get(rule.macroId);
+    let macro = game.macros.get(rule.macroId) || game.macros.getName(rule.macroId);
     if (!macro) {
       try {
         macro = await fromUuid(rule.macroId);
@@ -238,15 +262,11 @@ export class RulesEngine {
       return;
     }
 
-    try {
-      macro.execute({
-        message: originalMessage,
-        actor: originalMessage.actor,
-        rule
-      });
-    } catch (err) {
-      console.error(`Rolagens Globais | Erro ao executar macro: ${macro.name}`, err);
-    }
+    macro.execute({
+      message: originalMessage,
+      actor: originalMessage.actor,
+      rule
+    });
   }
 
   /**
