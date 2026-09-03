@@ -86,27 +86,3 @@ Hooks.on("renderChatLog", (app, html, data) => {
   controlButtons.prepend(btn);
 });
 
-/**
- * Adiciona um botão destacado no cabeçalho da aba de Tabelas Roláveis na barra lateral.
- */
-Hooks.on("renderRollTableDirectory", (app, html, data) => {
-  if (!game.user.isGM) return;
-
-  const headerActions = html.querySelector?.(".header-actions") || html.find?.(".header-actions")?.[0];
-  if (!headerActions) return;
-
-  if (headerActions.querySelector(".rolagens-globais-table-btn")) return;
-
-  const btn = document.createElement("button");
-  btn.type = "button";
-  btn.className = "create-document rolagens-globais-table-btn";
-  btn.innerHTML = '<i class="fas fa-dice-d20"></i> Rolagens Globais';
-  btn.style.marginTop = "4px";
-  btn.addEventListener("click", (e) => {
-    e.preventDefault();
-    new RulesManagerApp().render({ force: true });
-  });
-
-  headerActions.appendChild(btn);
-});
-

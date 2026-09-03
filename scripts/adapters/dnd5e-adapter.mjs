@@ -1,8 +1,8 @@
 import { BaseAdapter } from "./base-adapter.mjs";
 
 /**
- * Adaptador específico para D&D 5ª Edição (dnd5e).
- * Lê flags nativas do sistema (flags.dnd5e.roll.type, isCritical, isFumble).
+ * Adaptador específico para D&D 5ª Edição (dnd5e v3 e v4).
+ * Lê flags nativas do sistema (flags.dnd5e, activities, isCritical, isFumble).
  */
 export class Dnd5eAdapter extends BaseAdapter {
   constructor() {
@@ -39,32 +39,43 @@ export class Dnd5eAdapter extends BaseAdapter {
     if (!roll) return false;
 
     const dndFlags = message.flags?.dnd5e?.roll || {};
-    const rollType = dndFlags.type || "";
+    const rollType = dndFlags.type || message.flags?.dnd5e?.type || "";
+    const activityType = message.flags?.dnd5e?.activity?.type || "";
     const flavor = (message.flavor || "").toLowerCase();
+    const content = (message.content || "").toLowerCase();
+    const fullText = `${flavor} ${content}`;
 
     // Verificação do tipo de ação
     if (rule.actionType && rule.actionType !== "any") {
+      const isAttack = rollType === "attack" || activityType === "attack" || fullText.includes("ataque") || fullText.includes("attack");
+      const isSave = rollType === "save" || activityType === "save" || fullText.includes("resistência") || fullText.includes("save") || fullText.includes("salvaguarda");
+      const isSkill = rollType === "skill" || activityType === "skill" || fullText.includes("perícia") || fullText.includes("skill");
+      const isAbility = rollType === "ability" || fullText.includes("atributo") || fullText.includes("ability") || fullText.includes("teste de");
+      const isDeath = rollType === "death" || fullText.includes("morte") || fullText.includes("death");
+
       switch (rule.actionType) {
         case "attack":
-          if (rollType !== "attack" && !flavor.includes("ataque") && !flavor.includes("attack")) return false;
+          if (!isAttack) return false;
           break;
         case "weaponAttack":
-          if (!flavor.includes("arma") && !flavor.includes("weapon") && rollType !== "attack") return false;
+          if (!isAttack) return false;
+          if (!fullText.includes("arma") && !fullText.includes("weapon") && !fullText.includes("corpo a corpo") && !fullText.includes("à distância")) return false;
           break;
         case "spellAttack":
-          if (!flavor.includes("magia") && !flavor.includes("spell") && rollType !== "attack") return false;
+          if (!isAttack) return false;
+          if (!fullText.includes("magia") && !fullText.includes("spell")) return false;
           break;
         case "save":
-          if (rollType !== "save" && !flavor.includes("resistência") && !flavor.includes("save")) return false;
+          if (!isSave) return false;
           break;
         case "skill":
-          if (rollType !== "skill" && !flavor.includes("perícia") && !flavor.includes("skill")) return false;
+          if (!isSkill) return false;
           break;
         case "ability":
-          if (rollType !== "ability" && !flavor.includes("atributo") && !flavor.includes("ability")) return false;
+          if (!isAbility) return false;
           break;
         case "death":
-          if (rollType !== "death" && !flavor.includes("morte") && !flavor.includes("death")) return false;
+          if (!isDeath) return false;
           break;
       }
     }
@@ -72,8 +83,8 @@ export class Dnd5eAdapter extends BaseAdapter {
     const dice = this.getDiceResults(roll);
     const d20Dice = dice.filter(d => d.faces === 20);
 
-    const hasNat1 = dndFlags.isFumble || d20Dice.some(d => d.result === 1);
-    const hasNat20 = dndFlags.isCritical || d20Dice.some(d => d.result === 20);
+    const hasNat1 = dndFlags.isFumble || roll.isFumble || d20Dice.some(d => d.result === 1);
+    const hasNat20 = dndFlags.isCritical || roll.isCritical || d20Dice.some(d => d.result === 20);
 
     // Verificação da condição de resultado
     switch (rule.resultType) {
@@ -82,9 +93,9 @@ export class Dnd5eAdapter extends BaseAdapter {
       case "nat20":
         return hasNat20;
       case "death1":
-        return (rollType === "death" || flavor.includes("morte")) && hasNat1;
+        return (rollType === "death" || fullText.includes("morte")) && hasNat1;
       case "death20":
-        return (rollType === "death" || flavor.includes("morte")) && hasNat20;
+        return (rollType === "death" || fullText.includes("morte")) && hasNat20;
       case "any":
       default:
         return true;
@@ -126,4 +137,3 @@ export class Dnd5eAdapter extends BaseAdapter {
     ];
   }
 }
-

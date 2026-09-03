@@ -209,16 +209,23 @@
 
 /* --- Modal de Criação / Edição de Regra (RuleDialog) --- */
 .rolagens-globais.rule-dialog-window {
-  min-width: 520px;
+  min-width: 540px;
 }
 
 .rolagens-globais-dialog {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  height: 100%;
+  overflow: hidden;
+}
+
+.rolagens-globais-dialog .dialog-scroll-body {
+  flex: 1;
   overflow-y: auto;
-  max-height: 75vh;
-  padding: 6px;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .rolagens-globais-dialog .rule-section {
@@ -245,21 +252,23 @@
 }
 
 .rolagens-globais-dialog .dialog-buttons {
+  flex-shrink: 0;
   display: flex;
   justify-content: flex-end;
   gap: 8px;
-  margin-top: 10px;
+  padding: 10px 14px;
   border-top: 1px solid var(--color-border-light, #555);
-  padding-top: 10px;
+  background: rgba(0, 0, 0, 0.4);
 }
 
 .rolagens-globais-dialog .btn-save {
   background: #1b5e20;
   color: #fff;
   border: 1px solid #2e7d32;
-  padding: 6px 14px;
+  padding: 8px 18px;
   border-radius: 4px;
   font-weight: bold;
+  font-size: 0.9rem;
   cursor: pointer;
 }
 .rolagens-globais-dialog .btn-save:hover {
@@ -270,7 +279,7 @@
   background: rgba(255, 255, 255, 0.1);
   color: #ccc;
   border: 1px solid #555;
-  padding: 6px 12px;
+  padding: 8px 14px;
   border-radius: 4px;
   cursor: pointer;
 }
