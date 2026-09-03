@@ -23,8 +23,8 @@ export class QuickTableDialog extends HandlebarsApplicationMixin(ApplicationV2) 
       resizable: true
     },
     position: {
-      width: 580,
-      height: 640
+      width: 680,
+      height: 720
     },
     actions: {
       cancel: QuickTableDialog.#onCancel
