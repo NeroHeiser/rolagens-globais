@@ -2,7 +2,7 @@
   "id": "rolagens-globais",
   "title": "Rolagens Globais (Global Extra Rolls)",
   "description": "Gera automaticamente rolagens extras, tabelas roláveis ou macros acionadas por gatilhos configuráveis no D&D 5e, Tormenta20, Pathfinder 2e, Daggerheart e modo Genérico.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "compatibility": {
     "minimum": "12",
     "verified": "12",

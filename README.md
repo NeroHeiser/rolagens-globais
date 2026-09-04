@@ -17,9 +17,22 @@ Módulo para **Foundry Virtual Tabletop (V12 e V14)** que automatiza a execuçã
 - **3 Tipos de Saída / Efeitos Extras:**
   1. **Tabelas Roláveis (`RollTable`):** Sorteia e publica automaticamente o resultado de qualquer tabela do mundo.
   2. **Fórmulas de Dados (`Roll`):** Rola dados extras (ex: `1d100`, `2d6[fogo]`, `1d4`).
-  3. **Macros:** Executa macros JavaScript ou de chat cadastradas no mundo.
+- **🌀 Regras do Mundo (Pré-Ataque / Modo Loucura):**
+  - Intercepta ações e ataques antes do d20 ser rolado, substituindo a ação por um sorteio de tabela rolável.
+  - **Tabelas Independentes:** Separação entre tabela de **Ataques Físicos** (corpo a corpo e à distância) e **Magias/Conjurações**.
+  - Nome do modo 100% customizável pelo Mestre (ex: *Regras do Mundo*, *Modo Loucura*, *Magia Selvagem*, *Névoas de Ravenloft*).
+  - Botão de ativação rápida na barra lateral de tabelas.
+- **⚡ Central de Tabelas Roláveis:**
+  - **Criador Rápido:** Cole qualquer lista de texto (1 opção por linha) para criar uma tabela pronta em segundos.
+  - **Seletor de Dados & Distribuição Proporcional:** Escolha dados clássicos (`d100`, `d20`, `d12`, `d10`, `d8`, `d6` ou fórmula livre). Ao escolher `d100` com 27 opções, por exemplo, o módulo calcula faixas perfeitas de 1 a 100 sem lacunas nem sobreposições.
+  - **Exportação Universal:** Exporte suas tabelas em **JSON** (para outros mundos do Foundry), **CSV** (para Excel, Google Planilhas e Roll20) ou **Markdown** (para Obsidian e Notion).
+  - **Importação com 1 Clique:** Arraste e solte arquivos `.json`, `.csv` ou `.txt` para recriar tabelas instantaneamente no mundo.
+- **🔗 Subtabelas Automáticas (`TableChainEngine`):**
+  - Reconhece quando um resultado de tabela cita outra (ex: `tabela: Selvagem 17`, `role na tabela de Magia Selvagem 57.`, `@UUID[RollTable...]`).
+  - Rola a subtabela no chat automaticamente com animação de dados 3D no Dice So Nice.
+  - Proteção anti-loop de até 5 níveis e autoridade de mestre para partidas multiplayer.
 - **Controle de Visibilidade:** Pública (para todos), Sussurrada ao Mestre, Rolagem Cega ou mantendo a visibilidade da rolagem original.
-- **Suporte Híbrido nos Itens:** Botão integrado no cabeçalho das fichas de itens para permitir que armas ou itens específicos ignorem regras globais.
+- **Suporte Híbrido nos Itens:** Botão integrado no cabeçalho das fichas de itens para permitir que armas ou itens específicos ignorem regras globais ou interceptações.
 
 ---
 
