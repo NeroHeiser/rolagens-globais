@@ -71,7 +71,8 @@
       "TextareaPlaceholder": "Paste your list here, one option per line...\nExample:\nCritical Fumble: lose your turn\nNormal fumble\nSuccess with consequence\nNormal success\nCritical Success: max damage\ntable: Wild Magic",
       "SyntaxTitle": "How it works:",
       "CreateButton": "Create RollTable",
-      "EmptyWarn": "Please paste at least one option to generate the table."
+      "EmptyWarn": "Please paste at least one option to generate the table.",
+      "DistributionDefault": "Paste or type options below to view proportional dice distribution."
     },
     "Manager": {
       "HeaderSubtitle": "Automation of tables, formulas, and macros triggered by rolls",
@@ -140,6 +141,21 @@
       "IgnoreGlobal": "Ignore global extra roll rules for this item",
       "IgnoreMadness": "Ignore interception for this item (attack normally)",
       "Save": "Save Settings"
+    },
+    "TableChain": {
+      "SettingEnabled": {
+        "Name": "Auto-Chain Subtables",
+        "Hint": "When a table draw result mentions another table (e.g. 'table: Wild Magic 57'), automatically draws the subtable."
+      },
+      "SettingMaxDepth": {
+        "Name": "Maximum Subtable Depth",
+        "Hint": "Maximum number of chained subtables that can be triggered in sequence (prevents infinite loops). Default: 5."
+      },
+      "SettingDelay": {
+        "Name": "Delay Between Subtable Rolls (ms)",
+        "Hint": "Wait time in milliseconds to allow 3D dice (Dice So Nice) animation before drawing the next subtable."
+      },
+      "SubTableBadge": "Subtable"
     },
     "Chat": {
       "TriggeredBadge": "Extra Roll",

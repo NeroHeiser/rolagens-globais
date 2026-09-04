@@ -1,5 +1,6 @@
 import { RulesEngine } from "./rules-engine.mjs";
 import { MadnessEngine } from "./madness-engine.mjs";
+import { TableChainEngine } from "./table-chain-engine.mjs";
 import { RulesManagerApp } from "./apps/rules-manager.mjs";
 import { QuickTableDialog } from "./apps/quick-table-dialog.mjs";
 import { ItemConfigDialog } from "./apps/item-config-dialog.mjs";
@@ -16,6 +17,7 @@ Hooks.once("init", () => {
   // Registrar configurações de mundo
   RulesEngine.registerSettings();
   MadnessEngine.registerSettings();
+  TableChainEngine.registerSettings();
 
   // Registrar o botão de configuração no menu de módulos
   game.settings.registerMenu(MODULE_ID, "managerMenu", {
@@ -38,6 +40,7 @@ Hooks.once("ready", () => {
   // Inicializar os motores de escuta
   RulesEngine.initialize();
   MadnessEngine.initialize();
+  TableChainEngine.initialize();
 
   // Expor API pública no objeto do módulo
   const module = game.modules.get(MODULE_ID);
@@ -46,6 +49,7 @@ Hooks.once("ready", () => {
       RulesManagerApp,
       RulesEngine,
       MadnessEngine,
+      TableChainEngine,
       QuickTableDialog,
       getActiveAdapter,
       openManager: () => new RulesManagerApp().render({ force: true }),

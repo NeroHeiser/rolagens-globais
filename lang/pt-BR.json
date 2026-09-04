@@ -71,7 +71,8 @@
       "TextareaPlaceholder": "Cole sua lista aqui, uma opção por linha...\nExemplo:\nErro Crítico: perde o turno\nErro normal\nAcerto com consequência\nAcerto normal\nAcerto Crítico: dano máximo\ntabela: Magia Selvagem",
       "SyntaxTitle": "Como funciona:",
       "CreateButton": "Criar Tabela Rolável",
-      "EmptyWarn": "Por favor, cole ao menos uma opção para gerar a tabela."
+      "EmptyWarn": "Por favor, cole ao menos uma opção para gerar a tabela.",
+      "DistributionDefault": "Cole ou digite opções abaixo para ver a distribuição proporcional dos dados."
     },
     "Manager": {
       "HeaderSubtitle": "Automação de tabelas, fórmulas e macros acionadas por rolagens",
@@ -140,6 +141,21 @@
       "IgnoreGlobal": "Ignorar regras de rolagens extras para este item",
       "IgnoreMadness": "Ignorar interceptação para este item (ataca normalmente)",
       "Save": "Salvar Configurações"
+    },
+    "TableChain": {
+      "SettingEnabled": {
+        "Name": "Encadear Subtabelas Automaticamente",
+        "Hint": "Quando o resultado sorteado citar outra tabela (ex: 'tabela: Selvagem 17' ou 'role na tabela de Magia Selvagem 57'), sorteia a subtabela automaticamente."
+      },
+      "SettingMaxDepth": {
+        "Name": "Profundidade Máxima de Subtabelas",
+        "Hint": "Limite de subtabelas que podem ser disparadas em sequência (proteção contra loops infinitos). Padrão: 5."
+      },
+      "SettingDelay": {
+        "Name": "Atraso entre Rolagens de Subtabelas (ms)",
+        "Hint": "Tempo de espera em milissegundos para permitir a animação dos dados 3D (Dice So Nice) antes da próxima subtabela."
+      },
+      "SubTableBadge": "Subtabela"
     },
     "Chat": {
       "TriggeredBadge": "Rolagem Extra",

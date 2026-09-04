@@ -38,9 +38,25 @@
 
           <div class="form-row-grid">
             <div class="form-group-stacked">
-              <label for="table-formula">{{localize "ROLAGENS_GLOBAIS.QuickTable.Formula"}}</label>
-              <input type="text" id="table-formula" name="formula" placeholder="Ex: 1d6, 1d20" />
-              <span class="field-hint">{{localize "ROLAGENS_GLOBAIS.QuickTable.FormulaHint"}}</span>
+              <label for="table-formula"><i class="fas fa-dice"></i> {{localize "ROLAGENS_GLOBAIS.QuickTable.Formula"}}</label>
+              <input type="text" id="table-formula" name="formula" placeholder="Ex: 1d100, 1d20, 1d27" />
+              
+              <!-- Seletor Rápido de Dados -->
+              <div class="dice-presets-bar">
+                <span class="presets-label"><i class="fas fa-dice-d20"></i> Dado:</span>
+                <button type="button" class="btn-dice-preset active" data-die="auto" title="1d[Número de Opções]">Auto</button>
+                <button type="button" class="btn-dice-preset" data-die="1d100" title="1d100 (distribui 1..100)">d100</button>
+                <button type="button" class="btn-dice-preset" data-die="1d20" title="1d20 (distribui 1..20)">d20</button>
+                <button type="button" class="btn-dice-preset" data-die="1d12" title="1d12 (distribui 1..12)">d12</button>
+                <button type="button" class="btn-dice-preset" data-die="1d10" title="1d10 (distribui 1..10)">d10</button>
+                <button type="button" class="btn-dice-preset" data-die="1d8" title="1d8 (distribui 1..8)">d8</button>
+                <button type="button" class="btn-dice-preset" data-die="1d6" title="1d6 (distribui 1..6)">d6</button>
+              </div>
+
+              <!-- Dica visual dinâmica da distribuição dos números -->
+              <div class="dice-distribution-hint">
+                <i class="fas fa-info-circle"></i> <span class="distribution-text">{{localize "ROLAGENS_GLOBAIS.QuickTable.DistributionDefault"}}</span>
+              </div>
             </div>
 
             <div class="form-group-stacked">
