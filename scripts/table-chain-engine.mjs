@@ -9,6 +9,8 @@ export class TableChainEngine {
   static SETTING_ENABLED = "tableChainEnabled";
   static SETTING_MAX_DEPTH = "tableChainMaxDepth";
   static SETTING_DELAY = "tableChainDelay";
+  static SETTING_DICE_ENABLED = "tableDiceEnabled";
+  static SETTING_DICE_UPDATE_CHAT = "tableDiceUpdateChat";
 
   static #processedIds = new Set();
   static #isExecuting = false;
@@ -42,6 +44,24 @@ export class TableChainEngine {
       config: false,
       type: Number,
       default: 600
+    });
+
+    game.settings.register(this.MODULE_ID, this.SETTING_DICE_ENABLED, {
+      name: game.i18n.localize("ROLAGENS_GLOBAIS.TableDice.SettingEnabled.Name"),
+      hint: game.i18n.localize("ROLAGENS_GLOBAIS.TableDice.SettingEnabled.Hint"),
+      scope: "world",
+      config: true,
+      type: Boolean,
+      default: true
+    });
+
+    game.settings.register(this.MODULE_ID, this.SETTING_DICE_UPDATE_CHAT, {
+      name: game.i18n.localize("ROLAGENS_GLOBAIS.TableDice.SettingUpdateChat.Name"),
+      hint: game.i18n.localize("ROLAGENS_GLOBAIS.TableDice.SettingUpdateChat.Hint"),
+      scope: "world",
+      config: true,
+      type: Boolean,
+      default: true
     });
   }
 
@@ -113,7 +133,13 @@ export class TableChainEngine {
     const resultTexts = this.#extractResultTexts(message, sourceTable);
     if (resultTexts.length === 0) return;
 
-    // 8. Extrai referências a subtabelas em cada texto
+    // 8. Rolagem Automática de Dados ("Xdx") encontrados nos resultados
+    const isDiceEnabled = game.settings.get(this.MODULE_ID, this.SETTING_DICE_ENABLED) ?? true;
+    if (isDiceEnabled) {
+      await this.#processDiceRolls(message, resultTexts, sourceTable);
+    }
+
+    // 9. Extrai referências a subtabelas em cada texto
     const candidateNames = new Set();
     for (const text of resultTexts) {
       const names = this.#parseTableReferences(text);
@@ -167,6 +193,123 @@ export class TableChainEngine {
         console.error(`Rolagens Globais | Erro ao rolar subtabela "${subTable.name}":`, err);
       }
     }
+  }
+
+  /**
+   * Processa e rola fórmulas de dados (ex: "1d4 Reagentes Curativos Comuns") encontradas nos resultados.
+   * @param {ChatMessage} message - Mensagem original do sorteio da tabela
+   * @param {string[]} resultTexts - Textos dos resultados sorteados
+   * @param {RollTable|null} sourceTable - Tabela de origem
+   */
+  static async #processDiceRolls(message, resultTexts, sourceTable) {
+    const rollMode = this.#resolveRollMode(message);
+    const tableName = sourceTable ? sourceTable.name : "Tabela";
+    const shouldUpdateChat = game.settings.get(this.MODULE_ID, this.SETTING_DICE_UPDATE_CHAT) ?? true;
+
+    // Rastreia substituições para o cartão do chat
+    const replacements = [];
+
+    for (const text of resultTexts) {
+      const formulas = this.#parseDiceFormulas(text);
+      if (formulas.length === 0) continue;
+
+      for (const formula of formulas) {
+        try {
+          const roll = new Roll(formula);
+          await roll.evaluate();
+
+          // Cria descrição destacada substituindo a fórmula pelo total rolado
+          // Ex: "1d4 Reagentes Curativos Comuns" -> "<strong>3</strong> Reagentes Curativos Comuns"
+          const replacedDescription = text.replace(new RegExp(`\\b${formula}\\b`, "i"), `<strong>${roll.total}</strong>`);
+
+          console.log(`Rolagens Globais | 🎲 Rolagem de dados da tabela "${tableName}": ${formula} = ${roll.total}`);
+
+          await roll.toMessage({
+            speaker: message.speaker,
+            flavor: `<div class="rolagens-globais-badge"><i class="fas fa-dice"></i> ${tableName}: ${replacedDescription}</div>`,
+            flags: {
+              [this.MODULE_ID]: {
+                isExtraRoll: true,
+                isTableDiceRoll: true,
+                parentMessageId: message.id
+              }
+            }
+          }, { rollMode });
+
+          replacements.push({ formula, total: roll.total });
+        } catch (err) {
+          console.error(`Rolagens Globais | Erro ao rolar dados da tabela ("${formula}"):`, err);
+        }
+      }
+    }
+
+    // Se configurado, atualiza o cartão original da tabela no chat com o valor rolado
+    if (shouldUpdateChat && replacements.length > 0 && message.content && game.user.isGM) {
+      await this.#updateTableMessageWithRolls(message, replacements);
+    }
+  }
+
+  /**
+   * Atualiza o conteúdo HTML da mensagem original no chat para exibir os totais rolados no lugar de "Xdx".
+   * @param {ChatMessage} message
+   * @param {Array<{formula: string, total: number}>} replacements
+   */
+  static async #updateTableMessageWithRolls(message, replacements) {
+    try {
+      let content = message.content;
+      let modified = false;
+
+      for (const { formula, total } of replacements) {
+        // Substitui a fórmula dentro do texto do resultado por um chip de rolagem inline nativo
+        const regex = new RegExp(`\\b${formula}\\b`, "gi");
+        if (regex.test(content)) {
+          content = content.replace(regex, `<a class="inline-roll inline-result" data-mode="roll" data-formula="${formula}" title="${formula} (Rolado automaticamente)"><i class="fas fa-dice-d20"></i> ${total}</a>`);
+          modified = true;
+        }
+      }
+
+      if (modified) {
+        await message.update({ content });
+      }
+    } catch (err) {
+      console.warn("Rolagens Globais | Não foi possível atualizar o cartão da tabela no chat:", err);
+    }
+  }
+
+  /**
+   * Analisa um texto e extrai fórmulas de dados válidas (ex: "1d4", "1d2", "2d6+1", "[[/r 1d4]]").
+   * Ignora fórmulas que façam parte de gatilhos de subtabelas (ex: "role 1d20 na tabela...").
+   * @param {string} text
+   * @returns {string[]}
+   */
+  static #parseDiceFormulas(text) {
+    if (!text || typeof text !== "string") return [];
+
+    // 1. Remove menções a rolagens de subtabela (ex: "role 1d20 na tabela...")
+    const cleanText = text.replace(/(?:role|rolar|roll|jogar)\s+(\d+d\d+(?:\s*[+-]\s*\d+)?)\s+(?:na|no|em|on)\s+(?:uma\s+)?(?:tabela|table)/gi, "");
+
+    const formulas = [];
+
+    // 2. Extrai rolagens inline nativas do Foundry: [[/r 1d4]] ou [[1d4]]
+    const inlineRegex = /\[\[(?:\/r\s+)?(\d+d\d+(?:\s*[+-]\s*\d+)?)\]\]/gi;
+    let m;
+    while ((m = inlineRegex.exec(cleanText)) !== null) {
+      const f = m[1].replace(/\s+/g, "");
+      if (!formulas.includes(f)) {
+        formulas.push(f);
+      }
+    }
+
+    // 3. Extrai fórmulas livres de dados: 1d4, 1d2, 2d6+1, etc.
+    const freeRegex = /\b(\d+d\d+(?:\s*[+-]\s*\d+)?)\b/gi;
+    while ((m = freeRegex.exec(cleanText)) !== null) {
+      const f = m[1].replace(/\s+/g, "");
+      if (!formulas.includes(f)) {
+        formulas.push(f);
+      }
+    }
+
+    return formulas;
   }
 
   /**

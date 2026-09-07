@@ -157,6 +157,18 @@
       },
       "SubTableBadge": "Subtabela"
     },
+    "TableDice": {
+      "SettingEnabled": {
+        "Name": "Rolar Dados em Resultados de Tabelas",
+        "Hint": "Detecta automaticamente fórmulas como '1d4', '2d6', etc. nos resultados sorteados de tabelas e realiza a rolagem com dados 3D."
+      },
+      "SettingUpdateChat": {
+        "Name": "Atualizar Cartão do Chat com o Total Rolado",
+        "Hint": "Substitui o texto '1d4' pelo valor numérico rolado diretamente no cartão da tabela no chat."
+      },
+      "RollBadge": "Dados da Tabela",
+      "ConvertButton": "Converter Dados"
+    },
     "Chat": {
       "TriggeredBadge": "Rolagem Extra",
       "OriginalRoll": "Rolagem Original"

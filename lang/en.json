@@ -157,6 +157,18 @@
       },
       "SubTableBadge": "Subtable"
     },
+    "TableDice": {
+      "SettingEnabled": {
+        "Name": "Roll Dice in Table Results",
+        "Hint": "Automatically detects dice formulas like '1d4', '2d6', etc. in drawn table results and rolls them with 3D dice."
+      },
+      "SettingUpdateChat": {
+        "Name": "Update Chat Card with Rolled Total",
+        "Hint": "Replaces '1d4' with the rolled numeric total directly in the chat card."
+      },
+      "RollBadge": "Table Dice",
+      "ConvertButton": "Convert Dice"
+    },
     "Chat": {
       "TriggeredBadge": "Extra Roll",
       "OriginalRoll": "Original Roll"

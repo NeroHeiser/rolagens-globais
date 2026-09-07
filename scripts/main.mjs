@@ -75,6 +75,42 @@ Hooks.on("getItemSheetHeaderButtons", (sheet, buttons) => {
 });
 
 /**
+ * Adiciona botão no cabeçalho da ficha de configuração de Tabelas Roláveis para converter dados (Xdx -> [[/r Xdx]]).
+ */
+Hooks.on("getRollTableConfigHeaderButtons", (sheet, buttons) => {
+  if (!game.user.isGM) return;
+
+  buttons.unshift({
+    label: "Converter Dados",
+    class: "rolagens-globais-convert-dice-btn",
+    icon: "fas fa-dice-d20",
+    onclick: async () => {
+      const table = sheet.document;
+      if (!table) return;
+
+      let updatedCount = 0;
+      const updates = [];
+      for (const res of table.results) {
+        if (res.type === CONST.TABLE_RESULT_TYPES.TEXT && res.text) {
+          const newText = res.text.replace(/(?<!\[\[(?:\/r\s*)?)\b(\d+d\d+(?:\s*[+-]\s*\d+)?)\b(?!\]\])/gi, "[[/r $1]]");
+          if (newText !== res.text) {
+            updates.push({ _id: res.id, text: newText });
+            updatedCount++;
+          }
+        }
+      }
+
+      if (updates.length > 0) {
+        await table.updateEmbeddedDocuments("TableResult", updates);
+        ui.notifications.info(`Rolagens Globais: ${updatedCount} resultados da tabela "${table.name}" enriquecidos com rolagens inline!`);
+      } else {
+        ui.notifications.info(`Rolagens Globais: Nenhum dado avulso precisou ser convertido na tabela "${table.name}".`);
+      }
+    }
+  });
+});
+
+/**
  * Adiciona barra de controle rápida na Aba de Tabelas Roláveis da barra lateral.
  */
 Hooks.on("renderRollTableDirectory", (app, html, data) => {
