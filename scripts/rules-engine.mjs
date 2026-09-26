@@ -1,9 +1,10 @@
 import { getActiveAdapter } from "./adapters/index.mjs";
+import { BoundedSet } from "./domain/bounded-set.mjs";
 
 export class RulesEngine {
   static MODULE_ID = "rolagens-globais";
   static SETTING_RULES = "rules";
-  static #processedIds = new Set();
+  static #processedIds = new BoundedSet(500);
   static isExecuting = false;
 
   /**

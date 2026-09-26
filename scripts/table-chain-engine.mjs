@@ -1,3 +1,5 @@
+import { BoundedSet } from "./domain/bounded-set.mjs";
+
 /**
  * Reactive engine for detecting and automatically triggering chained subtables.
  * When the result of a RollTable contains references to other tables
@@ -12,7 +14,7 @@ export class TableChainEngine {
   static SETTING_DICE_ENABLED = "tableDiceEnabled";
   static SETTING_DICE_UPDATE_CHAT = "tableDiceUpdateChat";
 
-  static #processedIds = new Set();
+  static #processedIds = new BoundedSet(500);
   static #isExecuting = false;
 
   /**
