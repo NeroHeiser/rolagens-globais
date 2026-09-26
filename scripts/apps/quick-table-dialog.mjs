@@ -1,5 +1,6 @@
 import { MadnessEngine } from "../madness-engine.mjs";
 import { TableSerializer } from "../utils/table-serializer.mjs";
+import { DiceRangeCalculator } from "../domain/dice-range-calculator.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
@@ -87,7 +88,7 @@ export class QuickTableDialog extends HandlebarsApplicationMixin(ApplicationV2) 
       const presetButtons = createForm.querySelectorAll(".btn-dice-preset");
 
       const updateDistributionUI = () => {
-        const parsedItems = this.#parseLines(textarea?.value || "");
+        const parsedItems = DiceRangeCalculator.parseLines(textarea?.value || "");
         const count = parsedItems.length;
 
         if (lineCountSpan) {
@@ -100,7 +101,7 @@ export class QuickTableDialog extends HandlebarsApplicationMixin(ApplicationV2) 
         }
 
         const currentFormula = formulaInput?.value?.trim() || (count > 0 ? `1d${count}` : "1d6");
-        const { min, max } = QuickTableDialog.parseFormulaMinMax(currentFormula, count || 6);
+        const { min, max } = DiceRangeCalculator.parseFormulaMinMax(currentFormula, count || 6);
 
         // Atualiza a dica visual da distribuição de faixas
         if (distTextSpan) {
@@ -128,7 +129,7 @@ export class QuickTableDialog extends HandlebarsApplicationMixin(ApplicationV2) 
           btn.classList.add("active");
 
           if (die === "auto") {
-            const parsed = this.#parseLines(textarea?.value || "");
+            const parsed = DiceRangeCalculator.parseLines(textarea?.value || "");
             if (formulaInput) formulaInput.value = parsed.length > 0 ? `1d${parsed.length}` : "1d6";
           } else {
             if (formulaInput) formulaInput.value = die;
@@ -230,14 +231,14 @@ export class QuickTableDialog extends HandlebarsApplicationMixin(ApplicationV2) 
           tablesToCreate = TableSerializer.parseCSV(content);
         } else {
           // Arquivo de texto (.txt ou .md)
-          const lines = this.#parseLines(content);
+          const items = DiceRangeCalculator.parseLines(content);
           tablesToCreate = [{
             name: fileName.replace(/\.[^/.]+$/, ""),
-            formula: `1d${lines.length}`,
-            results: lines.map((l, i) => ({
+            formula: `1d${items.length}`,
+            results: items.map((item, i) => ({
               type: CONST.TABLE_RESULT_TYPES.TEXT,
-              text: l,
-              range: [i + 1, i + 1],
+              text: item.text,
+              range: item.explicitRange || [i + 1, i + 1],
               weight: 1,
               drawn: false
             })),
@@ -368,74 +369,13 @@ export class QuickTableDialog extends HandlebarsApplicationMixin(ApplicationV2) 
     }
   }
 
-  // --- Auxiliares de Criação de Texto & Cálculo de Faixas ---
-
-  /**
-   * Extrai os valores mínimo e máximo de uma fórmula (ex: 1d100 -> min: 1, max: 100).
-   * @param {string} formula
-   * @param {number} defaultMax
-   * @returns {{min: number, max: number}}
-   */
+  // Delegate formula, range calculation and line parsing to DiceRangeCalculator
   static parseFormulaMinMax(formula, defaultMax = 20) {
-    const clean = (formula || "").trim().toLowerCase();
-    const m = clean.match(/^(\d*)d(\d+)(?:\s*([+-])\s*(\d+))?$/);
-    if (m) {
-      const count = parseInt(m[1] || "1", 10);
-      const faces = parseInt(m[2], 10);
-      const sign = m[3];
-      const mod = m[4] ? parseInt(m[4], 10) : 0;
-      const min = count + (sign === "+" ? mod : sign === "-" ? -mod : 0);
-      const max = (count * faces) + (sign === "+" ? mod : sign === "-" ? -mod : 0);
-      return { min: Math.max(1, min), max: Math.max(1, max) };
-    }
-    return { min: 1, max: defaultMax };
+    return DiceRangeCalculator.parseFormulaMinMax(formula, defaultMax);
   }
 
-  /**
-   * Distribui uma quantidade N de opções proporcionalmente cobrindo toda a faixa do dado de min a max.
-   * Não deixa lacunas (buracos) nem sobreposições.
-   * @param {number} count - Total de opções
-   * @param {number} min - Valor mínimo do dado
-   * @param {number} max - Valor máximo do dado
-   * @returns {Array<[number, number]>}
-   */
   static calculateProportionalRanges(count, min, max) {
-    if (count <= 0) return [];
-    const span = max - min + 1;
-    const ranges = [];
-    for (let i = 0; i < count; i++) {
-      const start = min + Math.floor((i * span) / count);
-      const end = (i === count - 1)
-        ? max
-        : min + Math.floor(((i + 1) * span) / count) - 1;
-      ranges.push([start, Math.max(start, end)]);
-    }
-    return ranges;
-  }
-
-  #parseLines(rawText) {
-    return (rawText || "")
-      .split("\n")
-      .map(l => l.trim())
-      .filter(l => l.length > 0)
-      .map(l => {
-        // 1. Faixa numérica explícita (ex: "1-4: texto", "[1-4] texto", "1..4 texto", "01-05 - texto")
-        const rangeMatch = l.match(/^\[?(\d+)\s*(?:-|–|—|\.\.)\s*(\d+)\]?[:\-\)]?\s*(.*)$/);
-        if (rangeMatch) {
-          return {
-            explicitRange: [parseInt(rangeMatch[1], 10), parseInt(rangeMatch[2], 10)],
-            text: rangeMatch[3].trim()
-          };
-        }
-
-        // 2. Remove numeração simples de lista (ex: "1. ", "2 - ", "[3] ")
-        const cleanedText = l.replace(/^(\[\d+\]|\d+[\.\-\)]\s*)/, "").trim();
-        return {
-          explicitRange: null,
-          text: cleanedText || l
-        };
-      })
-      .filter(item => item.text.length > 0);
+    return DiceRangeCalculator.calculateProportionalRanges(count, min, max);
   }
 
   async #onFormSubmit(event) {
@@ -448,7 +388,7 @@ export class QuickTableDialog extends HandlebarsApplicationMixin(ApplicationV2) 
     const rawText = formData.get("rawText")?.toString() || "";
     const setTarget = formData.get("setTarget")?.toString() || "";
 
-    const parsedItems = this.#parseLines(rawText);
+    const parsedItems = DiceRangeCalculator.parseLines(rawText);
     if (parsedItems.length === 0) {
       ui.notifications.warn(game.i18n.localize("ROLAGENS_GLOBAIS.QuickTable.EmptyWarn"));
       return;
@@ -458,8 +398,8 @@ export class QuickTableDialog extends HandlebarsApplicationMixin(ApplicationV2) 
     const formula = customFormula || `1d${parsedItems.length}`;
 
     // Calcula a distribuição proporcional de faixas com base na fórmula escolhida
-    const { min, max } = QuickTableDialog.parseFormulaMinMax(formula, parsedItems.length);
-    const proportionalRanges = QuickTableDialog.calculateProportionalRanges(parsedItems.length, min, max);
+    const { min, max } = DiceRangeCalculator.parseFormulaMinMax(formula, parsedItems.length);
+    const proportionalRanges = DiceRangeCalculator.calculateProportionalRanges(parsedItems.length, min, max);
 
     const results = [];
     for (let i = 0; i < parsedItems.length; i++) {

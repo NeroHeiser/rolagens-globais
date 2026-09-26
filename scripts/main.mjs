@@ -4,6 +4,7 @@ import { TableChainEngine } from "./table-chain-engine.mjs";
 import { RulesManagerApp } from "./apps/rules-manager.mjs";
 import { QuickTableDialog } from "./apps/quick-table-dialog.mjs";
 import { ItemConfigDialog } from "./apps/item-config-dialog.mjs";
+import { DiceRangeCalculator } from "./domain/dice-range-calculator.mjs";
 import { getActiveAdapter } from "./adapters/index.mjs";
 
 const MODULE_ID = "rolagens-globais";
@@ -51,6 +52,7 @@ Hooks.once("ready", () => {
       MadnessEngine,
       TableChainEngine,
       QuickTableDialog,
+      DiceRangeCalculator,
       getActiveAdapter,
       openManager: () => new RulesManagerApp().render({ force: true }),
       openQuickTable: (options = {}) => new QuickTableDialog(options).render({ force: true })
