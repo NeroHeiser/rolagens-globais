@@ -86,7 +86,7 @@ https://raw.githubusercontent.com/NeroHeiser/rolagens-globais/main/module.json
 
 ---
 
-## 🧪 Testes Automatizados e Qualidade
+## Testes Automatizados e Qualidade
 
 O módulo conta com uma suíte de testes unitários sem dependências externas pesadas:
 ```bash

@@ -86,7 +86,7 @@ https://raw.githubusercontent.com/NeroHeiser/rolagens-globais/main/module.json
 
 ---
 
-## 🧪 Automated Testing and Quality
+## Automated Testing and Quality
 
 The module features a comprehensive, lightweight unit test suite with zero heavy external dependencies:
 ```bash
