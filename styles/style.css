@@ -553,27 +553,40 @@
   gap: 6px;
 }
 
-/* Formulários em Grid e Empilhados */
+/* Form inputs and stacked layouts */
+.rolagens-globais .form-group,
 .form-group-stacked {
   display: flex;
   flex-direction: column;
   gap: 5px;
   width: 100%;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   box-sizing: border-box;
 }
 
+.rolagens-globais .form-group:last-child,
 .form-group-stacked:last-child {
   margin-bottom: 0;
 }
 
+.rolagens-globais .form-group label,
 .form-group-stacked label {
-  font-size: 0.82rem;
+  font-size: 0.84rem;
   font-weight: 600;
-  color: #ddd;
+  color: #e5e5ec !important;
   margin: 0;
 }
 
+.rolagens-globais .form-group .form-fields {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.rolagens-globais input[type="text"],
+.rolagens-globais input[type="number"],
+.rolagens-globais select,
 .form-group-stacked input[type="text"],
 .form-group-stacked select {
   width: 100%;
@@ -581,35 +594,106 @@
   height: 32px;
   padding: 4px 10px;
   border-radius: 4px;
-  border: 1px solid #444;
-  background: rgba(0, 0, 0, 0.4);
-  color: #fff;
+  border: 1px solid #4a4a5a !important;
+  background: rgba(0, 0, 0, 0.45) !important;
+  color: #f0f0f5 !important;
   font-size: 0.88rem;
 }
 
+.rolagens-globais input[type="text"]::placeholder,
+.rolagens-globais input[type="number"]::placeholder {
+  color: #888899 !important;
+}
+
+.rolagens-globais input[type="text"]:focus,
+.rolagens-globais input[type="number"]:focus,
+.rolagens-globais select:focus,
 .form-group-stacked input[type="text"]:focus,
 .form-group-stacked select:focus {
-  border-color: #9d4edd;
+  border-color: #9d4edd !important;
   outline: none;
   box-shadow: 0 0 6px rgba(157, 78, 221, 0.5);
 }
 
-.field-hint {
-  font-size: 0.75rem;
-  color: #999;
-  font-style: italic;
-  margin-top: 2px;
+.rolagens-globais select option {
+  background-color: #1e1f2b !important;
+  color: #f0f0f5 !important;
 }
 
-.form-row-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
+.rolagens-globais p.notes,
+.rolagens-globais .field-hint {
+  font-size: 0.78rem;
+  color: #a8a8ba !important;
+  font-style: italic;
+  margin: 3px 0 0 0;
+  line-height: 1.35;
+}
+
+.rolagens-globais code {
+  background: rgba(0, 0, 0, 0.5);
+  color: #c77dff !important;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-family: monospace;
+}
+
+.rolagens-globais .checkbox-group label {
+  color: #e0e0ec !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 0.88rem;
+}
+
+.rolagens-globais input[type="checkbox"] {
+  accent-color: #9d4edd;
+  cursor: pointer;
+}
+
+.form-row-grid,
+.rolagens-globais .form-row {
+  display: flex;
+  gap: 12px;
   width: 100%;
   box-sizing: border-box;
 }
 
-/* Rodapé com Botões Fixos */
+.rolagens-globais .col-6 {
+  flex: 1;
+}
+
+/* Item Configuration Dialog */
+.rolagens-globais-item-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 20px;
+  box-sizing: border-box;
+}
+
+.rolagens-globais-item-dialog .item-header-preview {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.rolagens-globais-item-dialog .item-header-preview img {
+  border-radius: 4px;
+  border: 1px solid #555;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.rolagens-globais-item-dialog .item-header-preview h3 {
+  margin: 0;
+  color: #f0f0f5 !important;
+  font-size: 1.1rem;
+  border: none;
+}
+
+/* Dialog Footer Buttons */
 .dialog-buttons {
   flex-shrink: 0;
   display: flex;
@@ -657,26 +741,44 @@
   color: #fff;
 }
 
-/* --- Badges no Chat --- */
+/* Chat badges with high-contrast background and text for light and dark chat logs */
 .rolagens-globais-badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 3px 8px;
+  padding: 4px 10px;
   margin-bottom: 4px;
   border-radius: 4px;
-  background: rgba(230, 81, 0, 0.15);
-  border: 1px solid rgba(230, 81, 0, 0.4);
-  color: #ffb74d;
+  background: #241607 !important;
+  border: 1px solid #d97706 !important;
+  color: #fbbf24 !important;
   font-size: 0.85rem;
   font-weight: bold;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+.rolagens-globais-badge strong {
+  color: #ffffff !important;
+}
+
+.rolagens-globais-badge em {
+  color: #fde68a !important;
 }
 
 .rolagens-globais-madness-badge {
-  background: rgba(123, 44, 191, 0.2);
-  border: 1px solid rgba(157, 78, 221, 0.5);
-  color: #e0aaff;
+  background: #190d29 !important;
+  border: 1px solid #9d4edd !important;
+  color: #e0aaff !important;
   line-height: 1.4;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+.rolagens-globais-madness-badge strong {
+  color: #ffffff !important;
+}
+
+.rolagens-globais-madness-badge em {
+  color: #ddd6fe !important;
 }
 
 /* --- Criador Rápido de Tabelas (QuickTableDialog) --- */
