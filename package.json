@@ -1,0 +1,9 @@
+{
+  "name": "rolagens-globais",
+  "version": "1.0.1",
+  "description": "Global Extra Rolls module for Foundry VTT",
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/**/*.test.mjs"
+  }
+}
