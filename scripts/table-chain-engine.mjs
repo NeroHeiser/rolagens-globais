@@ -111,7 +111,7 @@ export class TableChainEngine {
 
     this.#processedIds.add(message.id);
 
-    // 6. Recupera a tabela de origem, se houver
+    // Retrieve source table if present
     const sourceTableId = message.flags?.core?.RollTable;
     let sourceTable = null;
     if (sourceTableId) {
@@ -125,17 +125,17 @@ export class TableChainEngine {
       }
     }
 
-    // 7. Coleta os textos dos resultados sorteados
+    // Collect text content from drawn results
     const resultTexts = this.#extractResultTexts(message, sourceTable);
     if (resultTexts.length === 0) return;
 
-    // 8. Rolagem Automática de Dados ("Xdx") encontrados nos resultados
+    // Automatic dice roll ("Xdx") found within results
     const isDiceEnabled = game.settings.get(this.MODULE_ID, this.SETTING_DICE_ENABLED) ?? true;
     if (isDiceEnabled) {
       await this.#processDiceRolls(message, resultTexts, sourceTable);
     }
 
-    // 9. Extrai referências a subtabelas em cada texto
+    // Extract subtable references from each result text
     const candidateNames = new Set();
     for (const text of resultTexts) {
       const names = this.#parseTableReferences(text);
@@ -146,7 +146,7 @@ export class TableChainEngine {
 
     if (candidateNames.size === 0) return;
 
-    // 9. Localiza os documentos das tabelas no mundo ou compêndios
+    // Resolve table documents in world or compendiums
     const tablesToDraw = [];
     for (const query of candidateNames) {
       const found = await this.findTable(query, sourceTable);
@@ -157,7 +157,7 @@ export class TableChainEngine {
 
     if (tablesToDraw.length === 0) return;
 
-    // 10. Executa o sorteio de cada subtabela encontrada
+    // Execute draw for each resolved subtable
     const delayMs = game.settings.get(this.MODULE_ID, this.SETTING_DELAY) || 600;
     const rollMode = this.#resolveRollMode(message);
 
@@ -268,15 +268,15 @@ export class TableChainEngine {
   }
 
   /**
-   * Analisa um texto e extrai fórmulas de dados válidas (ex: "1d4", "1d2", "2d6+1", "[[/r 1d4]]").
-   * Ignora fórmulas que façam parte de gatilhos de subtabelas (ex: "role 1d20 na tabela...").
+   * Analyzes text and extracts valid dice formulas (e.g. "1d4", "1d2", "2d6+1", "[[/r 1d4]]").
+   * Ignores formulas that are part of subtable roll triggers (e.g. "role 1d20 na tabela...").
    * @param {string} text
    * @returns {string[]}
    */
   static #parseDiceFormulas(text) {
     if (!text || typeof text !== "string") return [];
 
-    // 1. Remove menções a rolagens de subtabela (ex: "role 1d20 na tabela...")
+    // Strip subtable roll triggers (e.g. "role 1d20 na tabela...")
     const cleanText = text.replace(/(?:role|rolar|roll|jogar)\s+(\d+d\d+(?:\s*[+-]\s*\d+)?)\s+(?:na|no|em|on)\s+(?:uma\s+)?(?:tabela|table)/gi, "");
 
     const formulas = [];

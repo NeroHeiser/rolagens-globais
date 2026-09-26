@@ -134,7 +134,7 @@ export class QuickTableDialog extends HandlebarsApplicationMixin(ApplicationV2) 
         });
       });
 
-      // Listener para digitação manual na fórmula
+      // Listener for manual formula input
       if (formulaInput) {
         formulaInput.addEventListener("input", () => {
           const val = formulaInput.value.trim().toLowerCase();
@@ -162,7 +162,7 @@ export class QuickTableDialog extends HandlebarsApplicationMixin(ApplicationV2) 
       updateDistributionUI();
     }
 
-    // Configuração da Aba 2: Mudança de formato de exportação
+    // Tab 2 setup: export format change
     const formatCards = this.element.querySelectorAll(".format-card");
     formatCards.forEach(card => {
       card.addEventListener("click", () => {
@@ -177,7 +177,7 @@ export class QuickTableDialog extends HandlebarsApplicationMixin(ApplicationV2) 
       });
     });
 
-    // Configuração da Aba 3: Drag & Drop e Leitura de Arquivo
+    // Tab 3 setup: drag & drop and file reader
     const dropZone = this.element.querySelector("#file-drop-zone");
     const fileInput = this.element.querySelector(".import-file-input");
 

@@ -5,7 +5,8 @@ import { Pf2eAdapter } from "./pf2e-adapter.mjs";
 import { DaggerheartAdapter } from "./daggerheart-adapter.mjs";
 
 /**
- * Retorna o adaptador apropriado com base no sistema atualmente carregado no Foundry VTT.
+ * Returns the appropriate adapter based on the system currently running in Foundry VTT.
+ * Falls back to GenericAdapter if the system has no dedicated adapter.
  * @returns {BaseAdapter}
  */
 export function getActiveAdapter() {

@@ -175,7 +175,7 @@ export class TableSerializer {
     if (typeof saveDataToFile === "function") {
       saveDataToFile(data, type, filename);
     } else {
-      // Fallback para navegadores / testes
+      // Fallback for browser/test environments
       const blob = new Blob([data], { type });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -189,7 +189,9 @@ export class TableSerializer {
   }
 
   /**
-   * Auxiliar para quebra de linha CSV respeitando aspas duplas.
+   * Helper for splitting a CSV line while respecting quoted strings.
+   * @param {string} line
+   * @returns {string[]}
    */
   static #parseCSVLine(line) {
     const result = [];
