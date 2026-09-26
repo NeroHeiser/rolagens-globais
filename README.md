@@ -1,80 +1,104 @@
-# Rolagens Globais (Global Extra Rolls)
+# Global Extra Rolls (Rolagens Globais)
 
-Módulo para **Foundry Virtual Tabletop (V12 e V14)** que automatiza a execução de rolagens extras — como **Tabelas Roláveis (RollTable)**, **Fórmulas Livres de Dados** ou **Macros** — acionadas por gatilhos de dados e ações de jogadores e mestres.
+[English](README.md) | [Português (Brasil)](README.pt-BR.md)
 
----
+[![Foundry VTT](https://img.shields.io/badge/Foundry%20VTT-v12%20|%20v14-orange.svg)](https://foundryvtt.com/)
+[![Node.js](https://img.shields.io/badge/node-%3E%3D20-green.svg)](https://nodejs.org/)
+[![Tests](https://img.shields.io/badge/tests-35%20passed-brightgreen.svg)](test/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-## ✨ Principais Recursos
-
-- **100% Automático com Prevenção de Loop:** Ao identificar uma condição (ex: 1 natural ou dados iguais), o módulo dispara a rolagem secundária imediatamente sem risco de recursão infinita.
-- **Arquitetura de Adaptadores Inteligentes:**
-  - **Dungeons & Dragons 5e (`dnd5e`):** Reconhece ataques com armas, magias, testes de resistência, perícias e salvaguardas contra a morte; avalia 1 e 20 naturais automaticamente.
-  - **Tormenta20 (`tormenta20`):** Reconhece testes de ataque, perícias e resistências (Fortitude/Reflexos/Vontade), com suporte a falha crítica e margem de ameaça.
-  - **Pathfinder 2e (`pf2e`):** Suporte nativo aos 4 graus de sucesso (*Falha Crítica*, *Falha*, *Sucesso*, *Sucesso Crítico*) e tipos de ação como Golpes (*Strikes*).
-  - **Daggerheart (`daggerheart`):** Suporte à mecânica central de *Duality Dice (2d12)* — detecta Críticos (duplas/dados iguais), rolagens com Medo (*Fear > Hope*) e rolagens com Esperança (*Hope > Fear*).
-  - **Modo Genérico Universal:** Funciona em qualquer outro sistema por inspeção direta das faces dos dados, valores mínimos/máximos, totais e palavras-chave.
-- **Painel Central Moderno (ApplicationV2):** Interface elegante e responsiva para gerenciar regras, ativar/desativar com um clique e carregar regras recomendadas instantaneamente.
-- **3 Tipos de Saída / Efeitos Extras:**
-  1. **Tabelas Roláveis (`RollTable`):** Sorteia e publica automaticamente o resultado de qualquer tabela do mundo.
-  2. **Fórmulas de Dados (`Roll`):** Rola dados extras (ex: `1d100`, `2d6[fogo]`, `1d4`).
-- **🌀 Regras do Mundo (Pré-Ataque / Modo Loucura):**
-  - Intercepta ações e ataques antes do d20 ser rolado, substituindo a ação por um sorteio de tabela rolável.
-  - **Tabelas Independentes:** Separação entre tabela de **Ataques Físicos** (corpo a corpo e à distância) e **Magias/Conjurações**.
-  - Nome do modo 100% customizável pelo Mestre (ex: *Regras do Mundo*, *Modo Loucura*, *Magia Selvagem*, *Névoas de Ravenloft*).
-  - Botão de ativação rápida na barra lateral de tabelas.
-- **⚡ Central de Tabelas Roláveis:**
-  - **Criador Rápido:** Cole qualquer lista de texto (1 opção por linha) para criar uma tabela pronta em segundos.
-  - **Seletor de Dados & Distribuição Proporcional:** Escolha dados clássicos (`d100`, `d20`, `d12`, `d10`, `d8`, `d6` ou fórmula livre). Ao escolher `d100` com 27 opções, por exemplo, o módulo calcula faixas perfeitas de 1 a 100 sem lacunas nem sobreposições.
-  - **Exportação Universal:** Exporte suas tabelas em **JSON** (para outros mundos do Foundry), **CSV** (para Excel, Google Planilhas e Roll20) ou **Markdown** (para Obsidian e Notion).
-  - **Importação com 1 Clique:** Arraste e solte arquivos `.json`, `.csv` ou `.txt` para recriar tabelas instantaneamente no mundo.
-- **🔗 Subtabelas Automáticas (`TableChainEngine`):**
-  - Reconhece quando um resultado de tabela cita outra (ex: `tabela: Selvagem 17`, `role na tabela de Magia Selvagem 57.`, `@UUID[RollTable...]`).
-  - Rola a subtabela no chat automaticamente com animação de dados 3D no Dice So Nice.
-  - Proteção anti-loop de até 5 níveis e autoridade de mestre para partidas multiplayer.
-- **Controle de Visibilidade:** Pública (para todos), Sussurrada ao Mestre, Rolagem Cega ou mantendo a visibilidade da rolagem original.
-- **Suporte Híbrido nos Itens:** Botão integrado no cabeçalho das fichas de itens para permitir que armas ou itens específicos ignorem regras globais ou interceptações.
+A **Foundry Virtual Tabletop (V12 and V14)** module that automates extra rolls — such as **RollTables (`RollTable`)**, **Free-form Dice Formulas**, or **Macros** — triggered by roll outcomes and actions from players and Gamemasters.
 
 ---
 
-## 🚀 Como Usar
+## 🎯 Highlights
 
-### 1. Abrindo o Gerenciador de Regras
-Existem duas formas simples de acessar o painel:
-1. Clique no botão de dado **(<i class="fas fa-dice-d20"></i>)** no topo da aba do **Chat** (exclusivo para o Mestre).
-2. Acesse `Configurações do Jogo` -> `Configurações de Módulos` -> `Rolagens Globais` -> `Abrir Gerenciador`.
-
-### 2. Carregando Regras Recomendadas
-No painel de regras, clique no botão **`⚡ Carregar Regras Recomendadas`**. O módulo identificará o sistema ativo (ex: D&D 5e, T20, PF2e ou Daggerheart) e criará regras pré-configuradas de falhas e acertos críticos automaticamente.
-
-### 3. Criando uma Regra Personalizada
-1. Clique em **`+ Nova Regra`**.
-2. Defina o nome da regra e o tipo de ação (Ataque, Perícia, etc.).
-3. Escolha a condição de ativação (ex: 1 Natural, Sucesso Crítico, Face do dado, soma total).
-4. Selecione o que deve acontecer:
-   - Escolha uma **Tabela Rolável** existente no seu mundo.
-   - Ou digite uma **Fórmula de Dados** (ex: `1d100`).
-   - Ou escolha uma **Macro** para rodar efeitos visuais, sonoros ou condições.
-5. Defina a visibilidade da mensagem no chat e clique em **Salvar Regra**.
-
-### 4. Configuração Individual em Itens (Modo Híbrido)
-Ao abrir a ficha de qualquer item (uma espada mágica, por exemplo), clique no botão **Rolagens Extras** no cabeçalho da janela para marcar opções exclusivas, como *"Ignorar regras globais para este item"*.
+- **Intelligent Automation with Infinite Loop Protection:** Immediate dispatch of tables, formulas, or macros with zero risk of infinite recursion (configurable max recursion depth).
+- **Polymorphic System Adapter Architecture:** Dedicated support for D&D 5e, Tormenta20, Pathfinder 2e, and Daggerheart, with a universal generic fallback for any d20 or dice-pool system.
+- **Modern Management Interface (ApplicationV2):** Responsive UI for rule creation, 1-click recommended presets, and quick toggles.
+- **World Rules Mode (Madness Mode / Pre-Attack Interception):** Optional pre-roll interception that substitutes standard actions with sanity tables or setting effects for physical and magical attacks.
+- **Complete RollTable Hub:** Quick text-paste table generator, gapless proportional dice range calculator, and bi-directional JSON, CSV, and Markdown serialization.
+- **Chained Subtables (`TableChainEngine`):** Automatic detection and drawing of subtable references and inline roll formulas from table results with 3D dice animation (Dice So Nice).
 
 ---
 
-## 🛠️ Instalação
+## 🧩 Feature and Domain Tables
 
-Copie a pasta `rolagens-globais` para o diretório de dados do Foundry:
+### RPG System Adapters
+
+| Adapter | System | Supported Triggers & Mechanics |
+| :--- | :--- | :--- |
+| `Dnd5eAdapter` | D&D 5e (`dnd5e`) | Weapon and spell attacks, ability checks, skill checks, saving throws, and death saves (natural 1 and 20). |
+| `Tormenta20Adapter` | Tormenta20 (`tormenta20`) | Attack rolls, skill tests, saving throws (Fortitude, Reflexes, Will), fumbles, and expanded threat ranges. |
+| `Pf2eAdapter` | Pathfinder 2e (`pf2e`) | Native 4 degrees of success (*Critical Failure*, *Failure*, *Success*, *Critical Success*), Strikes, and roll contexts. |
+| `DaggerheartAdapter` | Daggerheart (`daggerheart`) | *Duality Dice (2d12)* mechanics: Hope rolls (*Hope > Fear*), Fear rolls (*Fear > Hope*), and Criticals (matching pairs). |
+| `GenericAdapter` | Universal / Others | Minimum/maximum die faces, explicit target values, total sums, and flavor/content keywords. |
+
+### Core Engines and Domain Services
+
+| Module / Service | Architectural Role | Description |
+| :--- | :--- | :--- |
+| `RulesEngine` | Primary Dispatcher | Intercepts chat roll messages, evaluates matching conditions via the active system adapter, and triggers tables, formulas, or macros. |
+| `MadnessEngine` | Pre-Attack Rules | Intercepts actions prior to rolls according to target type (physical or spell), redirecting to designated roll tables. |
+| `TableChainEngine` | Chained Subtables | Inspects drawn results for subtable references and inline dice formulas, triggering chained draws recursively up to depth limit. |
+| `DiceRangeCalculator` | Domain Service | Calculates formula boundaries, distributes proportional continuous ranges without gaps, and parses structured text lines. |
+| `BoundedSet` | Domain Data Structure | Fixed-capacity ID cache with O(1) LRU eviction policy, preventing memory leaks during long gaming sessions. |
+| `TableSerializer` | Utility Service | Bi-directional serialization of RollTables to portable formats: native JSON, CSV spreadsheets, and Markdown tables. |
+
+---
+
+## 🏛️ Architecture & Interfaces
+
+The module strictly enforces **SOLID** principles and layer separation:
+- **Presentation Layer:** Built on Foundry's `ApplicationV2` API and `HandlebarsApplicationMixin` (`RulesManager`, `RuleDialog`, `QuickTableDialog`).
+- **Pure Domain Layer:** Decoupled domain services (`DiceRangeCalculator`, `BoundedSet`) without DOM or external global dependencies for maximum testability.
+- **Public API Exposure:** All core engines, domain classes, and utilities are available globally via `game.modules.get("rolagens-globais").api`.
+
+---
+
+## 🚀 How to Use
+
+### 1. Opening the Management Panel
+- Click the dice icon in the top header of the **Chat Log** (GM only).
+- Or navigate to `Game Settings` -> `Module Settings` -> `Rolagens Globais` -> `Open Manager`.
+
+### 2. Loading Recommended Rules
+In the rules manager, click **`⚡ Load Recommended Rules`**. The module automatically detects your active game system and provisions critical hit and fumble rules.
+
+### 3. Quick Table Creation
+1. Open the Rollable Tables sidebar directory and click the **Lightning Bolt (`⚡`)** button.
+2. Paste any list of text options (one item per line).
+3. Select your target dice formula (e.g. `1d100` or `1d20`). The system computes continuous, gapless ranges automatically.
+4. Click **Create RollTable**.
+
+---
+
+## 🛠️ Installation
+
+Copy the `rolagens-globais` folder into your Foundry data directory:
 ```text
 <FoundryData>/Data/modules/rolagens-globais
 ```
-Ou instale pelo manifesto:
+Or install via the manifest URL:
 ```text
 https://raw.githubusercontent.com/NeroHeiser/rolagens-globais/main/module.json
 ```
 
 ---
 
-## 🧑‍💻 Autor
+## 🧪 Automated Testing and Quality
 
-- **Lopes** (GitHub: [@NeroHeiser](https://github.com/NeroHeiser))
-- Licença: MIT
+The module features a comprehensive, lightweight unit test suite with zero heavy external dependencies:
+```bash
+# Run the complete test suite
+npm test
+```
+The suite verifies system adapters, mathematical dice range distributions, RFC 4180 CSV serialization, and `BoundedSet` capacity constraints.
+
+---
+
+## 📄 Compatibility, License, and Author
+
+- **Foundry VTT:** Compatibility verified for v12 and v14.
+- **Author:** Lopes ([@NeroHeiser](https://github.com/NeroHeiser))
+- **License:** MIT
