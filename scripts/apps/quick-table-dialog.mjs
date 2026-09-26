@@ -5,10 +5,10 @@ import { DiceRangeCalculator } from "../domain/dice-range-calculator.mjs";
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
 /**
- * Central de Tabelas Roláveis:
- * 1. Criador Rápido por Texto
- * 2. Exportação para JSON, CSV e Markdown
- * 3. Importação de Arquivos entre mundos e programas
+ * RollTables Hub:
+ * 1. Quick text-based creator
+ * 2. Export to JSON, CSV, and Markdown
+ * 3. File import across worlds and tools
  */
 export class QuickTableDialog extends HandlebarsApplicationMixin(ApplicationV2) {
   constructor(options = {}) {
@@ -54,7 +54,6 @@ export class QuickTableDialog extends HandlebarsApplicationMixin(ApplicationV2) 
   async _prepareContext(options) {
     const modeName = MadnessEngine.getModeName();
     
-    // Lista de tabelas existentes no mundo para a aba de exportação
     const worldTables = game.tables.map(t => ({
       id: t.id,
       name: t.name,
@@ -76,7 +75,6 @@ export class QuickTableDialog extends HandlebarsApplicationMixin(ApplicationV2) 
   _onRender(context, options) {
     super._onRender(context, options);
 
-    // Configuração da Aba 1: Criador Rápido
     const createForm = this.element.querySelector(".quick-table-create-form");
     if (createForm) {
       createForm.addEventListener("submit", (e) => this.#onFormSubmit(e));
@@ -95,7 +93,6 @@ export class QuickTableDialog extends HandlebarsApplicationMixin(ApplicationV2) 
           lineCountSpan.textContent = count;
         }
 
-        // Se o modo automático estiver ativo, atualiza o formulaInput
         if (this.selectedDie === "auto" && formulaInput) {
           formulaInput.value = count > 0 ? `1d${count}` : "1d6";
         }
@@ -103,22 +100,20 @@ export class QuickTableDialog extends HandlebarsApplicationMixin(ApplicationV2) 
         const currentFormula = formulaInput?.value?.trim() || (count > 0 ? `1d${count}` : "1d6");
         const { min, max } = DiceRangeCalculator.parseFormulaMinMax(currentFormula, count || 6);
 
-        // Atualiza a dica visual da distribuição de faixas
         if (distTextSpan) {
           if (count === 0) {
             distTextSpan.textContent = game.i18n.localize("ROLAGENS_GLOBAIS.QuickTable.DistributionDefault");
           } else if (max < count) {
-            distTextSpan.innerHTML = `<span style="color: #ff9e00;"><i class="fas fa-exclamation-triangle"></i> Atenção: O dado <strong>${currentFormula}</strong> tem ${max} valores para ${count} opções (${count - max} opções não seriam sorteadas).</span>`;
+            distTextSpan.innerHTML = `<span style="color: #ff9e00;"><i class="fas fa-exclamation-triangle"></i> Warning: Formula <strong>${currentFormula}</strong> has ${max} values for ${count} options (${count - max} options will not be rolled).</span>`;
           } else if (max === count && min === 1) {
-            distTextSpan.innerHTML = `<span><i class="fas fa-check-circle" style="color: #4caf50;"></i> Distribuição 1 para 1: <strong>${currentFormula}</strong> (${count} opções, cada uma de 1 a ${max}).</span>`;
+            distTextSpan.innerHTML = `<span><i class="fas fa-check-circle" style="color: #4caf50;"></i> 1-to-1 distribution: <strong>${currentFormula}</strong> (${count} options, each from 1 to ${max}).</span>`;
           } else {
             const avgSpan = ((max - min + 1) / count).toFixed(1);
-            distTextSpan.innerHTML = `<span><i class="fas fa-chart-pie" style="color: #64b5f6;"></i> Distribuição proporcional: <strong>${currentFormula}</strong> (${count} opções cobrem de ${min} a ${max}, ~${avgSpan} valores por opção).</span>`;
+            distTextSpan.innerHTML = `<span><i class="fas fa-chart-pie" style="color: #64b5f6;"></i> Proportional distribution: <strong>${currentFormula}</strong> (${count} options cover ${min} to ${max}, ~${avgSpan} values per option).</span>`;
           }
         }
       };
 
-      // Listener para botões de dados predefinidos
       presetButtons.forEach(btn => {
         btn.addEventListener("click", (e) => {
           e.preventDefault();
@@ -213,7 +208,7 @@ export class QuickTableDialog extends HandlebarsApplicationMixin(ApplicationV2) 
   }
 
   /**
-   * Processa o arquivo selecionado para importação e exibe prévia.
+   * Processes the selected file for import and displays preview.
    */
   #handleFileLoad(file) {
     const reader = new FileReader();
@@ -230,7 +225,7 @@ export class QuickTableDialog extends HandlebarsApplicationMixin(ApplicationV2) 
         } else if (ext === "csv") {
           tablesToCreate = TableSerializer.parseCSV(content);
         } else {
-          // Arquivo de texto (.txt ou .md)
+          // Text file (.txt or .md)
           const items = DiceRangeCalculator.parseLines(content);
           tablesToCreate = [{
             name: fileName.replace(/\.[^/.]+$/, ""),
@@ -248,39 +243,38 @@ export class QuickTableDialog extends HandlebarsApplicationMixin(ApplicationV2) 
         }
 
         if (!tablesToCreate || tablesToCreate.length === 0) {
-          throw new Error("Nenhuma tabela válida encontrada no arquivo.");
+          throw new Error("No valid tables found in file.");
         }
 
         this.pendingImportData = tablesToCreate;
 
-        // Exibe a prévia no modal
         const previewBox = this.element.querySelector(".import-preview-box");
         const fileNameLabel = this.element.querySelector(".file-name-label");
         const previewContent = this.element.querySelector(".preview-content");
         const importBtn = this.element.querySelector(".btn-import-trigger");
 
         if (previewBox && fileNameLabel && previewContent && importBtn) {
-          fileNameLabel.textContent = `${fileName} (${tablesToCreate.length} tabela(s) detectada(s))`;
+          fileNameLabel.textContent = `${fileName} (${tablesToCreate.length} table(s) detected)`;
           previewContent.innerHTML = tablesToCreate.map(t => `
             <div class="preview-table-item">
-              <strong>${t.name}</strong> <span>(${t.results?.length || t.results?.size || 0} resultados, fórmula: ${t.formula || "1d20"})</span>
+              <strong>${t.name}</strong> <span>(${t.results?.length || t.results?.size || 0} results, formula: ${t.formula || "1d20"})</span>
             </div>
           `).join("");
           previewBox.style.display = "block";
           importBtn.removeAttribute("disabled");
         }
 
-        ui.notifications.info(`Arquivo "${fileName}" carregado! Clique em "Importar Tabelas" para salvar no mundo.`);
+        ui.notifications.info(`File "${fileName}" loaded! Click "Import Tables" to import into the world.`);
       } catch (err) {
-        console.error("Rolagens Globais | Erro ao ler arquivo:", err);
-        ui.notifications.error(`Erro ao processar arquivo: ${err.message}`);
+        console.error("Rolagens Globais | Error reading file:", err);
+        ui.notifications.error(`Error processing file: ${err.message}`);
       }
     };
 
     reader.readAsText(file);
   }
 
-  // --- Ações do Hub ---
+  // --- Hub Actions ---
 
   static #onSetTab(event, target) {
     const tab = target.dataset.tab;
@@ -310,12 +304,12 @@ export class QuickTableDialog extends HandlebarsApplicationMixin(ApplicationV2) 
   }
 
   /**
-   * Executa a exportação das tabelas selecionadas no formato escolhido.
+   * Executes export of selected tables in the chosen format.
    */
   static #onDoExport(event, target) {
     const checkedBoxes = Array.from(this.element.querySelectorAll(".export-table-checkbox:checked"));
     if (checkedBoxes.length === 0) {
-      ui.notifications.warn("Por favor, selecione ao menos uma tabela para exportar.");
+      ui.notifications.warn("Please select at least one table to export.");
       return;
     }
 
@@ -323,40 +317,40 @@ export class QuickTableDialog extends HandlebarsApplicationMixin(ApplicationV2) 
     const tables = selectedIds.map(id => game.tables.get(id)).filter(Boolean);
 
     if (tables.length === 0) {
-      ui.notifications.warn("Nenhuma tabela válida foi encontrada.");
+      ui.notifications.warn("No valid tables were found.");
       return;
     }
 
     const timestamp = new Date().toISOString().slice(0, 10);
-    const baseName = tables.length === 1 ? tables[0].name.slugify() : `tabelas-exportadas-${timestamp}`;
+    const baseName = tables.length === 1 ? tables[0].name.slugify() : `exported-tables-${timestamp}`;
 
     if (this.exportFormat === "json") {
       const data = TableSerializer.exportToJSON(tables);
       TableSerializer.triggerDownload(data, "application/json", `${baseName}.json`);
-      ui.notifications.info(`${tables.length} tabela(s) exportada(s) como JSON com sucesso!`);
+      ui.notifications.info(`Successfully exported ${tables.length} table(s) as JSON!`);
     } else if (this.exportFormat === "csv") {
       const data = TableSerializer.exportToCSV(tables);
       TableSerializer.triggerDownload(data, "text/csv;charset=utf-8;", `${baseName}.csv`);
-      ui.notifications.info(`${tables.length} tabela(s) exportada(s) como Planilha CSV com sucesso!`);
+      ui.notifications.info(`Successfully exported ${tables.length} table(s) as CSV!`);
     } else if (this.exportFormat === "md") {
       const data = TableSerializer.exportToMarkdown(tables);
       TableSerializer.triggerDownload(data, "text/markdown;charset=utf-8;", `${baseName}.md`);
-      ui.notifications.info(`${tables.length} tabela(s) exportada(s) como Markdown com sucesso!`);
+      ui.notifications.info(`Successfully exported ${tables.length} table(s) as Markdown!`);
     }
   }
 
   /**
-   * Executa a importação dos dados processados para o mundo.
+   * Executes import of processed tables into the world.
    */
   static async #onDoImport(event, target) {
     if (!this.pendingImportData || this.pendingImportData.length === 0) {
-      ui.notifications.warn("Nenhum dado pendente para importação.");
+      ui.notifications.warn("No pending data to import.");
       return;
     }
 
     try {
       const createdTables = await RollTable.createDocuments(this.pendingImportData);
-      ui.notifications.info(`🎉 ${createdTables.length} tabela(s) importada(s) com sucesso para o mundo!`);
+      ui.notifications.info(`Successfully imported ${createdTables.length} table(s) into the world!`);
 
       if (typeof this.onCreated === "function") {
         this.onCreated(createdTables);
@@ -364,12 +358,12 @@ export class QuickTableDialog extends HandlebarsApplicationMixin(ApplicationV2) 
 
       this.close();
     } catch (err) {
-      console.error("Rolagens Globais | Erro ao importar tabelas:", err);
-      ui.notifications.error(`Erro ao salvar tabelas no mundo: ${err.message}`);
+      console.error("Rolagens Globais | Error importing tables:", err);
+      ui.notifications.error(`Error saving tables to world: ${err.message}`);
     }
   }
 
-  // Delegate formula, range calculation and line parsing to DiceRangeCalculator
+  // Delegate formula and range calculation to DiceRangeCalculator
   static parseFormulaMinMax(formula, defaultMax = 20) {
     return DiceRangeCalculator.parseFormulaMinMax(formula, defaultMax);
   }
@@ -383,7 +377,7 @@ export class QuickTableDialog extends HandlebarsApplicationMixin(ApplicationV2) 
     const form = event.currentTarget;
     const formData = new FormData(form);
 
-    const name = formData.get("name")?.toString().trim() || "Nova Tabela Rolável";
+    const name = formData.get("name")?.toString().trim() || "New RollTable";
     const description = formData.get("description")?.toString().trim() || "";
     const rawText = formData.get("rawText")?.toString() || "";
     const setTarget = formData.get("setTarget")?.toString() || "";
@@ -397,7 +391,6 @@ export class QuickTableDialog extends HandlebarsApplicationMixin(ApplicationV2) 
     const customFormula = formData.get("formula")?.toString().trim();
     const formula = customFormula || `1d${parsedItems.length}`;
 
-    // Calcula a distribuição proporcional de faixas com base na fórmula escolhida
     const { min, max } = DiceRangeCalculator.parseFormulaMinMax(formula, parsedItems.length);
     const proportionalRanges = DiceRangeCalculator.calculateProportionalRanges(parsedItems.length, min, max);
 
@@ -460,15 +453,15 @@ export class QuickTableDialog extends HandlebarsApplicationMixin(ApplicationV2) 
       replacement: true
     });
 
-    ui.notifications.info(`Tabela "${createdTable.name}" criada com sucesso com ${results.length} resultados (${formula})!`);
+    ui.notifications.info(`Table "${createdTable.name}" created successfully with ${results.length} results (${formula})!`);
 
     const modeName = MadnessEngine.getModeName();
     if (setTarget === "physical") {
       await MadnessEngine.saveConfig({ physicalTableId: createdTable.id });
-      ui.notifications.info(`Tabela "${createdTable.name}" definida para Ataques Físicos em "${modeName}"!`);
+      ui.notifications.info(`Table "${createdTable.name}" assigned to Physical Attacks in "${modeName}"!`);
     } else if (setTarget === "magic") {
       await MadnessEngine.saveConfig({ magicTableId: createdTable.id });
-      ui.notifications.info(`Tabela "${createdTable.name}" definida para Magias em "${modeName}"!`);
+      ui.notifications.info(`Table "${createdTable.name}" assigned to Spells in "${modeName}"!`);
     }
 
     if (typeof this.onCreated === "function") {

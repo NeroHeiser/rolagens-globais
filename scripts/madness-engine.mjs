@@ -5,7 +5,7 @@ export class MadnessEngine {
   static isExecuting = false;
 
   /**
-   * Registra as configurações do Modo de Interceptação no Foundry VTT.
+   * Registers interception mode settings in Foundry VTT.
    */
   static registerSettings() {
     game.settings.register(this.MODULE_ID, this.SETTING_ENABLED, {
@@ -24,21 +24,21 @@ export class MadnessEngine {
       config: false,
       type: Object,
       default: {
-        customName: "Regras do Mundo",
+        customName: "World Rules",
         physicalTableId: "",
         magicTableId: "",
         tableId: "",
         interceptMelee: true,
         interceptRanged: true,
         interceptSpells: true,
-        flavor: "🌀 {mode}: {actor} tentou usar {item}, mas as regras do mundo interferiram!",
+        flavor: "{mode}: {actor} tried to use {item}, but the action was intercepted!",
         visibility: "public"
       }
     });
   }
 
   /**
-   * Verifica se o modo está ativo.
+   * Checks if interception mode is active.
    * @returns {boolean}
    */
   static isEnabled() {
@@ -46,7 +46,7 @@ export class MadnessEngine {
   }
 
   /**
-   * Retorna o nome configurado para o modo (ex: "Regras do Mundo", "Modo Loucura", etc.).
+   * Returns configured mode display name.
    * @returns {string}
    */
   static getModeName() {
@@ -55,7 +55,7 @@ export class MadnessEngine {
   }
 
   /**
-   * Alterna o estado ativo/inativo do modo.
+   * Toggles enabled state of interception mode.
    * @returns {Promise<boolean>}
    */
   static async toggleEnabled() {
@@ -64,35 +64,35 @@ export class MadnessEngine {
     const modeName = this.getModeName();
     
     if (nextState) {
-      ui.notifications.warn(`🌀 ${modeName} ATIVADO! Ataques e magias agora serão interceptados.`);
+      ui.notifications.warn(`${modeName}: ${game.i18n.localize("ROLAGENS_GLOBAIS.Madness.ActivatedNotice")}`);
     } else {
-      ui.notifications.info(`✨ ${modeName} DESATIVADO. As rolagens voltaram ao normal.`);
+      ui.notifications.info(`${modeName}: ${game.i18n.localize("ROLAGENS_GLOBAIS.Madness.DeactivatedNotice")}`);
     }
 
     return nextState;
   }
 
   /**
-   * Retorna as configurações atuais.
+   * Returns current interception configuration.
    * @returns {object}
    */
   static getConfig() {
     const defaults = {
-      customName: "Regras do Mundo",
+      customName: "World Rules",
       physicalTableId: "",
       magicTableId: "",
       tableId: "",
       interceptMelee: true,
       interceptRanged: true,
       interceptSpells: true,
-      flavor: "🌀 {mode}: {actor} tentou usar {item}, mas as regras do mundo interferiram!",
+      flavor: "{mode}: {actor} tried to use {item}, but the action was intercepted!",
       visibility: "public"
     };
     return foundry.utils.mergeObject(defaults, game.settings.get(this.MODULE_ID, this.SETTING_CONFIG) || {});
   }
 
   /**
-   * Salva as configurações.
+   * Saves updated configuration.
    * @param {object} newConfig
    */
   static async saveConfig(newConfig) {
@@ -102,7 +102,7 @@ export class MadnessEngine {
   }
 
   /**
-   * Inicializa os interceptadores de pré-rolagem.
+   * Initializes pre-roll interception listeners.
    */
   static initialize() {
     if (game.system.id === "dnd5e") {
@@ -110,11 +110,7 @@ export class MadnessEngine {
     }
   }
 
-  /**
-   * Interceptadores específicos para o sistema D&D 5e (v3 e v4).
-   */
   static #initializeDnd5e() {
-    // 1. D&D 5e v3 e legado: pré-rolagem de ataque
     Hooks.on("dnd5e.preRollAttack", (item, rollConfig) => {
       if (!this.isEnabled()) return true;
       if (this.isExecuting) return true;
@@ -123,12 +119,10 @@ export class MadnessEngine {
       const interceptInfo = this.#checkItemIntercept(item, config);
       if (!interceptInfo.shouldIntercept) return true;
 
-      // Intercepta e cancela a rolagem normal
       this.triggerInterception(item, "attack", interceptInfo.isMagic);
-      return false; // Retornar false cancela o ataque limpo no D&D 5e, Midi-QOL e Ready Set Roll
+      return false;
     });
 
-    // 2. D&D 5e v4: pré-uso de atividades (Activities System)
     Hooks.on("dnd5e.preUseActivity", (activity, usage, dialogConfig) => {
       if (!this.isEnabled()) return true;
       if (this.isExecuting) return true;
@@ -138,15 +132,11 @@ export class MadnessEngine {
       const interceptInfo = this.#checkActivityIntercept(activity, item, config);
       if (!interceptInfo.shouldIntercept) return true;
 
-      // Intercepta e cancela a atividade normal
       this.triggerInterception(item, activity?.type || "activity", interceptInfo.isMagic);
-      return false; // Retornar false cancela a atividade
+      return false;
     });
   }
 
-  /**
-   * Avalia se um Item deve ser interceptado e classifica se é mágico ou físico.
-   */
   static #checkItemIntercept(item, config) {
     if (!item) return { shouldIntercept: false, isMagic: false };
     if (item.flags?.[this.MODULE_ID]?.ignoreMadness === true) return { shouldIntercept: false, isMagic: false };
@@ -155,22 +145,18 @@ export class MadnessEngine {
     const actionType = item.system?.actionType || "";
     const itemType = item.type;
 
-    // Magias ou ataques mágicos
     if (itemType === "spell" || actionType === "msak" || actionType === "rsak") {
       return { shouldIntercept: !!config.interceptSpells, isMagic: true };
     }
 
-    // Ataques corpo a corpo físicos
     if (actionType === "mwak") {
       return { shouldIntercept: !!config.interceptMelee, isMagic: false };
     }
 
-    // Ataques à distância físicos
     if (actionType === "rwak") {
       return { shouldIntercept: !!config.interceptRanged, isMagic: false };
     }
 
-    // Outros ataques com arma
     if (actionType.includes("wak")) {
       return { shouldIntercept: true, isMagic: false };
     }
@@ -178,9 +164,6 @@ export class MadnessEngine {
     return { shouldIntercept: false, isMagic: false };
   }
 
-  /**
-   * Avalia se uma Activity do D&D 5e v4 deve ser interceptada.
-   */
   static #checkActivityIntercept(activity, item, config) {
     if (!activity) return { shouldIntercept: false, isMagic: false };
     if (item?.flags?.[this.MODULE_ID]?.ignoreMadness === true) return { shouldIntercept: false, isMagic: false };
@@ -188,12 +171,10 @@ export class MadnessEngine {
 
     const actType = activity.type;
 
-    // Magias ou Atividades de Conjuração
     if (actType === "cast" || item?.type === "spell") {
       return { shouldIntercept: !!config.interceptSpells, isMagic: true };
     }
 
-    // Atividades de Ataque
     if (actType === "attack") {
       const attackType = activity.attack?.type?.value || "";
       const isSpellAttack = attackType.includes("spell");
@@ -213,10 +194,10 @@ export class MadnessEngine {
   }
 
   /**
-   * Executa o sorteio da Tabela (Física ou Mágica) em substituição à ação cancelada.
-   * @param {Item} item - Item cuja ação foi interceptada
-   * @param {string} actionType - Tipo da ação interceptada
-   * @param {boolean} isMagic - Se a ação interceptada é mágica
+   * Draws configured table replacing the cancelled action.
+   * @param {Item} item
+   * @param {string} actionType
+   * @param {boolean} isMagic
    */
   static async triggerInterception(item, actionType = "attack", isMagic = false) {
     if (this.isExecuting) return;
@@ -226,14 +207,13 @@ export class MadnessEngine {
       const config = this.getConfig();
       const modeName = this.getModeName();
 
-      // Seleciona a tabela apropriada: Mágica ou Física (com fallback para tableId legado)
       let selectedTableId = isMagic 
         ? (config.magicTableId || config.tableId) 
         : (config.physicalTableId || config.tableId);
 
       if (!selectedTableId) {
-        const categoryLabel = isMagic ? "Magias" : "Ataques Físicos";
-        ui.notifications.warn(`Rolagens Globais: Nenhuma Tabela Rolável configurada para ${categoryLabel} em "${modeName}".`);
+        const categoryLabel = isMagic ? "Spells" : "Physical Attacks";
+        ui.notifications.warn(`Global Extra Rolls: No RollTable configured for ${categoryLabel} in "${modeName}".`);
         return;
       }
 
@@ -247,17 +227,16 @@ export class MadnessEngine {
       }
 
       if (!table) {
-        ui.notifications.warn(`Rolagens Globais: Tabela "${selectedTableId}" não foi encontrada no mundo.`);
+        ui.notifications.warn(`Global Extra Rolls: Table "${selectedTableId}" was not found in the world.`);
         return;
       }
 
       const actor = item?.actor;
-      const actorName = actor?.name || "Personagem";
-      const itemName = item?.name || "Ação";
+      const actorName = actor?.name || "Character";
+      const itemName = item?.name || "Action";
 
-      // Mensagem informativa no chat avisando sobre a interceptação
       const rollMode = config.visibility || CONST.DICE_ROLL_MODES.PUBLIC;
-      const defaultFlavor = `🌀 <strong>${modeName}</strong><br><em>${actorName}</em> tentou usar <strong>${itemName}</strong>, mas a ação foi interceptada!`;
+      const defaultFlavor = `<strong>${modeName}</strong><br><em>${actorName}</em> tried to use <strong>${itemName}</strong>, but the action was intercepted!`;
       const finalFlavor = config.flavor 
         ? config.flavor.replace("{mode}", modeName).replace("{actor}", actorName).replace("{item}", itemName)
         : defaultFlavor;
@@ -270,12 +249,11 @@ export class MadnessEngine {
         }
       }, { rollMode });
 
-      // Sorteia a tabela nativamente (exibindo dados 3D no Dice So Nice e recursividade)
       await table.draw({ recursive: true, rollMode });
 
     } catch (err) {
-      console.error("Rolagens Globais | Erro na interceptação:", err);
-      ui.notifications.error(`Rolagens Globais: Erro na interceptação: ${err.message}`);
+      console.error("Global Extra Rolls | Error in interception:", err);
+      ui.notifications.error(`Global Extra Rolls: Error in interception: ${err.message}`);
     } finally {
       setTimeout(() => {
         this.isExecuting = false;
@@ -283,7 +261,6 @@ export class MadnessEngine {
     }
   }
 
-  // Alias para manter compatibilidade
   static async triggerMadness(item, actionType = "attack", isMagic = false) {
     return await this.triggerInterception(item, actionType, isMagic);
   }

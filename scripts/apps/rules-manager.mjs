@@ -7,9 +7,9 @@ import { QuickTableDialog } from "./quick-table-dialog.mjs";
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
 /**
- * Painel Central do Rolagens Globais com suporte a duas abas:
- * 1. Regras do Mundo (Interceptador Pré-Ataque com tabelas Física e Mágica)
- * 2. Rolagens Extras (Gatilhos Reativos)
+ * Central management dialog for Rolagens Globais supporting two tabs:
+ * 1. World Rules (Pre-attack interception with Physical and Magic tables)
+ * 2. Extra Rolls (Reactive triggers)
  */
 export class RulesManagerApp extends HandlebarsApplicationMixin(ApplicationV2) {
   static currentTab = "madness";
@@ -52,7 +52,7 @@ export class RulesManagerApp extends HandlebarsApplicationMixin(ApplicationV2) {
   };
 
   /**
-   * Prepara o contexto de dados para renderizar a interface.
+   * Prepares render context for the handlebars template.
    */
   async _prepareContext(options) {
     const adapter = getActiveAdapter();
@@ -68,29 +68,29 @@ export class RulesManagerApp extends HandlebarsApplicationMixin(ApplicationV2) {
 
       if (rule.effectType === "table") {
         if (!rule.tableId) {
-          targetName = "⚠️ Nenhuma tabela selecionada (clique em Editar)";
+          targetName = "No table selected (click Edit)";
           hasConfigError = true;
         } else {
           const table = game.tables.get(rule.tableId) || game.tables.getName(rule.tableId);
-          targetName = table ? table.name : (rule.tableId ? "Tabela não encontrada" : "Não configurada");
+          targetName = table ? table.name : (rule.tableId ? "Table not found" : "Not configured");
         }
       } else if (rule.effectType === "macro") {
         if (!rule.macroId) {
-          targetName = "⚠️ Nenhuma macro selecionada (clique em Editar)";
+          targetName = "No macro selected (click Edit)";
           hasConfigError = true;
         } else {
           const macro = game.macros.get(rule.macroId) || game.macros.getName(rule.macroId);
-          targetName = macro ? macro.name : (rule.macroId ? "Macro não encontrada" : "Não configurada");
+          targetName = macro ? macro.name : (rule.macroId ? "Macro not found" : "Not configured");
         }
       }
 
-      let triggerSummary = rule.resultType || "Qualquer";
+      let triggerSummary = rule.resultType || "Any";
       if (rule.dieType && rule.dieType !== "any") triggerSummary += ` (${rule.dieType})`;
       if (rule.keyword) triggerSummary += ` [${rule.keyword}]`;
 
-      let visibilityLabel = "Pública";
-      if (rule.visibility === "whisper_gm" || rule.visibility === "gm") visibilityLabel = "Mestre";
-      if (rule.visibility === "blind") visibilityLabel = "Cega";
+      let visibilityLabel = "Public";
+      if (rule.visibility === "whisper_gm" || rule.visibility === "gm") visibilityLabel = "GM";
+      if (rule.visibility === "blind") visibilityLabel = "Blind";
       if (rule.visibility === "same") visibilityLabel = "Original";
 
       return {
@@ -114,7 +114,7 @@ export class RulesManagerApp extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   /**
-   * Busca todas as tabelas roláveis no mundo e compêndios.
+   * Retrieves all available RollTables in world and compendiums.
    */
   async #getAvailableTables() {
     const list = game.tables.map(t => ({ id: t.id, name: t.name }));
@@ -128,14 +128,14 @@ export class RulesManagerApp extends HandlebarsApplicationMixin(ApplicationV2) {
           });
         }
       } catch {
-        // Ignora compêndios não carregados
+        // Ignore unindexed compendiums
       }
     }
     return list;
   }
 
   /**
-   * Ação: Alternar aba ativa.
+   * Action: Switch active tab.
    */
   static #onSetTab(event, target) {
     const tab = target.dataset.tab;
@@ -146,7 +146,7 @@ export class RulesManagerApp extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   /**
-   * Ação: Alternar o Modo ligado/desligado.
+   * Action: Toggle World Rules interception on/off.
    */
   static async #onToggleMadness(event, target) {
     await MadnessEngine.toggleEnabled();
@@ -154,21 +154,22 @@ export class RulesManagerApp extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   /**
-   * Ação: Salvar as configurações da aba Regras do Mundo.
+   * Action: Save World Rules configuration.
    */
   static async #onSaveMadnessConfig(event, target) {
     const form = this.element.querySelector(".madness-config-form");
     if (!form) return;
 
+    const defaultName = game.i18n.localize("ROLAGENS_GLOBAIS.Madness.DefaultName") || "World Rules";
     const formData = new FormData(form);
     const newConfig = {
-      customName: formData.get("customName")?.toString().trim() || "Regras do Mundo",
+      customName: formData.get("customName")?.toString().trim() || defaultName,
       physicalTableId: formData.get("physicalTableId")?.toString() || "",
       magicTableId: formData.get("magicTableId")?.toString() || "",
       interceptMelee: formData.get("interceptMelee") === "on",
       interceptRanged: formData.get("interceptRanged") === "on",
       interceptSpells: formData.get("interceptSpells") === "on",
-      flavor: formData.get("flavor")?.toString().trim() || "🌀 {mode}: {actor} tentou usar {item}, mas as regras do mundo interferiram!",
+      flavor: formData.get("flavor")?.toString().trim() || "{mode}: {actor} tried to use {item}, but the action was intercepted!",
       visibility: formData.get("visibility")?.toString() || "public"
     };
 
@@ -178,13 +179,13 @@ export class RulesManagerApp extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   /**
-   * Ação: Testar o sorteio da Tabela Física.
+   * Action: Test draw from Physical Table.
    */
   static async #onTestMadnessDrawPhysical(event, target) {
     const config = MadnessEngine.getConfig();
     const tableId = config.physicalTableId || config.tableId;
     if (!tableId) {
-      ui.notifications.warn("Nenhuma tabela configurada para Ataques Físicos.");
+      ui.notifications.warn("No table configured for physical attacks.");
       return;
     }
 
@@ -198,7 +199,7 @@ export class RulesManagerApp extends HandlebarsApplicationMixin(ApplicationV2) {
     }
 
     if (!table) {
-      ui.notifications.warn(`Tabela física "${tableId}" não encontrada.`);
+      ui.notifications.warn(`Physical table "${tableId}" not found.`);
       return;
     }
 
@@ -206,13 +207,13 @@ export class RulesManagerApp extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   /**
-   * Ação: Testar o sorteio da Tabela Mágica.
+   * Action: Test draw from Magic Table.
    */
   static async #onTestMadnessDrawMagic(event, target) {
     const config = MadnessEngine.getConfig();
     const tableId = config.magicTableId || config.tableId;
     if (!tableId) {
-      ui.notifications.warn("Nenhuma tabela configurada para Magias.");
+      ui.notifications.warn("No table configured for spells.");
       return;
     }
 
@@ -226,7 +227,7 @@ export class RulesManagerApp extends HandlebarsApplicationMixin(ApplicationV2) {
     }
 
     if (!table) {
-      ui.notifications.warn(`Tabela mágica "${tableId}" não encontrada.`);
+      ui.notifications.warn(`Magic table "${tableId}" not found.`);
       return;
     }
 
@@ -234,7 +235,7 @@ export class RulesManagerApp extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   /**
-   * Ação: Abrir o Criador Rápido de Tabelas (geral).
+   * Action: Open Quick Table dialog.
    */
   static #onOpenQuickTable(event, target) {
     new QuickTableDialog({
@@ -243,7 +244,7 @@ export class RulesManagerApp extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   /**
-   * Ação: Abrir o Criador Rápido vinculado à Tabela Física.
+   * Action: Open Quick Table dialog bound to Physical Table.
    */
   static #onOpenQuickTablePhysical(event, target) {
     new QuickTableDialog({
@@ -253,7 +254,7 @@ export class RulesManagerApp extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   /**
-   * Ação: Abrir o Criador Rápido vinculado à Tabela Mágica.
+   * Action: Open Quick Table dialog bound to Magic Table.
    */
   static #onOpenQuickTableMagic(event, target) {
     new QuickTableDialog({
@@ -263,7 +264,7 @@ export class RulesManagerApp extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   /**
-   * Ação: Abrir a Central de Tabelas na aba de Exportação.
+   * Action: Open Tables Hub in Export tab.
    */
   static #onOpenExportTables(event, target) {
     new QuickTableDialog({
@@ -273,7 +274,7 @@ export class RulesManagerApp extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   /**
-   * Ação: Adicionar uma nova regra reativa.
+   * Action: Add a new reactive rule.
    */
   static #onAddRule(event, target) {
     const dialog = new RuleDialog({
@@ -289,7 +290,7 @@ export class RulesManagerApp extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   /**
-   * Ação: Editar uma regra reativa existente.
+   * Action: Edit an existing reactive rule.
    */
   static #onEditRule(event, target) {
     const ruleId = target.dataset.ruleId;
@@ -313,7 +314,7 @@ export class RulesManagerApp extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   /**
-   * Ação: Alternar ativação de uma regra reativa.
+   * Action: Toggle reactive rule enabled state.
    */
   static async #onToggleRule(event, target) {
     const ruleId = target.dataset.ruleId;
@@ -327,7 +328,7 @@ export class RulesManagerApp extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   /**
-   * Ação: Excluir uma regra reativa após confirmação.
+   * Action: Delete a reactive rule after confirmation.
    */
   static async #onDeleteRule(event, target) {
     const ruleId = target.dataset.ruleId;
@@ -346,20 +347,20 @@ export class RulesManagerApp extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   /**
-   * Ação: Carregar presets recomendados para o sistema ativo.
+   * Action: Load recommended presets for active system.
    */
   static async #onLoadPresets(event, target) {
     const adapter = getActiveAdapter();
     const presets = adapter.getPresetRules();
     if (presets.length === 0) {
-      ui.notifications.warn("Nenhum preset disponível para este sistema.");
+      ui.notifications.warn("No presets available for this system.");
       return;
     }
 
     const currentRules = RulesEngine.getRules();
     const mergedRules = [...currentRules, ...presets];
     await RulesEngine.saveRules(mergedRules);
-    ui.notifications.info("Regras recomendadas carregadas! Lembre-se de clicar em 'Editar' para escolher qual Tabela Rolável ou Macro deseja associar.");
+    ui.notifications.info(game.i18n.localize("ROLAGENS_GLOBAIS.Manager.PresetsLoaded"));
     this.render({ force: true });
   }
 }

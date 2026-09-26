@@ -1,8 +1,8 @@
 import { BaseAdapter } from "./base-adapter.mjs";
 
 /**
- * Adaptador para Pathfinder 2ª Edição (pf2e).
- * Lê as flags nativas do PF2e: context.type e context.outcome (Graus de Sucesso).
+ * Adapter for Pathfinder 2nd Edition (pf2e).
+ * Reads native PF2e flags: context.type and context.outcome (Degrees of Success).
  */
 export class Pf2eAdapter extends BaseAdapter {
   constructor() {
@@ -13,23 +13,23 @@ export class Pf2eAdapter extends BaseAdapter {
 
   getActionTypes() {
     return [
-      { value: "any", label: "Qualquer Rolagem" },
-      { value: "attack-roll", label: "Golpe / Ataque (Strike)" },
-      { value: "saving-throw", label: "Salvaguarda (Saving Throw)" },
-      { value: "skill-check", label: "Teste de Perícia (Skill Check)" },
-      { value: "perception-check", label: "Percepção" }
+      { value: "any", label: "Any Roll" },
+      { value: "attack-roll", label: "Strike / Attack Roll" },
+      { value: "saving-throw", label: "Saving Throw" },
+      { value: "skill-check", label: "Skill Check" },
+      { value: "perception-check", label: "Perception Check" }
     ];
   }
 
   getResultTypes() {
     return [
-      { value: "any", label: "Qualquer Resultado" },
-      { value: "criticalFailure", label: "Falha Crítica (Critical Failure)" },
-      { value: "criticalSuccess", label: "Sucesso Crítico (Critical Success)" },
-      { value: "failure", label: "Falha Comum (Failure)" },
-      { value: "success", label: "Sucesso Comum (Success)" },
-      { value: "nat1", label: "1 Natural no d20" },
-      { value: "nat20", label: "20 Natural no d20" }
+      { value: "any", label: "Any Result" },
+      { value: "criticalFailure", label: "Critical Failure" },
+      { value: "criticalSuccess", label: "Critical Success" },
+      { value: "failure", label: "Failure" },
+      { value: "success", label: "Success" },
+      { value: "nat1", label: "Natural 1 on d20" },
+      { value: "nat20", label: "Natural 20 on d20" }
     ];
   }
 
@@ -42,7 +42,7 @@ export class Pf2eAdapter extends BaseAdapter {
     const outcome = pf2eContext.outcome || "";
     const flavor = (message.flavor || "").toLowerCase();
 
-    // Filtro por tipo de ação
+    // Action type filtering
     if (rule.actionType && rule.actionType !== "any") {
       if (rule.actionType === "attack-roll" && rollType !== "attack-roll" && !flavor.includes("strike") && !flavor.includes("golpe") && !flavor.includes("attack")) return false;
       if (rule.actionType === "saving-throw" && rollType !== "saving-throw" && !flavor.includes("saving throw") && !flavor.includes("salvaguarda")) return false;
@@ -50,7 +50,7 @@ export class Pf2eAdapter extends BaseAdapter {
       if (rule.actionType === "perception-check" && rollType !== "perception-check" && !flavor.includes("perception") && !flavor.includes("percepção")) return false;
     }
 
-    // Graus de Sucesso nativos do PF2e
+    // Native PF2e Degrees of Success
     if (rule.resultType === "criticalFailure") {
       if (outcome === "criticalFailure") return true;
       if (flavor.includes("critical failure") || flavor.includes("falha crítica")) return true;
@@ -69,7 +69,7 @@ export class Pf2eAdapter extends BaseAdapter {
       if (outcome === "success") return true;
     }
 
-    // Checagem de dados brutos
+    // Raw dice checks
     const dice = this.getDiceResults(roll);
     const d20Dice = dice.filter(d => d.faces === 20);
 
@@ -89,7 +89,7 @@ export class Pf2eAdapter extends BaseAdapter {
     return [
       {
         id: foundry.utils.randomID(),
-        name: "PF2e: Falha Crítica em Golpe",
+        name: "PF2e: Critical Failure on Strike",
         enabled: true,
         actionType: "attack-roll",
         resultType: "criticalFailure",
@@ -99,12 +99,12 @@ export class Pf2eAdapter extends BaseAdapter {
         formula: "1d100",
         macroId: "",
         visibility: "public",
-        flavor: "💥 PF2e: Falha Crítica em Golpe!",
+        flavor: "PF2e: Critical Failure on Strike!",
         keyword: ""
       },
       {
         id: foundry.utils.randomID(),
-        name: "PF2e: Sucesso Crítico em Golpe",
+        name: "PF2e: Critical Success on Strike",
         enabled: true,
         actionType: "attack-roll",
         resultType: "criticalSuccess",
@@ -114,7 +114,7 @@ export class Pf2eAdapter extends BaseAdapter {
         formula: "1d10",
         macroId: "",
         visibility: "public",
-        flavor: "⭐ PF2e: Sucesso Crítico!",
+        flavor: "PF2e: Critical Success on Strike!",
         keyword: ""
       }
     ];

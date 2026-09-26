@@ -1,12 +1,12 @@
 /**
- * Serializador e conversor universal de Tabelas Roláveis para JSON, CSV e Markdown.
- * Suporta exportação e importação entre mesas do Foundry e entre programas externos.
+ * Universal serializer and converter of RollTables for JSON, CSV, and Markdown.
+ * Supports export and import between Foundry worlds and external tools.
  */
 export class TableSerializer {
   /**
-   * Exporta tabelas para o formato JSON nativo / compatível com Foundry VTT.
+   * Exports tables to native Foundry VTT compatible JSON format.
    * @param {RollTable[]} tables
-   * @returns {string} JSON string formatado
+   * @returns {string} Formatted JSON string
    */
   static exportToJSON(tables) {
     const bundle = {
@@ -30,17 +30,17 @@ export class TableSerializer {
   }
 
   /**
-   * Exporta tabelas para formato CSV (compatível com Excel, Google Sheets, Roll20).
+   * Exports tables to RFC 4180 CSV format (compatible with Excel, Sheets, Roll20).
    * @param {RollTable[]} tables
-   * @returns {string} CSV formatado RFC 4180
+   * @returns {string} Formatted CSV string
    */
   static exportToCSV(tables) {
     const rows = [
-      ["Tabela", "FaixaMin", "FaixaMax", "Peso", "Texto", "Tipo", "Documento"]
+      ["Table", "RangeMin", "RangeMax", "Weight", "Text", "Type", "Document"]
     ];
 
     for (const table of tables) {
-      const tableName = table.name || "Tabela";
+      const tableName = table.name || "Table";
       const results = table.results 
         ? (Array.isArray(table.results) ? table.results : Array.from(table.results.values())) 
         : [];
@@ -61,9 +61,9 @@ export class TableSerializer {
   }
 
   /**
-   * Exporta tabelas para formato Markdown / Texto Puro (compatível com Notion, Obsidian, Bloco de notas).
+   * Exports tables to Markdown format (compatible with Notion, Obsidian, text editors).
    * @param {RollTable[]} tables
-   * @returns {string} Texto formatado
+   * @returns {string} Formatted markdown string
    */
   static exportToMarkdown(tables) {
     const sections = [];
@@ -84,7 +84,7 @@ export class TableSerializer {
         const res = results[i];
         const isTable = res.documentCollection === "RollTable" || res.type === 1 || res.type === "document";
         if (isTable) {
-          lines.push(`${i + 1}. tabela: ${res.text}`);
+          lines.push(`${i + 1}. table: ${res.text}`);
         } else {
           lines.push(`${i + 1}. ${res.text}`);
         }
@@ -97,9 +97,9 @@ export class TableSerializer {
   }
 
   /**
-   * Analisa e extrai tabelas de um arquivo JSON.
+   * Parses and extracts tables from a JSON string.
    * @param {string} content
-   * @returns {object[]} Array de dados prontos para RollTable.createDocuments
+   * @returns {object[]} Array of table data ready for RollTable.createDocuments
    */
   static parseJSON(content) {
     const parsed = JSON.parse(content);
@@ -109,32 +109,29 @@ export class TableSerializer {
     if (parsed.tables && Array.isArray(parsed.tables)) {
       return parsed.tables;
     }
-    // Se for um único documento de RollTable exportado nativamente pelo Foundry
     if (parsed.name && (parsed.results || parsed.formula)) {
       return [parsed];
     }
-    throw new Error("Estrutura JSON não reconhecida como pacote de tabelas.");
+    throw new Error("JSON structure not recognized as a table bundle.");
   }
 
   /**
-   * Analisa e extrai tabelas de um arquivo CSV.
+   * Parses and extracts tables from a CSV string.
    * @param {string} content
-   * @returns {object[]} Array de dados de tabelas
+   * @returns {object[]} Array of table data
    */
   static parseCSV(content) {
     const lines = content.split(/\r?\n/).filter(l => l.trim().length > 0);
-    if (lines.length <= 1) throw new Error("O arquivo CSV está vazio ou contém apenas cabeçalho.");
+    if (lines.length <= 1) throw new Error("CSV file is empty or contains only a header.");
 
-    // Agrupa linhas por nome de tabela
     const tableMap = new Map();
 
-    // Pula o cabeçalho (linha 0)
     for (let i = 1; i < lines.length; i++) {
       const rawLine = lines[i];
       const cols = this.#parseCSVLine(rawLine);
       if (cols.length < 5) continue;
 
-      const tableName = cols[0] || "Tabela Importada";
+      const tableName = cols[0] || "Imported Table";
       const minRange = parseInt(cols[1], 10) || 1;
       const maxRange = parseInt(cols[2], 10) || minRange;
       const weight = parseInt(cols[3], 10) || 1;
@@ -169,10 +166,10 @@ export class TableSerializer {
   }
 
   /**
-   * Dispara o download de arquivo no navegador usando a função nativa do Foundry VTT.
-   * @param {string} data - Conteúdo do arquivo
-   * @param {string} type - MIME type (ex: "application/json", "text/csv")
-   * @param {string} filename - Nome do arquivo a baixar
+   * Triggers browser download using Foundry VTT's native function or fallback.
+   * @param {string} data - File content
+   * @param {string} type - MIME type (e.g. "application/json", "text/csv")
+   * @param {string} filename - Target file name
    */
   static triggerDownload(data, type, filename) {
     if (typeof saveDataToFile === "function") {

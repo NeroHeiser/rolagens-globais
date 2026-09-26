@@ -3,7 +3,7 @@ import { getActiveAdapter } from "../adapters/index.mjs";
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
 /**
- * Diálogo para criar ou editar uma regra de Rolagem Extra.
+ * Dialog for creating or editing an Extra Roll rule.
  */
 export class RuleDialog extends HandlebarsApplicationMixin(ApplicationV2) {
   constructor(options = {}) {
@@ -69,7 +69,7 @@ export class RuleDialog extends HandlebarsApplicationMixin(ApplicationV2) {
           tables.push({ id: entry.uuid, name: `${entry.name} (${pack.metadata.label})` });
         }
       } catch (e) {
-        // Ignora compêndio se não carregar
+        // Ignore unindexed compendium
       }
     }
 
@@ -81,7 +81,7 @@ export class RuleDialog extends HandlebarsApplicationMixin(ApplicationV2) {
           macros.push({ id: entry.uuid, name: `${entry.name} (${pack.metadata.label})` });
         }
       } catch (e) {
-        // Ignora compêndio se não carregar
+        // Ignore unindexed compendium
       }
     }
 
@@ -101,10 +101,8 @@ export class RuleDialog extends HandlebarsApplicationMixin(ApplicationV2) {
     const form = html.querySelector("form");
     if (!form) return;
 
-    // Listener para o submit do formulário
     form.addEventListener("submit", (e) => this.#onFormSubmit(e));
 
-    // Listener para mudança dinâmica no tipo de efeito
     const effectSelect = form.querySelector('[name="effectType"]');
     if (effectSelect) {
       effectSelect.addEventListener("change", (e) => {
@@ -125,7 +123,7 @@ export class RuleDialog extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   static #onChangeEffectType(event, target) {
-    // Tratado via _onRender event listener
+    // Handled via _onRender event listener
   }
 
   static #onCancel(event, target) {
@@ -139,7 +137,7 @@ export class RuleDialog extends HandlebarsApplicationMixin(ApplicationV2) {
 
     const updatedRule = {
       id: this.rule.id || foundry.utils.randomID(),
-      name: formData.get("name")?.toString().trim() || "Nova Regra",
+      name: formData.get("name")?.toString().trim() || "New Rule",
       enabled: formData.get("enabled") === "on",
       actionType: formData.get("actionType")?.toString() || "any",
       resultType: formData.get("resultType")?.toString() || "any",

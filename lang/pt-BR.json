@@ -34,15 +34,15 @@
       "StatusInactive": "DESATIVADO",
       "ToggleOn": "Ativar",
       "ToggleOff": "Desativar",
-      "ActivatedNotice": "🌀 Regras do Mundo ATIVADAS! Ataques e magias agora serão interceptados.",
-      "DeactivatedNotice": "✨ Regras do Mundo DESATIVADAS. As rolagens voltaram ao normal.",
+      "ActivatedNotice": "Regras do Mundo ATIVADAS. Ataques e magias agora serão interceptados.",
+      "DeactivatedNotice": "Regras do Mundo DESATIVADAS. As rolagens voltaram ao normal.",
       "NoTableConfigured": "Rolagens Globais: Nenhuma Tabela Rolável foi configurada para este modo. Abra o Gerenciador e selecione uma tabela.",
       "Filters": "Ações Interceptadas",
       "InterceptMelee": "Interceptar Ataques Corpo a Corpo",
       "InterceptRanged": "Interceptar Ataques à Distância",
       "InterceptSpells": "Interceptar Lançamento de Magias",
       "Flavor": "Mensagem de Destaque no Chat",
-      "FlavorPlaceholder": "Ex: 🌀 {mode}: {actor} tentou usar {item}, mas a ação foi interceptada!",
+      "FlavorPlaceholder": "Ex: {mode}: {actor} tentou usar {item}, mas a ação foi interceptada!",
       "Visibility": "Visibilidade do Sorteio",
       "SaveConfig": "Salvar Configurações",
       "ConfigSaved": "Configurações salvas com sucesso!",
@@ -77,8 +77,8 @@
     "Manager": {
       "HeaderSubtitle": "Automação de tabelas, fórmulas e macros acionadas por rolagens",
       "SystemDetected": "Sistema detectado:",
-      "TabMadness": "🌀 Regras do Mundo (Pré-Ataque)",
-      "TabRules": "⚡ Rolagens Extras (Gatilhos Reativos)",
+      "TabMadness": "Regras do Mundo (Pré-Ataque)",
+      "TabRules": "Rolagens Extras (Gatilhos Reativos)",
       "AddRule": "Nova Regra",
       "LoadPresets": "Carregar Regras Recomendadas",
       "QuickTableBtn": "Criar Tabela",
@@ -131,7 +131,7 @@
       "VisBlind": "Rolagem Cega (Apenas Mestre)",
       "VisSame": "Mesma da rolagem original",
       "FlavorMessage": "Mensagem de Destaque no Chat",
-      "FlavorPlaceholder": "Ex: ⚠️ Efeito Crítico Ativado!",
+      "FlavorPlaceholder": "Ex: Efeito Crítico Ativado!",
       "Save": "Salvar Regra",
       "Cancel": "Cancelar"
     },
@@ -167,7 +167,9 @@
         "Hint": "Substitui o texto '1d4' pelo valor numérico rolado diretamente no cartão da tabela no chat."
       },
       "RollBadge": "Dados da Tabela",
-      "ConvertButton": "Converter Dados"
+      "ConvertButton": "Converter Dados",
+      "ConvertedNotice": "{count} resultados da tabela foram enriquecidos com rolagens inline.",
+      "NoDiceNotice": "Nenhum dado avulso precisou ser convertido nesta tabela."
     },
     "Chat": {
       "TriggeredBadge": "Rolagem Extra",

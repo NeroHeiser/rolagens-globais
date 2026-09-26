@@ -4,23 +4,20 @@ import { TableChainEngine } from "./table-chain-engine.mjs";
 import { RulesManagerApp } from "./apps/rules-manager.mjs";
 import { QuickTableDialog } from "./apps/quick-table-dialog.mjs";
 import { ItemConfigDialog } from "./apps/item-config-dialog.mjs";
-import { DiceRangeCalculator } from "./domain/dice-range-calculator.mjs";
 import { getActiveAdapter } from "./adapters/index.mjs";
 
 const MODULE_ID = "rolagens-globais";
 
 /**
- * Hook de Inicialização do Foundry VTT (init).
+ * Foundry VTT Initialization Hook (init).
  */
 Hooks.once("init", () => {
-  console.log("Rolagens Globais | Inicializando módulo...");
+  console.log("Global Extra Rolls | Initializing module...");
 
-  // Registrar configurações de mundo
   RulesEngine.registerSettings();
   MadnessEngine.registerSettings();
   TableChainEngine.registerSettings();
 
-  // Registrar o botão de configuração no menu de módulos
   game.settings.registerMenu(MODULE_ID, "managerMenu", {
     name: game.i18n.localize("ROLAGENS_GLOBAIS.Settings.OpenManager.Name"),
     label: game.i18n.localize("ROLAGENS_GLOBAIS.Settings.OpenManager.Label"),
@@ -32,18 +29,16 @@ Hooks.once("init", () => {
 });
 
 /**
- * Hook quando o Foundry VTT está pronto (ready).
+ * Foundry VTT Ready Hook (ready).
  */
 Hooks.once("ready", () => {
   const adapter = getActiveAdapter();
-  console.log(`Rolagens Globais | Pronto para uso! Sistema detectado: ${adapter.name} (${game.system.id})`);
+  console.log(`Global Extra Rolls | Ready. Detected system: ${adapter.name} (${game.system.id})`);
 
-  // Inicializar os motores de escuta
   RulesEngine.initialize();
   MadnessEngine.initialize();
   TableChainEngine.initialize();
 
-  // Expor API pública no objeto do módulo
   const module = game.modules.get(MODULE_ID);
   if (module) {
     module.api = {
@@ -61,13 +56,13 @@ Hooks.once("ready", () => {
 });
 
 /**
- * Suporte Híbrido: Adiciona botão no cabeçalho das fichas de Item para configurar exceções.
+ * Injects configuration button in item sheet headers for exception handling.
  */
 Hooks.on("getItemSheetHeaderButtons", (sheet, buttons) => {
   if (!game.user.isGM) return;
 
   buttons.unshift({
-    label: "Rolagens Extras",
+    label: game.i18n.localize("ROLAGENS_GLOBAIS.Title"),
     class: "rolagens-globais-item-btn",
     icon: "fas fa-dice-d20",
     onclick: () => {
@@ -77,13 +72,13 @@ Hooks.on("getItemSheetHeaderButtons", (sheet, buttons) => {
 });
 
 /**
- * Adiciona botão no cabeçalho da ficha de configuração de Tabelas Roláveis para converter dados (Xdx -> [[/r Xdx]]).
+ * Injects dice conversion button into RollTable configuration header.
  */
 Hooks.on("getRollTableConfigHeaderButtons", (sheet, buttons) => {
   if (!game.user.isGM) return;
 
   buttons.unshift({
-    label: "Converter Dados",
+    label: game.i18n.localize("ROLAGENS_GLOBAIS.TableDice.ConvertButton"),
     class: "rolagens-globais-convert-dice-btn",
     icon: "fas fa-dice-d20",
     onclick: async () => {
@@ -104,16 +99,16 @@ Hooks.on("getRollTableConfigHeaderButtons", (sheet, buttons) => {
 
       if (updates.length > 0) {
         await table.updateEmbeddedDocuments("TableResult", updates);
-        ui.notifications.info(`Rolagens Globais: ${updatedCount} resultados da tabela "${table.name}" enriquecidos com rolagens inline!`);
+        ui.notifications.info(game.i18n.format("ROLAGENS_GLOBAIS.TableDice.ConvertedNotice", { count: updatedCount }));
       } else {
-        ui.notifications.info(`Rolagens Globais: Nenhum dado avulso precisou ser convertido na tabela "${table.name}".`);
+        ui.notifications.info(game.i18n.localize("ROLAGENS_GLOBAIS.TableDice.NoDiceNotice"));
       }
     }
   });
 });
 
 /**
- * Adiciona barra de controle rápida na Aba de Tabelas Roláveis da barra lateral.
+ * Injects quick toolbar inside the RollTable directory sidebar.
  */
 Hooks.on("renderRollTableDirectory", (app, html, data) => {
   if (!game.user.isGM) return;
@@ -128,12 +123,14 @@ Hooks.on("renderRollTableDirectory", (app, html, data) => {
 
   const isEnabled = MadnessEngine.isEnabled();
   const modeName = MadnessEngine.getModeName();
+  const activeLabel = game.i18n.localize("ROLAGENS_GLOBAIS.Madness.StatusActive");
+  const inactiveLabel = game.i18n.localize("ROLAGENS_GLOBAIS.Madness.StatusInactive");
   const toolbar = document.createElement("div");
   toolbar.className = "rolagens-globais-sidebar-toolbar";
   toolbar.innerHTML = `
-    <button type="button" class="btn-madness-toggle ${isEnabled ? "active" : "inactive"}" title="Alternar ${modeName}">
+    <button type="button" class="btn-madness-toggle ${isEnabled ? "active" : "inactive"}" title="Toggle ${modeName}">
       <i class="fas fa-globe"></i>
-      <span class="toggle-label">${modeName}: ${isEnabled ? "ATIVADO" : "DESATIVADO"}</span>
+      <span class="toggle-label">${modeName}: ${isEnabled ? activeLabel : inactiveLabel}</span>
     </button>
     <button type="button" class="btn-quick-table" title="${game.i18n.localize("ROLAGENS_GLOBAIS.QuickTable.ButtonTooltip")}">
       <i class="fas fa-bolt"></i>
@@ -155,11 +152,11 @@ Hooks.on("renderRollTableDirectory", (app, html, data) => {
     if (newState) {
       toggleBtn.classList.remove("inactive");
       toggleBtn.classList.add("active");
-      labelSpan.textContent = `${currentModeName}: ATIVADO`;
+      labelSpan.textContent = `${currentModeName}: ${activeLabel}`;
     } else {
       toggleBtn.classList.remove("active");
       toggleBtn.classList.add("inactive");
-      labelSpan.textContent = `${currentModeName}: DESATIVADO`;
+      labelSpan.textContent = `${currentModeName}: ${inactiveLabel}`;
     }
   });
 
@@ -177,7 +174,7 @@ Hooks.on("renderRollTableDirectory", (app, html, data) => {
 });
 
 /**
- * Adiciona um botão de atalho rápido na barra lateral do Chat para o Mestre.
+ * Injects shortcut button inside the Chat Log control bar for the GM.
  */
 Hooks.on("renderChatLog", (app, html, data) => {
   if (!game.user.isGM) return;

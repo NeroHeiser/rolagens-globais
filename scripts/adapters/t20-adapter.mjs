@@ -1,8 +1,8 @@
 import { BaseAdapter } from "./base-adapter.mjs";
 
 /**
- * Adaptador para Tormenta20 (tormenta20).
- * Reconhece testes de ataque, perícias e resistências (Fortitude/Reflexos/Vontade).
+ * Adapter for Tormenta20 (tormenta20).
+ * Detects attack rolls, skills, and saving throws (Fortitude/Reflex/Will).
  */
 export class Tormenta20Adapter extends BaseAdapter {
   constructor() {
@@ -13,20 +13,20 @@ export class Tormenta20Adapter extends BaseAdapter {
 
   getActionTypes() {
     return [
-      { value: "any", label: "Qualquer Rolagem" },
-      { value: "attack", label: "Teste de Ataque" },
-      { value: "skill", label: "Teste de Perícia" },
-      { value: "save", label: "Teste de Resistência (Fort/Ref/Von)" },
-      { value: "attribute", label: "Teste de Atributo" }
+      { value: "any", label: "Any Roll" },
+      { value: "attack", label: "Attack Roll" },
+      { value: "skill", label: "Skill Check" },
+      { value: "save", label: "Saving Throw (Fort/Ref/Will)" },
+      { value: "attribute", label: "Attribute Check" }
     ];
   }
 
   getResultTypes() {
     return [
-      { value: "any", label: "Qualquer Resultado" },
-      { value: "nat1", label: "Falha Crítica (1 no d20)" },
-      { value: "threat", label: "Ameaça de Crítico (20 no d20)" },
-      { value: "expanded_threat", label: "Margem de Ameaça (19 ou 20)" }
+      { value: "any", label: "Any Result" },
+      { value: "nat1", label: "Critical Fumble (1 on d20)" },
+      { value: "threat", label: "Critical Threat (20 on d20)" },
+      { value: "expanded_threat", label: "Expanded Threat (19 or 20)" }
     ];
   }
 
@@ -38,7 +38,7 @@ export class Tormenta20Adapter extends BaseAdapter {
     const flavor = (message.flavor || "").toLowerCase();
     const content = (message.content || "").toLowerCase();
 
-    // Verificação de tipo de ação
+    // Action type verification
     if (rule.actionType && rule.actionType !== "any") {
       switch (rule.actionType) {
         case "attack":
@@ -80,7 +80,7 @@ export class Tormenta20Adapter extends BaseAdapter {
     return [
       {
         id: foundry.utils.randomID(),
-        name: "T20: Erro Crítico em Ataque",
+        name: "T20: Critical Fumble on Attack",
         enabled: true,
         actionType: "attack",
         resultType: "nat1",
@@ -90,12 +90,12 @@ export class Tormenta20Adapter extends BaseAdapter {
         formula: "1d100",
         macroId: "",
         visibility: "public",
-        flavor: "💀 Tormenta20: Falha Crítica em Ataque!",
+        flavor: "Tormenta20: Critical Fumble on Attack!",
         keyword: ""
       },
       {
         id: foundry.utils.randomID(),
-        name: "T20: Ameaça de Crítico",
+        name: "T20: Critical Threat",
         enabled: true,
         actionType: "attack",
         resultType: "threat",
@@ -105,7 +105,7 @@ export class Tormenta20Adapter extends BaseAdapter {
         formula: "1d8",
         macroId: "",
         visibility: "public",
-        flavor: "⚔️ Tormenta20: Ameaça de Crítico!",
+        flavor: "Tormenta20: Critical Threat!",
         keyword: ""
       }
     ];

@@ -1,7 +1,7 @@
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
 /**
- * Diálogo rápido para configurar flags individuais em um Item (Modo Híbrido).
+ * Quick configuration dialog for per-item flags.
  */
 export class ItemConfigDialog extends HandlebarsApplicationMixin(ApplicationV2) {
   constructor(item, options = {}) {
@@ -64,7 +64,7 @@ export class ItemConfigDialog extends HandlebarsApplicationMixin(ApplicationV2) 
 
     await this.item.setFlag("rolagens-globais", "ignoreGlobal", ignoreGlobal);
     await this.item.setFlag("rolagens-globais", "ignoreMadness", ignoreMadness);
-    ui.notifications.info(`Configurações de Rolagens Globais salvas para: ${this.item.name}`);
+    ui.notifications.info(`Global Extra Rolls settings saved for: ${this.item.name}`);
     this.close();
   }
 }

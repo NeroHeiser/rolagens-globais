@@ -1,8 +1,8 @@
 /**
- * Motor reativo para detecção e execução automática de subtabelas encadeadas.
- * Quando o resultado de uma Tabela Rolável contém referências a outras tabelas
- * (ex: "tabela: Selvagem 17", "role na tabela de Magia Selvagem 57", "@UUID[RollTable...]"),
- * o TableChainEngine localiza e sorteia a subtabela automaticamente.
+ * Reactive engine for detecting and automatically triggering chained subtables.
+ * When the result of a RollTable contains references to other tables
+ * (e.g., "table: Wild Magic 17", "@UUID[RollTable...]"),
+ * TableChainEngine locates and draws the subtable automatically.
  */
 export class TableChainEngine {
   static MODULE_ID = "rolagens-globais";
@@ -16,7 +16,7 @@ export class TableChainEngine {
   static #isExecuting = false;
 
   /**
-   * Registra as configurações de encadeamento no Foundry VTT.
+   * Registers subtable chaining settings in Foundry VTT.
    */
   static registerSettings() {
     game.settings.register(this.MODULE_ID, this.SETTING_ENABLED, {
@@ -66,32 +66,27 @@ export class TableChainEngine {
   }
 
   /**
-   * Inicializa o hook de escuta de mensagens de chat.
+   * Initializes the chat message listener hook.
    */
   static initialize() {
     Hooks.on("createChatMessage", (message, options, userId) => {
       this.#onChatMessageCreated(message);
     });
 
-    console.log("Rolagens Globais | TableChainEngine inicializado com sucesso.");
+    console.log("Rolagens Globais | TableChainEngine initialized successfully.");
   }
 
   /**
-   * Processador de novas mensagens no chat.
+   * Chat message creation handler.
    * @param {ChatMessage} message
    */
   static async #onChatMessageCreated(message) {
-    // 1. Verifica se o recurso está ativado
     const isEnabled = game.settings.get(this.MODULE_ID, this.SETTING_ENABLED) ?? true;
     if (!isEnabled) return;
 
-    // 2. Trava de autoridade multiplayer: apenas o Mestre ativo (ou o autor caso não haja GM online)
     if (!this.#canExecute()) return;
-
-    // 3. Evita reprocessar a mesma mensagem
     if (this.#processedIds.has(message.id)) return;
 
-    // 4. Verifica se a mensagem provém de uma Tabela Rolável ou contém resultado de tabela
     const isTableMessage = 
       message.isRollTable || 
       !!message.flags?.core?.RollTable || 
@@ -104,12 +99,11 @@ export class TableChainEngine {
 
     if (!isTableMessage) return;
 
-    // 5. Profundidade de recursão para evitar loops infinitos
     const maxDepth = game.settings.get(this.MODULE_ID, this.SETTING_MAX_DEPTH) || 5;
     const currentDepth = message.flags?.[this.MODULE_ID]?.chainDepth || 0;
 
     if (currentDepth >= maxDepth) {
-      console.warn(`Rolagens Globais | Limite máximo de subtabelas encadeadas atingido (${maxDepth}). Interrompendo para prevenir loop infinito.`);
+      console.warn(`Rolagens Globais | Maximum chained subtable depth reached (${maxDepth}). Halting to prevent infinite loop.`);
       return;
     }
 
@@ -166,20 +160,20 @@ export class TableChainEngine {
     const rollMode = this.#resolveRollMode(message);
 
     for (const subTable of tablesToDraw) {
-      console.log(`Rolagens Globais | 🎲 Subtabela disparada automaticamente: "${subTable.name}" (Profundidade ${currentDepth + 1})`);
+      console.log(`Rolagens Globais | Chained subtable triggered: "${subTable.name}" (Depth ${currentDepth + 1})`);
       
-      // Delay suave para sincronia com dados 3D
       if (delayMs > 0) {
         await new Promise(r => setTimeout(r, delayMs));
       }
 
       try {
+        const subtableLabel = game.i18n.localize("ROLAGENS_GLOBAIS.TableChain.SubTableBadge") || "Subtable";
         await subTable.draw({
           recursive: true,
           rollMode,
           messageData: {
             speaker: message.speaker,
-            flavor: `<div class="rolagens-globais-badge"><i class="fas fa-link"></i> Subtabela: <strong>${subTable.name}</strong></div>`,
+            flavor: `<div class="rolagens-globais-badge"><i class="fas fa-link"></i> ${subtableLabel}: <strong>${subTable.name}</strong></div>`,
             flags: {
               [this.MODULE_ID]: {
                 isChainedRoll: true,
@@ -190,23 +184,22 @@ export class TableChainEngine {
           }
         });
       } catch (err) {
-        console.error(`Rolagens Globais | Erro ao rolar subtabela "${subTable.name}":`, err);
+        console.error(`Rolagens Globais | Error drawing subtable "${subTable.name}":`, err);
       }
     }
   }
 
   /**
-   * Processa e rola fórmulas de dados (ex: "1d4 Reagentes Curativos Comuns") encontradas nos resultados.
-   * @param {ChatMessage} message - Mensagem original do sorteio da tabela
-   * @param {string[]} resultTexts - Textos dos resultados sorteados
-   * @param {RollTable|null} sourceTable - Tabela de origem
+   * Processes and rolls dice formulas (e.g. "1d4 Common Healing Reagents") found within table results.
+   * @param {ChatMessage} message - Original table draw chat message
+   * @param {string[]} resultTexts - Text results drawn from table
+   * @param {RollTable|null} sourceTable - Source table
    */
   static async #processDiceRolls(message, resultTexts, sourceTable) {
     const rollMode = this.#resolveRollMode(message);
-    const tableName = sourceTable ? sourceTable.name : "Tabela";
+    const tableName = sourceTable ? sourceTable.name : "Table";
     const shouldUpdateChat = game.settings.get(this.MODULE_ID, this.SETTING_DICE_UPDATE_CHAT) ?? true;
 
-    // Rastreia substituições para o cartão do chat
     const replacements = [];
 
     for (const text of resultTexts) {
@@ -218,11 +211,9 @@ export class TableChainEngine {
           const roll = new Roll(formula);
           await roll.evaluate();
 
-          // Cria descrição destacada substituindo a fórmula pelo total rolado
-          // Ex: "1d4 Reagentes Curativos Comuns" -> "<strong>3</strong> Reagentes Curativos Comuns"
           const replacedDescription = text.replace(new RegExp(`\\b${formula}\\b`, "i"), `<strong>${roll.total}</strong>`);
 
-          console.log(`Rolagens Globais | 🎲 Rolagem de dados da tabela "${tableName}": ${formula} = ${roll.total}`);
+          console.log(`Rolagens Globais | Table dice roll for "${tableName}": ${formula} = ${roll.total}`);
 
           await roll.toMessage({
             speaker: message.speaker,
@@ -238,19 +229,18 @@ export class TableChainEngine {
 
           replacements.push({ formula, total: roll.total });
         } catch (err) {
-          console.error(`Rolagens Globais | Erro ao rolar dados da tabela ("${formula}"):`, err);
+          console.error(`Rolagens Globais | Error rolling table dice ("${formula}"):`, err);
         }
       }
     }
 
-    // Se configurado, atualiza o cartão original da tabela no chat com o valor rolado
     if (shouldUpdateChat && replacements.length > 0 && message.content && game.user.isGM) {
       await this.#updateTableMessageWithRolls(message, replacements);
     }
   }
 
   /**
-   * Atualiza o conteúdo HTML da mensagem original no chat para exibir os totais rolados no lugar de "Xdx".
+   * Updates original chat message HTML content to show rolled totals instead of raw formula strings.
    * @param {ChatMessage} message
    * @param {Array<{formula: string, total: number}>} replacements
    */
@@ -260,10 +250,9 @@ export class TableChainEngine {
       let modified = false;
 
       for (const { formula, total } of replacements) {
-        // Substitui a fórmula dentro do texto do resultado por um chip de rolagem inline nativo
         const regex = new RegExp(`\\b${formula}\\b`, "gi");
         if (regex.test(content)) {
-          content = content.replace(regex, `<a class="inline-roll inline-result" data-mode="roll" data-formula="${formula}" title="${formula} (Rolado automaticamente)"><i class="fas fa-dice-d20"></i> ${total}</a>`);
+          content = content.replace(regex, `<a class="inline-roll inline-result" data-mode="roll" data-formula="${formula}" title="${formula} (Rolled automatically)"><i class="fas fa-dice-d20"></i> ${total}</a>`);
           modified = true;
         }
       }
@@ -272,7 +261,7 @@ export class TableChainEngine {
         await message.update({ content });
       }
     } catch (err) {
-      console.warn("Rolagens Globais | Não foi possível atualizar o cartão da tabela no chat:", err);
+      console.warn("Rolagens Globais | Could not update table chat card:", err);
     }
   }
 
@@ -290,7 +279,7 @@ export class TableChainEngine {
 
     const formulas = [];
 
-    // 2. Extrai rolagens inline nativas do Foundry: [[/r 1d4]] ou [[1d4]]
+    // Native Foundry inline rolls: [[/r 1d4]] or [[1d4]]
     const inlineRegex = /\[\[(?:\/r\s+)?(\d+d\d+(?:\s*[+-]\s*\d+)?)\]\]/gi;
     let m;
     while ((m = inlineRegex.exec(cleanText)) !== null) {
@@ -300,7 +289,7 @@ export class TableChainEngine {
       }
     }
 
-    // 3. Extrai fórmulas livres de dados: 1d4, 1d2, 2d6+1, etc.
+    // Free-form dice formulas: 1d4, 1d2, 2d6+1, etc.
     const freeRegex = /\b(\d+d\d+(?:\s*[+-]\s*\d+)?)\b/gi;
     while ((m = freeRegex.exec(cleanText)) !== null) {
       const f = m[1].replace(/\s+/g, "");
@@ -313,7 +302,7 @@ export class TableChainEngine {
   }
 
   /**
-   * Extrai os textos puros dos resultados da mensagem.
+   * Extracts text content of table results from chat message.
    * @param {ChatMessage} message
    * @param {RollTable|null} sourceTable
    * @returns {string[]}
@@ -321,7 +310,7 @@ export class TableChainEngine {
   static #extractResultTexts(message, sourceTable) {
     const texts = [];
 
-    // Prioridade 1: Extrai diretamente dos documentos de TableResult via flags.core.results
+    // Priority 1: Extract directly from TableResult documents via flags.core.results
     const resultIds = message.flags?.core?.results;
     if (sourceTable && Array.isArray(resultIds)) {
       for (const resId of resultIds) {
@@ -332,9 +321,8 @@ export class TableChainEngine {
       }
     }
 
-    // Prioridade 2: Se não houver textos ou resultados nas flags, extrai do HTML da mensagem
+    // Priority 2: Extract from message HTML if flags do not contain results
     if (texts.length === 0 && message.content) {
-      // Usa regex seguro para extrair o conteúdo de .result-text ou do corpo HTML sem depender de DOM no Node
       const resultRegex = /<div[^>]*class=["'][^"']*(?:result-text|table-result)[^"']*["'][^>]*>([\s\S]*?)<\/div>/gi;
       let m;
       while ((m = resultRegex.exec(message.content)) !== null) {
@@ -352,13 +340,11 @@ export class TableChainEngine {
   }
 
   /**
-   * Analisa um texto e extrai menções a outras tabelas.
-   * Suporta:
-   * - "tabela: Selvagem 17"
-   * - "role na tabela de Magia Selvagem 57."
-   * - "role na tabela: Selvagem 57"
-   * - "tabela de Magia Selvagem 57"
-   * - "@UUID[RollTable.XYZ]{Nome}"
+   * Parses text and extracts references to other rollable tables.
+   * Supports:
+   * - "table: Wild 17"
+   * - "roll on table Wild Magic 57."
+   * - "@UUID[RollTable.XYZ]{Name}"
    * @param {string} text
    * @returns {string[]}
    */
@@ -367,7 +353,7 @@ export class TableChainEngine {
 
     const found = new Set();
 
-    // 1. Links nativos do Foundry: @UUID[RollTable.id]{Nome} ou @RollTable[id]{Nome}
+    // 1. Native Foundry links: @UUID[RollTable.id]{Name} or @RollTable[id]{Name}
     const uuidRegex = /@(?:UUID\[(?:RollTable\.)?([^\]]+)\]|RollTable\[([^\]]+)\])(?:\{([^}]+)\})?/gi;
     let match;
     while ((match = uuidRegex.exec(text)) !== null) {
@@ -377,21 +363,21 @@ export class TableChainEngine {
       if (idOrUuid) found.add(idOrUuid.trim());
     }
 
-    // 2. Prefixo direto "tabela: Nome" ou "table: Nome"
+    // 2. Direct prefix "table: Name" or "tabela: Name"
     const prefixRegex = /(?:tabela|table|@):\s*["'«“]?([^<>\n\r\t,.;"'»”\)\(]+)["'»”]?/gi;
     while ((match = prefixRegex.exec(text)) !== null) {
       const raw = this.#cleanName(match[1]);
       if (raw) found.add(raw);
     }
 
-    // 3. "role na tabela de/da/do/..." ou "role 1d20 na tabela de/da/do/..."
+    // 3. "roll on table Name" / "role na tabela Name"
     const rollOnRegex = /(?:role|rolar|roll|jogar)(?:\s+[\ddD\+]+)?\s+(?:na|em|no|on)\s+(?:uma\s+)?(?:tabela|table)(?:\s+(?:de|da|do|dos|das))?\s*[:\-]?\s*["'«“]?([^<>\n\r\t,.;"'»”\)\(]+)["'»”]?/gi;
     while ((match = rollOnRegex.exec(text)) !== null) {
       const raw = this.#cleanName(match[1]);
       if (raw) found.add(raw);
     }
 
-    // 4. "tabela de/da/do Nome"
+    // 4. "table of Name" / "tabela de Name"
     const tableOfRegex = /(?:tabela|table)\s+(?:de|da|do|dos|das)\s+["'«“]?([^<>\n\r\t,.;"'»”\)\(]+)["'»”]?/gi;
     while ((match = tableOfRegex.exec(text)) !== null) {
       const raw = this.#cleanName(match[1]);
@@ -402,9 +388,9 @@ export class TableChainEngine {
   }
 
   /**
-   * Localiza uma Tabela Rolável no mundo ou compêndios por ID, Nome exato ou busca flexível.
-   * @param {string} query - Termo de busca (ID, UUID ou Nome)
-   * @param {RollTable|null} sourceTable - Tabela que gerou a rolagem (evita re-seleção acidental)
+   * Locates a RollTable in the world or compendiums by ID, exact name, or fuzzy match.
+   * @param {string} query - Search term (ID, UUID or Name)
+   * @param {RollTable|null} sourceTable - Table that generated the roll
    * @returns {Promise<RollTable|null>}
    */
   static async findTable(query, sourceTable = null) {
@@ -412,38 +398,37 @@ export class TableChainEngine {
     const clean = this.#cleanName(query);
     if (!clean) return null;
 
-    // 1. Busca por ID direto
+    // 1. Direct ID lookup
     let table = game.tables.get(clean);
     if (table) return table;
 
-    // 2. Busca por UUID
+    // 2. UUID lookup
     try {
       table = await fromUuid(clean);
       if (table instanceof RollTable) return table;
     } catch {
-      // Ignora erro de UUID inválido
+      // Ignore invalid UUID error
     }
 
-    // 3. Busca por Nome Exato no mundo
+    // 3. Exact world name lookup
     table = game.tables.getName(clean);
     if (table) return table;
 
-    // 4. Busca por Nome Case-Insensitive
+    // 4. Case-insensitive world name lookup
     const lowerClean = clean.toLowerCase();
     table = game.tables.find(t => t.name.trim().toLowerCase() === lowerClean);
     if (table) return table;
 
-    // 5. Busca Normalizada (remove acentos, prefixos "tabela de", etc.)
+    // 5. Normalized search (strip accents and table prefixes)
     const normQuery = this.#normalizeKey(clean);
     table = game.tables.find(t => this.#normalizeKey(t.name) === normQuery);
     if (table) return table;
 
-    // 6. Busca Inteligente com correspondência de número (ex: "57" ou "17")
+    // 6. Number matching (e.g. "57" or "17")
     const queryNum = this.#extractNumber(clean);
     const worldTables = game.tables.contents;
 
     if (queryNum !== null) {
-      // Se a consulta possui um número específico (ex: 57), filtra candidatos com o mesmo número
       const candidates = worldTables.filter(t => {
         if (sourceTable && t.id === sourceTable.id) return false;
         return this.#extractNumber(t.name) === queryNum;
@@ -454,7 +439,6 @@ export class TableChainEngine {
       }
 
       if (candidates.length > 1) {
-        // Encontra o que tem maior sobreposição de nome com a busca
         const best = candidates.find(t => {
           const normName = this.#normalizeKey(t.name);
           return normQuery.includes(normName) || normName.includes(normQuery);
@@ -464,7 +448,7 @@ export class TableChainEngine {
       }
     }
 
-    // 7. Busca Parcial / Contém (excluindo a própria tabela de origem)
+    // 7. Partial match (excluding source table)
     const partialMatch = worldTables.find(t => {
       if (sourceTable && t.id === sourceTable.id) return false;
       const normName = this.#normalizeKey(t.name);
@@ -472,7 +456,7 @@ export class TableChainEngine {
     });
     if (partialMatch) return partialMatch;
 
-    // 8. Fallback: Busca em Compêndios de RollTable
+    // 8. Fallback: Compendium search
     for (const pack of game.packs) {
       if (pack.documentName !== "RollTable") continue;
       
@@ -486,7 +470,7 @@ export class TableChainEngine {
           const doc = await pack.getDocument(entry._id);
           if (doc) return doc;
         } catch {
-          // Continua
+          // Continue
         }
       }
     }
@@ -495,7 +479,7 @@ export class TableChainEngine {
   }
 
   /**
-   * Limpa pontuações periféricas e tags de um nome extraído.
+   * Cleans boundary punctuation and tags from an extracted name.
    * @param {string} str
    * @returns {string}
    */
@@ -509,7 +493,7 @@ export class TableChainEngine {
   }
 
   /**
-   * Normaliza um texto para comparação frouxa.
+   * Normalizes a string for loose comparison.
    * @param {string} str
    * @returns {string}
    */
@@ -525,7 +509,7 @@ export class TableChainEngine {
   }
 
   /**
-   * Extrai o primeiro número inteiro de uma string (ex: "Selvagem 57" -> 57).
+   * Extracts the first integer from a string (e.g. "Wild 57" -> 57).
    * @param {string} str
    * @returns {number|null}
    */
@@ -536,7 +520,7 @@ export class TableChainEngine {
   }
 
   /**
-   * Determina o modo de rolagem herdado da mensagem original.
+   * Resolves the inherited roll mode from the original message.
    * @param {ChatMessage} message
    * @returns {string}
    */
@@ -549,7 +533,7 @@ export class TableChainEngine {
   }
 
   /**
-   * Determina se este cliente Foundry deve executar a automação no multiplayer.
+   * Determines if this Foundry client has authority to execute automation.
    * @returns {boolean}
    */
   static #canExecute() {

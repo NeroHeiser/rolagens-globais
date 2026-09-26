@@ -1,8 +1,8 @@
 import { BaseAdapter } from "./base-adapter.mjs";
 
 /**
- * Adaptador específico para D&D 5ª Edição (dnd5e v3 e v4).
- * Lê flags nativas do sistema (flags.dnd5e, activities, isCritical, isFumble).
+ * Adapter specifically for D&D 5th Edition (dnd5e v3 and v4).
+ * Reads native system flags (flags.dnd5e, activities, isCritical, isFumble).
  */
 export class Dnd5eAdapter extends BaseAdapter {
   constructor() {
@@ -13,24 +13,24 @@ export class Dnd5eAdapter extends BaseAdapter {
 
   getActionTypes() {
     return [
-      { value: "any", label: "Qualquer Rolagem" },
-      { value: "attack", label: "Qualquer Ataque" },
-      { value: "weaponAttack", label: "Ataque com Arma" },
-      { value: "spellAttack", label: "Ataque com Magia" },
-      { value: "save", label: "Teste de Resistência (Save)" },
-      { value: "skill", label: "Teste de Perícia" },
-      { value: "ability", label: "Teste de Atributo" },
-      { value: "death", label: "Salvaguarda contra a Morte" }
+      { value: "any", label: "Any Roll" },
+      { value: "attack", label: "Any Attack" },
+      { value: "weaponAttack", label: "Weapon Attack" },
+      { value: "spellAttack", label: "Spell Attack" },
+      { value: "save", label: "Saving Throw" },
+      { value: "skill", label: "Skill Check" },
+      { value: "ability", label: "Ability Check" },
+      { value: "death", label: "Death Saving Throw" }
     ];
   }
 
   getResultTypes() {
     return [
-      { value: "any", label: "Qualquer Resultado" },
-      { value: "nat1", label: "Falha Crítica (1 Natural)" },
-      { value: "nat20", label: "Acerto Crítico (20 Natural / Crítico)" },
-      { value: "death1", label: "1 na Salvaguarda da Morte" },
-      { value: "death20", label: "20 na Salvaguarda da Morte" }
+      { value: "any", label: "Any Result" },
+      { value: "nat1", label: "Critical Fumble (Natural 1)" },
+      { value: "nat20", label: "Critical Hit (Natural 20)" },
+      { value: "death1", label: "1 on Death Save" },
+      { value: "death20", label: "20 on Death Save" }
     ];
   }
 
@@ -45,7 +45,7 @@ export class Dnd5eAdapter extends BaseAdapter {
     const content = (message.content || "").toLowerCase();
     const fullText = `${flavor} ${content}`;
 
-    // Verificação do tipo de ação
+    // Action type verification
     if (rule.actionType && rule.actionType !== "any") {
       const isAttack = rollType === "attack" || activityType === "attack" || fullText.includes("ataque") || fullText.includes("attack");
       const isSave = rollType === "save" || activityType === "save" || fullText.includes("resistência") || fullText.includes("save") || fullText.includes("salvaguarda");
@@ -86,7 +86,7 @@ export class Dnd5eAdapter extends BaseAdapter {
     const hasNat1 = dndFlags.isFumble || roll.isFumble || d20Dice.some(d => d.result === 1);
     const hasNat20 = dndFlags.isCritical || roll.isCritical || d20Dice.some(d => d.result === 20);
 
-    // Verificação da condição de resultado
+    // Result condition verification
     switch (rule.resultType) {
       case "nat1":
         return hasNat1;
@@ -106,7 +106,7 @@ export class Dnd5eAdapter extends BaseAdapter {
     return [
       {
         id: foundry.utils.randomID(),
-        name: "D&D 5e: Erro Crítico em Ataque",
+        name: "D&D 5e: Critical Fumble on Attack",
         enabled: true,
         actionType: "attack",
         resultType: "nat1",
@@ -116,12 +116,12 @@ export class Dnd5eAdapter extends BaseAdapter {
         formula: "1d100",
         macroId: "",
         visibility: "public",
-        flavor: "💥 D&D 5e: Falha Crítica em Ataque!",
+        flavor: "D&D 5e: Critical Fumble on Attack!",
         keyword: ""
       },
       {
         id: foundry.utils.randomID(),
-        name: "D&D 5e: Acerto Crítico em Ataque",
+        name: "D&D 5e: Critical Hit on Attack",
         enabled: true,
         actionType: "attack",
         resultType: "nat20",
@@ -131,7 +131,7 @@ export class Dnd5eAdapter extends BaseAdapter {
         formula: "1d6",
         macroId: "",
         visibility: "public",
-        flavor: "⭐ D&D 5e: Acerto Crítico!",
+        flavor: "D&D 5e: Critical Hit!",
         keyword: ""
       }
     ];

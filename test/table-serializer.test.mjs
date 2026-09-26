@@ -33,12 +33,12 @@ describe("TableSerializer", () => {
   it("throws an error when parsing invalid JSON structures", () => {
     assert.throws(() => {
       TableSerializer.parseJSON(JSON.stringify({ invalid: true }));
-    }, /Estrutura JSON não reconhecida/);
+    }, /JSON structure not recognized/);
   });
 
   it("exports and parses CSV with proper escaping and ranges", () => {
     const csvString = TableSerializer.exportToCSV(sampleTables);
-    assert.match(csvString, /"Tabela","FaixaMin","FaixaMax","Peso","Texto","Tipo","Documento"/);
+    assert.match(csvString, /"Table","RangeMin","RangeMax","Weight","Text","Type","Document"/);
     assert.match(csvString, /"Wild Surge","1","1","1","Fire spark","text",""/);
 
     const parsedTables = TableSerializer.parseCSV(csvString);
@@ -53,8 +53,8 @@ describe("TableSerializer", () => {
 
   it("throws error when parsing empty or header-only CSV", () => {
     assert.throws(() => {
-      TableSerializer.parseCSV("Tabela,FaixaMin,FaixaMax,Peso,Texto,Tipo,Documento\n");
-    }, /CSV está vazio ou contém apenas cabeçalho/);
+      TableSerializer.parseCSV("Table,RangeMin,RangeMax,Weight,Text,Type,Document\n");
+    }, /CSV file is empty or contains only a header/);
   });
 
   it("exports tables to formatted Markdown", () => {

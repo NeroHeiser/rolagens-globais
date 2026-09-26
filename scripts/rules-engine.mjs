@@ -7,7 +7,7 @@ export class RulesEngine {
   static isExecuting = false;
 
   /**
-   * Registra as configurações do módulo no Foundry VTT.
+   * Registers module rules settings in Foundry VTT.
    */
   static registerSettings() {
     game.settings.register(this.MODULE_ID, this.SETTING_RULES, {
@@ -21,7 +21,7 @@ export class RulesEngine {
   }
 
   /**
-   * Obtém a lista atual de regras configuradas.
+   * Returns configured rules list.
    * @returns {Array<object>}
    */
   static getRules() {
@@ -29,7 +29,7 @@ export class RulesEngine {
   }
 
   /**
-   * Salva a lista de regras no mundo.
+   * Persists rules list to world settings.
    * @param {Array<object>} rules
    */
   static async saveRules(rules) {
@@ -37,10 +37,9 @@ export class RulesEngine {
   }
 
   /**
-   * Inicializa os hooks de escuta de rolagens.
+   * Initializes listeners for chat and system-specific roll events.
    */
   static initialize() {
-    // 1. Hook de pré-criação: Carimba a flag isExtraRoll no momento em que o módulo cria a rolagem
     Hooks.on("preCreateChatMessage", (document, data, options, userId) => {
       if (this.isExecuting) {
         document.updateSource({
@@ -52,12 +51,10 @@ export class RulesEngine {
       }
     });
 
-    // 2. Escuta de mensagens do chat criadas
     Hooks.on("createChatMessage", (message, options, userId) => {
       this.#onChatMessageCreated(message);
     });
 
-    // 3. Hooks nativos do D&D 5e (para capturar disparos diretos de fichas e atividades)
     if (game.system.id === "dnd5e") {
       Hooks.on("dnd5e.rollAttack", (item, roll) => {
         this.#onDnd5eDirectRoll(item, roll, "attack");
@@ -73,14 +70,10 @@ export class RulesEngine {
     }
   }
 
-  /**
-   * Processador para rolagens capturadas diretamente por hooks do D&D 5e.
-   */
   static async #onDnd5eDirectRoll(item, roll, rollType) {
     if (this.isExecuting) return;
     if (!this.#canExecute()) return;
 
-    // Evita processar a mesma rolagem duas vezes
     const rollId = roll?._id || `${item?.id}-${roll?.total}-${Date.now()}`;
     if (this.#processedIds.has(rollId)) return;
 
@@ -107,7 +100,7 @@ export class RulesEngine {
       if (!rule.enabled) continue;
 
       if (adapter.matches(rule, fakeMessage, roll)) {
-        console.log(`Rolagens Globais | ✅ Regra ATIVADA via D&D 5e: "${rule.name}"`);
+        console.log(`Global Extra Rolls | Rule triggered via D&D 5e: "${rule.name}"`);
         this.#processedIds.add(rollId);
         await this.#executeRule(rule, fakeMessage, roll);
         break;
@@ -115,51 +108,39 @@ export class RulesEngine {
     }
   }
 
-  /**
-   * Processador de novas mensagens no chat.
-   */
   static async #onChatMessageCreated(message) {
-    // 1. Trava anti-loop: Se o módulo está executando uma rolagem extra agora, IGNORE!
     if (this.isExecuting) {
       return;
     }
 
-    // 2. Prevenção por Flags
     if (message.flags?.[this.MODULE_ID]?.isExtraRoll) {
       return;
     }
 
-    // 3. Ignora se for mensagem originada de RollTable (tanto automática quanto manual)
     if (message.isRollTable || message.flags?.core?.RollTable || message.flags?.core?.table) {
       return;
     }
 
-    // 4. Ignora se o HTML do chat contém resultado de tabela
     if (message.content && (message.content.includes("table-result") || message.content.includes("table-draw") || message.content.includes("result-text"))) {
       return;
     }
 
-    // 5. Ignora se o flavor indica ser tabela ou rolagem do módulo
-    if (message.flavor && (message.flavor.includes("Tabela") || message.flavor.includes("Rolagem Extra") || message.flavor.includes("rolagens-globais"))) {
+    if (message.flavor && (message.flavor.includes("Tabela") || message.flavor.includes("Table") || message.flavor.includes("Rolagem Extra") || message.flavor.includes("Extra Roll") || message.flavor.includes("rolagens-globais"))) {
       return;
     }
 
-    // 6. Só processa se houver rolagens
     if (!message.rolls || message.rolls.length === 0) {
       return;
     }
 
-    // 7. Evita processar a mesma mensagem duas vezes
     if (this.#processedIds.has(message.id)) {
       return;
     }
 
-    // 8. Seleção de Executor (Apenas o GM ativo executa)
     if (!this.#canExecute()) {
       return;
     }
 
-    // 9. Modo Híbrido: Item com ignoreGlobal
     const item = await this.#getItemFromMessage(message);
     if (item && item.flags?.[this.MODULE_ID]?.ignoreGlobal === true) {
       return;
@@ -172,13 +153,12 @@ export class RulesEngine {
 
     const adapter = getActiveAdapter();
 
-    // 10. Avalia cada regra para cada rolagem da mensagem
     for (const rule of rules) {
       if (!rule.enabled) continue;
 
       for (const roll of message.rolls) {
         if (adapter.matches(rule, message, roll)) {
-          console.log(`Rolagens Globais | ✅ Regra ATIVADA via Chat: "${rule.name}"`);
+          console.log(`Global Extra Rolls | Rule triggered via Chat: "${rule.name}"`);
           this.#processedIds.add(message.id);
           await this.#executeRule(rule, message, roll);
           break;
@@ -187,9 +167,6 @@ export class RulesEngine {
     }
   }
 
-  /**
-   * Determina se o cliente atual deve ser o executor do gatilho.
-   */
   static #canExecute() {
     const isGM = game.user.isGM;
     if (!isGM) {
@@ -201,9 +178,6 @@ export class RulesEngine {
     }
   }
 
-  /**
-   * Tenta recuperar o Item da mensagem.
-   */
   static async #getItemFromMessage(message) {
     if (message.item) return message.item;
     const itemUuid = message.flags?.dnd5e?.item?.uuid || message.flags?.dnd5e?.roll?.itemUuid || message.flags?.dnd5e?.activity?.item;
@@ -217,9 +191,6 @@ export class RulesEngine {
     return null;
   }
 
-  /**
-   * Executa a regra com trava estrita contra recursão e loops.
-   */
   static async #executeRule(rule, originalMessage, originalRoll) {
     if (this.isExecuting) return;
     this.isExecuting = true;
@@ -241,22 +212,18 @@ export class RulesEngine {
           break;
       }
     } catch (err) {
-      console.error(`Rolagens Globais | Erro ao executar "${rule.name}":`, err);
-      ui.notifications.error(`Rolagens Globais: Erro na regra "${rule.name}": ${err.message}`);
+      console.error(`Global Extra Rolls | Error executing "${rule.name}":`, err);
+      ui.notifications.error(`Global Extra Rolls: Error executing rule "${rule.name}": ${err.message}`);
     } finally {
-      // Mantém a trava ativa por 1 segundo após o disparo para que todas as mensagens do chat geradas terminem
       setTimeout(() => {
         this.isExecuting = false;
       }, 1000);
     }
   }
 
-  /**
-   * Executa o sorteio de uma Tabela Rolável nativa do Foundry.
-   */
   static async #executeTable(rule, originalMessage, rollMode) {
     if (!rule.tableId) {
-      ui.notifications.warn(`Rolagens Globais: A regra "${rule.name}" não possui tabela selecionada.`);
+      ui.notifications.warn(`Global Extra Rolls: Rule "${rule.name}" has no table selected.`);
       return;
     }
 
@@ -270,17 +237,13 @@ export class RulesEngine {
     }
 
     if (!table) {
-      ui.notifications.warn(`Rolagens Globais: Tabela "${rule.tableId}" não encontrada.`);
+      ui.notifications.warn(`Global Extra Rolls: Table "${rule.tableId}" not found.`);
       return;
     }
 
-    // Executa o sorteio oficial do Foundry VTT
     await table.draw({ rollMode: rollMode || CONST.DICE_ROLL_MODES.PUBLIC });
   }
 
-  /**
-   * Rola uma fórmula livre de dados e publica no chat.
-   */
   static async #executeFormula(rule, originalMessage, rollMode) {
     if (!rule.formula) return;
 
@@ -304,9 +267,6 @@ export class RulesEngine {
     );
   }
 
-  /**
-   * Executa uma Macro do mundo.
-   */
   static async #executeMacro(rule, originalMessage) {
     if (!rule.macroId) return;
 
@@ -320,7 +280,7 @@ export class RulesEngine {
     }
 
     if (!macro) {
-      console.warn(`Rolagens Globais | Macro não encontrada: ${rule.macroId}`);
+      console.warn(`Global Extra Rolls | Macro not found: ${rule.macroId}`);
       return;
     }
 
@@ -331,9 +291,6 @@ export class RulesEngine {
     });
   }
 
-  /**
-   * Determina o modo de rolagem para o chat com base na visibilidade.
-   */
   static #resolveRollMode(visibility, originalMessage) {
     switch (visibility) {
       case "whisper_gm":

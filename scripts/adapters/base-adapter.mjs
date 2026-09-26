@@ -1,6 +1,6 @@
 /**
- * Classe base para os adaptadores de sistema do Rolagens Globais.
- * Cada sistema (D&D 5e, Tormenta20, PF2e, Daggerheart, Genérico) estende esta classe.
+ * Base class for Rolagens Globais system adapters.
+ * Each supported system (D&D 5e, Tormenta20, PF2e, Daggerheart, Generic) extends this class.
  */
 export class BaseAdapter {
   constructor() {
@@ -9,7 +9,7 @@ export class BaseAdapter {
   }
 
   /**
-   * Retorna os tipos de ação suportados por este sistema para exibição no formulário.
+   * Returns action types supported by this system for display in forms.
    * @returns {Array<{value: string, label: string}>}
    */
   getActionTypes() {
@@ -19,7 +19,7 @@ export class BaseAdapter {
   }
 
   /**
-   * Retorna os tipos de resultado suportados por este sistema (ex: Nat 1, Nat 20, Graus de Sucesso, Duality).
+   * Returns result conditions supported by this system (e.g. Nat 1, Nat 20, Degrees of Success, Duality).
    * @returns {Array<{value: string, label: string}>}
    */
   getResultTypes() {
@@ -29,16 +29,16 @@ export class BaseAdapter {
   }
 
   /**
-   * Avalia se uma mensagem de chat e sua rolagem atendem aos critérios desta regra.
-   * @param {object} rule - Objeto com as configurações da regra.
-   * @param {ChatMessage} message - Mensagem do Foundry VTT.
-   * @param {Roll} roll - Instância da rolagem (se houver).
-   * @returns {boolean} - true se o gatilho foi ativado.
+   * Evaluates whether a chat message and its roll meet the rule criteria.
+   * @param {object} rule - Rule configuration object.
+   * @param {ChatMessage} message - Foundry VTT chat message.
+   * @param {Roll} roll - Roll instance (if any).
+   * @returns {boolean} - true if the rule trigger was activated.
    */
   matches(rule, message, roll) {
     if (!rule.enabled) return false;
 
-    // Filtro de palavra-chave (opcional)
+    // Optional keyword filter
     if (rule.keyword && rule.keyword.trim() !== "") {
       const keyword = rule.keyword.toLowerCase().trim();
       const flavor = (message.flavor || "").toLowerCase();
@@ -48,7 +48,7 @@ export class BaseAdapter {
       }
     }
 
-    // Validação da soma total (se configurada)
+    // Roll total comparison
     if (rule.totalComparison && rule.totalComparison !== "none" && roll) {
       const total = Number(roll.total);
       const targetVal = Number(rule.totalValue);
@@ -63,7 +63,7 @@ export class BaseAdapter {
   }
 
   /**
-   * Helper para extrair todos os dados jogados (Die terms) de uma rolagem.
+   * Helper extracting all active die terms from a roll.
    * @param {Roll} roll
    * @returns {Array<{faces: number, result: number, active: boolean}>}
    */
@@ -87,7 +87,7 @@ export class BaseAdapter {
   }
 
   /**
-   * Retorna regras recomendadas para este sistema ao clicar em "Carregar Regras Recomendadas".
+   * Returns preset recommended rules for this system.
    * @returns {Array<object>}
    */
   getPresetRules() {
